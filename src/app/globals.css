@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+:root {
+  /* ── Official Brand Palette ──
+   * Primary Dark:     #17191c | RGB 23 25 28    | CMYK 75 67.5 62.5 77.5
+   * Deep Olive Slate: #50524a | RGB 80 82 74    | CMYK 62.5 52.5 62.5 37.5
+   * Stone Taupe:      #b6b2a7 | RGB 182 178 167 | CMYK 30 25 32.5 0
+   * Ice Surface Light:#f6f8f9 | RGB 246 248 249 | CMYK 2.5 1 1 0
+   */
+  --brand-dark: #17191c;
+  --brand-slate: #50524a;
+  --brand-taupe: #b6b2a7;
+  --brand-light: #f6f8f9;
+
+  /* ── System Mappings ── */
+  --background: #f6f8f9;
+  --foreground: #17191c;
+  --border: #b6b2a7;
+
+  --black: #17191c;
+  --white: #ffffff;
+}
+
+@theme inline {
+  --color-brand-dark: #17191c;
+  --color-brand-slate: #50524a;
+  --color-brand-taupe: #b6b2a7;
+  --color-brand-light: #f6f8f9;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --animate-marquee: marquee 35s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 35s linear infinite;
+}
+
+body {
+  background: #f6f8f9;
+  color: #17191c;
+  font-family: 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Marquee Animations ── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ── Minimalist Button Utilities ── */
+.btn-mono-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--black);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border: 1px solid var(--black);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-mono-solid:hover {
+  background-color: #27272a;
+  border-color: #27272a;
+}
+
+.btn-mono-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border: 1px solid var(--foreground);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-mono-outline:hover {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+.btn-mono-outline-white {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-mono-outline-white:hover {
+  background-color: var(--white);
+  color: var(--black);
+  border-color: var(--white);
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+::-webkit-scrollbar-thumb {
+  background: #e4e4e7;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}

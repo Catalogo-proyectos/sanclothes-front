@@ -1,0 +1,63 @@
+{
+  "source": "https://nude-project.com/es",
+  "tokens": {
+    "spacing": {
+      "scale": [0, 8, 12, 16, 24, 36],
+      "base_unit": 8
+    },
+    "typography": {
+      "families": ["Helvetica Neue", "-apple-system", "sans-serif"],
+      "scale": [
+        { "role": "hero", "size": "48px", "weight": "800", "family": "Helvetica Neue" },
+        { "role": "h1", "size": "32px", "weight": "800", "family": "Helvetica Neue" },
+        { "role": "nav", "size": "14px", "weight": "600", "family": "Helvetica Neue" },
+        { "role": "body", "size": "14px", "weight": "400", "family": "Helvetica Neue" },
+        { "role": "ticker", "size": "12px", "weight": "500", "family": "Helvetica Neue" }
+      ]
+    },
+    "colors": [
+      { "role": "background", "value": "#f2e8db" },
+      { "role": "surface-dark", "value": "#0e0e0e" },
+      { "role": "text-primary", "value": "#ffffff" },
+      { "role": "text-dark", "value": "#1c1b18" },
+      { "role": "accent-border", "value": "rgba(255, 255, 255, 0.8)" }
+    ],
+    "radius": ["0px", "9999px"],
+    "shadows": ["none"],
+    "image_ratios": [
+      { "usage": "hero-column", "ratio": "9:16" },
+      { "usage": "product-card", "ratio": "3:4" }
+    ],
+    "grid": { "max_width": "100%", "columns": 4, "gutter": "0px" }
+  },
+  "taste": [
+    {
+      "name": "Raw Editorial Grid over Boxed Product Cards",
+      "trigger": "When presenting product categories and new arrivals on the main storefront landing page",
+      "decision": "Chose 4 full-height vertical photo split columns with 0px gaps over standard padded grid cards with borders",
+      "reason": "Streetwear culture values high-impact lookbook editorial feel over transactional catalog listing grids",
+      "evidence": ["4-column grid", "gap: 0px", "containerWidth: 100vw", "height: 100vh"]
+    },
+    {
+      "name": "High Contrast Pill Micro-CTA over Heavy Solid Buttons",
+      "trigger": "When placing key primary call-to-action buttons over complex editorial photography",
+      "decision": "Chose transparent pill-shaped outline buttons with 1px white borders (border-radius: 9999px) over solid filled rectangular block buttons",
+      "reason": "Solid buttons obstruct the underlying outfit styling photo; a slim outlined pill frames the text legibly without obscuring the lookbook photograph",
+      "evidence": ["Shop Now CTA", "border-radius: 9999px", "background: transparent", "border: 1px solid rgba(255,255,255,0.8)"]
+    },
+    {
+      "name": "Warm Organic Cream Accent Ticker over Stark White Utility Bar",
+      "trigger": "When designing top announcement and notification bars for shipping/promotional messages",
+      "decision": "Chose a warm sand tone (#f2e8db) with dark brown typography (#1c1b18) over standard stark white (#ffffff) or generic black (#000000)",
+      "reason": "Pure white utility bars feel generic and industrial; warm sand tones create a vintage, tactile paper feel that sets a relaxed premium tone",
+      "evidence": ["Ticker background #f2e8db", "text #1c1b18", "height 36px"]
+    },
+    {
+      "name": "Absolute Shadow Restraint over Elevated UI Cards",
+      "trigger": "When layering content sections, navigation header, and interactive product containers",
+      "decision": "Chose flat box-shadow: none layout surfaces, using photograph contrast and typography hierarchy for depth instead of drop shadows",
+      "reason": "Artificial drop shadows make digital storefronts look like software dashboards; flat photographic surfaces feel like physical editorial print magazines",
+      "evidence": ["box-shadow: none on 100% of hero cards", "header elements", "container splits"]
+    }
+  ]
+}
