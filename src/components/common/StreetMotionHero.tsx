@@ -11,7 +11,7 @@ export default function StreetMotionHero() {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-          {/* Left Column: Street Photo (Longboard Model with Flowers) */}
+          {/* Left Column: Atelier Photoshoot Image */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -24,8 +24,8 @@ export default function StreetMotionHero() {
               style={{ borderRadius: '0px' }}
             >
               <Image
-                src="/img/editorial/longboard-flowers.jpg"
-                alt="SANTS CLOTHES — Street Motion Longboard Collection"
+                src="/img/secciones/IMG_4279.jpg"
+                alt="SANTS CLOTHES — Atelier de Diseño y Confección"
                 fill
                 quality={95}
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
@@ -35,13 +35,13 @@ export default function StreetMotionHero() {
               {/* Image Badge */}
               <div className="absolute bottom-6 left-6 z-10">
                 <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-black bg-white px-3 py-1.5 uppercase border border-white">
-                  LOOKBOOK N° 04 · STREET MOTION
+                  ATELIER SANTS · PROCESO & CREACIÓN
                 </span>
               </div>
             </div>
           </motion.div>
 
-          {/* Right Column: Editorial Text & Call to Action */}
+          {/* Right Column: Brand Story Editorial Text */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -52,49 +52,49 @@ export default function StreetMotionHero() {
             <div className="flex items-center gap-2">
               <Compass className="w-4 h-4 text-[#50524a]" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
-                CULTURA & MOVIMIENTO
+                NUESTRA HISTORIA & ATELIER
               </span>
             </div>
 
             <h2 className="text-4xl sm:text-6xl md:text-7xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-[0.95] text-[#17191c]">
-              LIFE IN MOTION — STREET ARCHITECTS
+              SANTS CLOTHES — EL ARTE DEL STREETWEAR ELEVADO
             </h2>
 
             <p className="text-xs sm:text-sm font-mono text-[#17191c] uppercase tracking-wide leading-relaxed">
-              CULTURA SKATEBOARD & ESTÉTICA URBANA. EL JERSEY SANT 01 SE COMBINA CON JEANS RELAJADOS EN UN DIÁLOGO ENTRE ARQUITECTURA Y LIBERTAD.
+              Nacido en Asunción, SANTS CLOTHES redefine la intersección entre la cultura urbana, la sastrería moderna y el diseño arquitectónico. Cada prenda es concebida en nuestro atelier con un enfoque obsesivo en el calce, los textiles de gramaje pesado y los acabados de alta durabilidad.
             </p>
 
             <p className="text-xs font-mono text-[#50524a] uppercase tracking-wider leading-relaxed">
-              PIEZAS DISEÑADAS PARA MOVERTE POR LA CIUDAD CON ESTILO PROPIO. FABRICADO CON MATERIALES DE ALTA RESISTENCIA EN PARAGUAY.
+              Desde hoodies heavyweight de 400g hasta siluetas atelier, creamos piezas con identidad propia fabricadas con orgullo en Paraguay para quienes viven con determinación y actitud.
             </p>
 
             {/* Feature Pills */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="p-3.5 bg-[#f6f8f9] border border-[#b6b2a7]">
                 <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase block">
-                  JERSEY SANT 01
+                  ATELIER PROPIO
                 </span>
                 <span className="text-[9px] font-mono text-[#50524a] uppercase">
-                  PINK & WHITE STRIPES
+                  DISEÑO & CONFECCIÓN PARAGUAYA
                 </span>
               </div>
               <div className="p-3.5 bg-[#f6f8f9] border border-[#b6b2a7]">
                 <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase block">
-                  RELAXED DENIM
+                  GRAMAJE PREMIUM
                 </span>
                 <span className="text-[9px] font-mono text-[#50524a] uppercase">
-                  LIGHT WASH BLUE
+                  COTTON 400G & SILUETAS OVERSIZED
                 </span>
               </div>
             </div>
 
             <div className="pt-4">
               <Link
-                href="/catalog?category=streetwear"
+                href="/journal"
                 className="inline-flex items-center gap-3 bg-[#17191c] text-[#f6f8f9] hover:bg-[#50524a] text-[11px] font-mono font-bold tracking-[0.2em] uppercase px-8 py-4 border border-[#17191c] transition-all shadow-xl"
                 style={{ borderRadius: '0px' }}
               >
-                <span>VER CÁPSULA STREET</span>
+                <span>CONOCÉ SOBRE NOSOTROS</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

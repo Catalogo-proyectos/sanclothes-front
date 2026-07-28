@@ -67,7 +67,7 @@ export default function FeaturedCollection() {
                     src={item.img}
                     alt={item.title}
                     fill
-                    className="object-cover object-center grayscale hover:scale-105 transition-transform duration-700 ease-out"
+                    className="object-cover object-center hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <span className="absolute top-3 left-3 text-[9px] font-mono font-bold tracking-widest text-[#f6f8f9] bg-[#50524a] px-2.5 py-1 uppercase">
                     {item.tag}

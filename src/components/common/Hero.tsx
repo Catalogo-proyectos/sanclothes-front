@@ -27,7 +27,7 @@ const PORTAL_COLUMNS: PortalColumn[] = [
     subtitle: 'CAMISAS Y BÁSICOS · ESTILO RELAJADO',
     ctaText: 'EXPLORAR CASUAL',
     ctaHref: '/catalog?category=casual',
-    imageSrc: '/img/col-4.png',
+    imageSrc: '/img/hero/IMG_3202.jpg',
     alt: 'SANTS — Moda Casual',
   },
   {
@@ -38,7 +38,7 @@ const PORTAL_COLUMNS: PortalColumn[] = [
     subtitle: 'HOODIES & REMERAS · HEAVYWEIGHT 400G',
     ctaText: 'EXPLORAR STREETWEAR',
     ctaHref: '/catalog?category=streetwear',
-    imageSrc: '/img/hero-1.jpg',
+    imageSrc: '/img/hero/IMG_3148.jpg',
     alt: 'SANTS — Streetwear',
   },
   {
@@ -49,7 +49,7 @@ const PORTAL_COLUMNS: PortalColumn[] = [
     subtitle: 'POLOS & CANALÉ · CORTE CLÁSICO',
     ctaText: 'EXPLORAR OLD MONEY',
     ctaHref: '/catalog?category=old-money',
-    imageSrc: '/img/col-2.png',
+    imageSrc: '/img/hero/IMG_2334.jpg',
     alt: 'SANTS — Old Money',
   },
   {
@@ -60,7 +60,7 @@ const PORTAL_COLUMNS: PortalColumn[] = [
     subtitle: 'PRENDAS TÉCNICAS · ALTO RENDIMIENTO',
     ctaText: 'EXPLORAR SPORTS',
     ctaHref: '/catalog?category=performance',
-    imageSrc: '/img/col-3.png',
+    imageSrc: '/img/hero/IMG_1460.jpg',
     alt: 'SANTS — Moda Deportiva',
   },
 ];
@@ -92,12 +92,11 @@ export default function Hero() {
                   fill
                   priority={index === 0}
                   quality={95}
-                  className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0"
+                  className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
                 />
 
                 {/* Dark Contrast Gradient Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#17191c]/90 via-[#17191c]/40 to-[#17191c]/20 z-10 group-hover:from-[#17191c]/80 transition-colors duration-500" />
-                <div className="absolute inset-0 bg-[#17191c]/25 group-hover:bg-transparent transition-colors duration-500 z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#17191c]/80 via-[#17191c]/20 to-transparent z-10" />
               </div>
 
 

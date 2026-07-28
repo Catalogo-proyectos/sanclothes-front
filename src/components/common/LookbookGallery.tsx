@@ -105,7 +105,7 @@ export default function LookbookGallery() {
                   alt={currentLook.title}
                   fill
                   priority
-                  className="object-cover object-center grayscale contrast-110"
+                  className="object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#17191c] via-[#17191c]/30 to-transparent pointer-events-none" />
 

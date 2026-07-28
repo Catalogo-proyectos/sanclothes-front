@@ -69,7 +69,7 @@ export default function SocialStudioGrid() {
                 src={img.url}
                 alt={img.alt}
                 fill
-                className="object-cover object-center grayscale group-hover:scale-105 transition-transform duration-700 ease-out"
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                 <span

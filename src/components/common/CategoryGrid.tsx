@@ -106,7 +106,7 @@ export default function CategoryGrid() {
                     src={cat.image}
                     alt={cat.title}
                     fill
-                    className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out grayscale group-hover:grayscale-0"
+                    className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#17191c] via-[#17191c]/40 to-transparent pointer-events-none" />
 
