@@ -4,7 +4,7 @@ import ProductGrid from '@/components/catalog/ProductGrid';
 
 export default function CatalogPage() {
   return (
-    <div className="bg-white">
+    <div className="bg-[#f6f8f9]">
       {/* Page Hero */}
       <PageHero
         category="CATÁLOGO OFICIAL / SANCLOTHES"

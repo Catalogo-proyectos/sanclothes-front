@@ -8,7 +8,7 @@ export default async function ProductDetailPage({
 }) {
   const { productId } = await params;
   return (
-    <div className="bg-white">
+    <div className="bg-[#f6f8f9]">
       <PageHero
         category="ESPECIFICACIONES DE PRENDA / SANCLOTHES"
         title="DETALLE Y CONFECCIÓN DE PRENDA"

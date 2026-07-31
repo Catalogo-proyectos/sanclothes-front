@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,80 +8,67 @@ import { User, LogOut, Search, X, Menu } from 'lucide-react';
 import CartIcon from './CartIcon';
 import CartDrawer from '../checkout/CartDrawer';
 import { useAuth } from '@/hooks/useAuth';
+import { NAV_CATEGORIES } from './navData';
+import MegaMenuPanel from './MegaMenuPanel';
 
-/* ── Navigation Data ── */
-
-interface NavCategory {
-  id: string;
-  name: string;
-  href: string;
-  lines: { label: string; href: string }[];
-}
-
-const NAV_CATEGORIES: NavCategory[] = [
-  {
-    id: 'streetwear',
-    name: 'STREETWEAR',
-    href: '/catalog?category=streetwear',
-    lines: [
-      { label: 'HOMBRE', href: '/catalog?category=streetwear&gender=men' },
-      { label: 'MUJER', href: '/catalog?category=streetwear&gender=women' },
-      { label: 'UNISEX', href: '/catalog?category=streetwear&gender=unisex' },
-    ],
-  },
-  {
-    id: 'old-money',
-    name: 'OLD MONEY',
-    href: '/catalog?category=old-money',
-    lines: [
-      { label: 'HOMBRE', href: '/catalog?category=old-money&gender=men' },
-      { label: 'MUJER', href: '/catalog?category=old-money&gender=women' },
-      { label: 'UNISEX', href: '/catalog?category=old-money&gender=unisex' },
-    ],
-  },
-  {
-    id: 'casual',
-    name: 'CASUAL',
-    href: '/catalog?category=casual',
-    lines: [
-      { label: 'HOMBRE', href: '/catalog?category=casual&gender=men' },
-      { label: 'MUJER', href: '/catalog?category=casual&gender=women' },
-      { label: 'UNISEX', href: '/catalog?category=casual&gender=unisex' },
-    ],
-  },
-  {
-    id: 'sports',
-    name: 'SPORTS',
-    href: '/catalog?category=performance',
-    lines: [
-      { label: 'HOMBRE', href: '/catalog?category=performance&gender=men' },
-      { label: 'MUJER', href: '/catalog?category=performance&gender=women' },
-      { label: 'UNISEX', href: '/catalog?category=performance&gender=unisex' },
-    ],
-  },
-];
-
-/* ── Hide-on-scroll-down Hook ── */
+/* ── Throttled & Optimized Hide-on-scroll-down Hook ── */
 
 function useScrollDirection() {
   const [hidden, setHidden] = useState(false);
   const [atTop, setAtTop] = useState(true);
   const lastY = useRef(0);
+  const tickingRef = useRef(false);
 
   useEffect(() => {
     const threshold = 10;
     const onScroll = () => {
-      const y = window.scrollY;
-      setAtTop(y < 20);
-      if (Math.abs(y - lastY.current) < threshold) return;
-      setHidden(y > lastY.current && y > 80);
-      lastY.current = y;
+      if (!tickingRef.current) {
+        window.requestAnimationFrame(() => {
+          const y = window.scrollY;
+          const newAtTop = y < 20;
+          setAtTop((prev) => (prev !== newAtTop ? newAtTop : prev));
+
+          if (Math.abs(y - lastY.current) >= threshold) {
+            const newHidden = y > lastY.current && y > 80;
+            setHidden((prev) => (prev !== newHidden ? newHidden : prev));
+            lastY.current = y;
+          }
+          tickingRef.current = false;
+        });
+        tickingRef.current = true;
+      }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return { hidden, atTop };
+}
+
+/* ── Decode dropdown artwork while the main thread is idle ── */
+
+function useDecodeNavImages() {
+  useEffect(() => {
+    let cancelled = false;
+    const run = () => {
+      if (cancelled) return;
+      for (const cat of NAV_CATEGORIES) {
+        const img = new Image();
+        img.fetchPriority = 'low';
+        img.src = cat.featuredImage;
+        void img.decode().catch(() => {});
+      }
+    };
+    const hasIdle = typeof window.requestIdleCallback === 'function';
+    const handle = hasIdle
+      ? window.requestIdleCallback(run, { timeout: 2500 })
+      : window.setTimeout(run, 1200);
+    return () => {
+      cancelled = true;
+      if (hasIdle) window.cancelIdleCallback(handle);
+      else clearTimeout(handle);
+    };
+  }, []);
 }
 
 /* ── Header Component ── */
@@ -93,10 +80,44 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const { isLoggedIn, user, logout } = useAuth();
+  const leaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isLoggedIn = useAuth((s) => s.isLoggedIn);
+  const user = useAuth((s) => s.user);
+  const logout = useAuth((s) => s.logout);
   const { hidden, atTop } = useScrollDirection();
   const pathname = usePathname();
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useDecodeNavImages();
+
+  // Smooth hover handlers with grace period debounce
+  const handleMouseEnterHeader = useCallback(() => {
+    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+    setIsHeaderHovered(true);
+  }, []);
+
+  const handleMouseLeaveHeader = useCallback(() => {
+    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+    leaveTimerRef.current = setTimeout(() => {
+      setIsHeaderHovered(false);
+      setHoveredCategory(null);
+    }, 120);
+  }, []);
+
+  const handleMouseEnterCategory = useCallback((catId: string) => {
+    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+    setIsHeaderHovered(true);
+    setHoveredCategory(catId);
+  }, []);
+
+  const closeDropdown = useCallback(() => setHoveredCategory(null), []);
+  const openCart = useCallback(() => setIsCartOpen(true), []);
+  const closeCart = useCallback(() => setIsCartOpen(false), []);
+
+  useEffect(() => () => {
+    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+  }, []);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -120,26 +141,28 @@ export default function Header() {
   const isHeaderActive = !atTop || isHeaderHovered || hoveredCategory !== null || isSearchOpen;
 
   const headerBg = isHeaderActive
-    ? 'bg-[#f6f8f9] border-b border-[#17191c]/[0.06] shadow-sm'
+    ? 'bg-white border-b border-[#17191c]/[0.08] shadow-sm'
     : 'bg-transparent border-b border-transparent';
 
+  const textColor = isHeaderActive ? 'text-[#17191c]' : 'text-white';
+  const activeLineBg = isHeaderActive ? 'bg-[#17191c]' : 'bg-white';
+  const logoFilter = isHeaderActive ? '' : 'brightness-0 invert';
+
   const shouldHideHeader = hidden && !isMobileMenuOpen && !isHeaderHovered && !hoveredCategory && !isSearchOpen;
+  const isDropdownOpen = hoveredCategory !== null;
 
   return (
     <>
       {/* Invisible Mouse Sensor Bar at the very top of screen */}
       <div
         className="fixed top-0 left-0 right-0 h-4 z-[51] pointer-events-auto"
-        onMouseEnter={() => setIsHeaderHovered(true)}
+        onMouseEnter={handleMouseEnterHeader}
       />
 
       <header
-        onMouseEnter={() => setIsHeaderHovered(true)}
-        onMouseLeave={() => {
-          setIsHeaderHovered(false);
-          setHoveredCategory(null);
-        }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${headerBg} ${
+        onMouseEnter={handleMouseEnterHeader}
+        onMouseLeave={handleMouseLeaveHeader}
+        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out will-change-transform transform-gpu ${headerBg} ${
           shouldHideHeader ? '-translate-y-full' : 'translate-y-0'
         }`}
       >
@@ -150,11 +173,13 @@ export default function Header() {
           <div className="flex items-center gap-3 z-10">
             <Link href="/" className="group flex items-center gap-2.5" aria-label="Ir al inicio">
               <img
-                src="/img/Sant_ISO_Negro.png"
+                src="/img/logo/Sant_ISO_Negro.png"
                 alt="SANTS CLOTHES"
-                className="h-8 sm:h-9 w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-110"
+                width={144}
+                height={144}
+                className={`h-8 sm:h-9 w-auto object-contain transition-all duration-300 group-hover:scale-110 ${logoFilter}`}
               />
-              <span className="font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-[0.15em] text-[#17191c] font-black leading-none hidden sm:block drop-shadow-sm">
+              <span className={`font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-[0.15em] font-black leading-none hidden sm:block drop-shadow-sm transition-colors duration-300 ${textColor}`}>
                 SANTS
               </span>
             </Link>
@@ -165,39 +190,29 @@ export default function Header() {
             {NAV_CATEGORIES.map((cat) => (
               <div
                 key={cat.id}
-                onMouseEnter={() => setHoveredCategory(cat.id)}
+                onMouseEnter={() => handleMouseEnterCategory(cat.id)}
                 className="relative"
               >
                 <Link
                   href={cat.href}
                   className={`text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-300 py-6 block ${
                     hoveredCategory === cat.id
-                      ? 'text-[#17191c] opacity-100 scale-105'
-                      : 'text-[#17191c] hover:opacity-75'
+                      ? `${textColor} opacity-100 scale-105`
+                      : `${textColor} hover:opacity-75`
                   }`}
                 >
                   {cat.name}
                 </Link>
-                {/* Active indicator line */}
-                <motion.div
-                  className="absolute bottom-4 left-0 right-0 h-[2px] bg-[#17191c]"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: hoveredCategory === cat.id ? 1 : 0 }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ transformOrigin: 'center' }}
+                {/* GPU-Accelerated Active indicator line */}
+                <div
+                  className={`absolute bottom-4 left-0 right-0 h-[2px] ${activeLineBg} transition-transform duration-300 ease-out origin-center ${
+                    hoveredCategory === cat.id ? 'scale-x-100' : 'scale-x-0'
+                  }`}
                 />
               </div>
             ))}
 
-            {/* Separator */}
-            <div className="w-px h-4 bg-[#17191c]/20" />
 
-            <Link
-              href="/catalog"
-              className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#17191c] hover:opacity-75 transition-opacity duration-300 py-6 block"
-            >
-              CATÁLOGO
-            </Link>
           </nav>
 
           {/* RIGHT: Actions */}
@@ -206,7 +221,7 @@ export default function Header() {
             <button
               onClick={() => setIsSearchOpen(true)}
               aria-label="Buscar"
-              className="w-10 h-10 flex items-center justify-center text-[#17191c] hover:opacity-70 transition-opacity duration-200"
+              className={`w-10 h-10 flex items-center justify-center transition-colors duration-300 hover:opacity-70 ${textColor}`}
             >
               <Search className="w-[18px] h-[18px] stroke-[2]" />
             </button>
@@ -216,7 +231,7 @@ export default function Header() {
               <div className="hidden sm:flex items-center gap-1">
                 <Link
                   href="/dashboard"
-                  className="w-10 h-10 flex items-center justify-center text-[#17191c] hover:opacity-70 transition-opacity duration-200"
+                  className={`w-10 h-10 flex items-center justify-center transition-colors duration-300 hover:opacity-70 ${textColor}`}
                   aria-label="Mi cuenta"
                 >
                   <User className="w-[18px] h-[18px] stroke-[2]" />
@@ -224,7 +239,7 @@ export default function Header() {
                 <button
                   onClick={logout}
                   aria-label="Cerrar sesión"
-                  className="w-10 h-10 flex items-center justify-center text-[#17191c] hover:opacity-70 transition-opacity duration-200"
+                  className={`w-10 h-10 flex items-center justify-center transition-colors duration-300 hover:opacity-70 ${textColor}`}
                 >
                   <LogOut className="w-[18px] h-[18px] stroke-[2]" />
                 </button>
@@ -232,7 +247,7 @@ export default function Header() {
             ) : (
               <Link
                 href="/login"
-                className="hidden sm:flex w-10 h-10 items-center justify-center text-[#17191c] hover:opacity-70 transition-opacity duration-200"
+                className={`hidden sm:flex w-10 h-10 items-center justify-center transition-colors duration-300 hover:opacity-70 ${textColor}`}
                 aria-label="Iniciar sesión"
               >
                 <User className="w-[18px] h-[18px] stroke-[2]" />
@@ -240,13 +255,13 @@ export default function Header() {
             )}
 
             {/* Cart */}
-            <CartIcon onClick={() => setIsCartOpen(true)} />
+            <CartIcon onClick={openCart} isWhiteText={!isHeaderActive} />
 
             {/* Mobile Menu Toggle */}
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMobileMenuOpen((v) => !v)}
               aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-              className="lg:hidden w-10 h-10 flex items-center justify-center text-[#17191c] hover:opacity-70 transition-opacity duration-200 ml-1"
+              className={`lg:hidden w-10 h-10 flex items-center justify-center transition-colors duration-300 hover:opacity-70 ml-1 ${textColor}`}
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5 stroke-[2]" />
@@ -258,67 +273,33 @@ export default function Header() {
         </div>
 
         {/* ── Desktop Mega-Dropdown ── */}
-        <AnimatePresence>
-          {hoveredCategory && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="hidden lg:block overflow-hidden bg-[#f6f8f9] border-b border-[#17191c]/[0.06]"
-              onMouseLeave={() => setHoveredCategory(null)}
-            >
-              <div className="max-w-7xl mx-auto px-12 py-8 grid grid-cols-4 gap-16">
-                {NAV_CATEGORIES.filter((c) => c.id === hoveredCategory).map((cat) => (
-                  <div key={cat.id} className="col-span-1">
-                    <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#17191c]/40 mb-5">
-                      LÍNEAS — {cat.name}
-                    </p>
-                    <ul className="space-y-3">
-                      {cat.lines.map((line, i) => (
-                        <li key={i}>
-                          <Link
-                            href={line.href}
-                            onClick={() => setHoveredCategory(null)}
-                            className="text-sm font-medium text-[#17191c]/70 hover:text-[#17191c] transition-colors duration-200 block"
-                          >
-                            {line.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-
-                <div className="col-span-1">
-                  <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#17191c]/40 mb-5">
-                    ACCESO RÁPIDO
-                  </p>
-                  <ul className="space-y-3">
-                    <li>
-                      <Link
-                        href="/catalog"
-                        onClick={() => setHoveredCategory(null)}
-                        className="text-sm font-medium text-[#17191c]/70 hover:text-[#17191c] transition-colors duration-200 block"
-                      >
-                        Todo el catálogo
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/catalog?sort=new"
-                        onClick={() => setHoveredCategory(null)}
-                        className="text-sm font-medium text-[#17191c]/70 hover:text-[#17191c] transition-colors duration-200 block"
-                      >
-                        Lo más nuevo
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Stays mounted (collapsed) so the artwork is fetched and decoded long before
+            the first hover. The reveal uses the grid-template-rows 0fr→1fr technique so
+            the browser resolves the open height itself — no JS measurement pass, which
+            is what made the first open mis-size. `contain` scopes the reflow. */}
+        <div
+          className={`hidden lg:grid overflow-hidden bg-white border-b border-[#17191c]/[0.08] shadow-2xl [contain:layout_style] transition-[grid-template-rows,opacity] duration-[180ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isDropdownOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+          style={{ pointerEvents: isDropdownOpen ? 'auto' : 'none' }}
+          aria-hidden={!isDropdownOpen}
+          inert={!isDropdownOpen}
+          onMouseEnter={handleMouseEnterHeader}
+          onMouseLeave={handleMouseLeaveHeader}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="max-w-7xl mx-auto pl-8 sm:pl-12 lg:pl-16 pr-0 py-8 relative">
+              {NAV_CATEGORIES.map((cat) => (
+                <MegaMenuPanel
+                  key={cat.id}
+                  cat={cat}
+                  isActive={cat.id === hoveredCategory}
+                  onNavigate={closeDropdown}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* ── Search Overlay ── */}
         <AnimatePresence>
@@ -387,8 +368,8 @@ export default function Header() {
                     </span>
                   </Link>
 
-                  <div className="flex gap-4 py-3 pl-1">
-                    {cat.lines.map((line, j) => (
+                  <div className="flex flex-wrap gap-4 py-3 pl-1">
+                    {cat.col1Links.slice(1, 4).map((line, j) => (
                       <Link
                         key={j}
                         href={line.href}
@@ -451,7 +432,7 @@ export default function Header() {
         )}
       </AnimatePresence>
 
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
     </>
   );
 }

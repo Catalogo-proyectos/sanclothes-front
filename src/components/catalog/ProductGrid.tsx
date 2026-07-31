@@ -24,7 +24,7 @@ export default function ProductGrid() {
   const { data: products, loading, error } = useFetch<CatalogProduct[]>('GET', path);
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-12 bg-[#f6f8f9]">
       <div className="w-full px-4 sm:px-6 md:px-8">
         {/* Category Ticker & Filter Tabs */}
         <FilterBar />

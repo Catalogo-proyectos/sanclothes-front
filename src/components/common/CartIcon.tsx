@@ -6,9 +6,10 @@ import { useCart } from '@/hooks/useCart';
 
 interface CartIconProps {
   onClick?: () => void;
+  isWhiteText?: boolean;
 }
 
-export default function CartIcon({ onClick }: CartIconProps) {
+export default function CartIcon({ onClick, isWhiteText = false }: CartIconProps) {
   const itemCount = useCart((state) => state.getItemCount());
   const [mounted, setMounted] = useState(false);
 
@@ -22,15 +23,21 @@ export default function CartIcon({ onClick }: CartIconProps) {
     <button
       onClick={onClick}
       aria-label="Carrito de compras"
-      className="relative p-2 text-black hover:opacity-60 transition-opacity flex items-center gap-1.5 cursor-pointer"
+      className={`relative p-2 transition-colors duration-300 flex items-center gap-1.5 cursor-pointer ${
+        isWhiteText ? 'text-white hover:opacity-75' : 'text-[#17191c] hover:opacity-70'
+      }`}
     >
       <ShoppingBag className="w-5 h-5 stroke-[2]" />
-      <span className="text-[11px] font-bold uppercase tracking-wider hidden sm:inline text-[#17191c]">
+      <span className="text-[11px] font-bold uppercase tracking-wider hidden sm:inline">
         CARRITO
       </span>
       {displayCount > 0 && (
         <span
-          className="bg-black text-white text-[10px] font-black w-4.5 h-4.5 px-1 flex items-center justify-center border border-white"
+          className={`text-[10px] font-black w-4.5 h-4.5 px-1 flex items-center justify-center transition-colors duration-300 ${
+            isWhiteText
+              ? 'bg-white text-black border border-black'
+              : 'bg-black text-white border border-white'
+          }`}
           style={{ borderRadius: '0px' }}
         >
           {displayCount}

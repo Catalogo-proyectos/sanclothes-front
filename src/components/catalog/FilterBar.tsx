@@ -36,7 +36,7 @@ export default function FilterBar() {
   ];
 
   return (
-    <div className="w-full bg-white border-b border-zinc-200 py-3 mb-6 overflow-hidden">
+    <div className="w-full bg-[#f6f8f9] border-b border-[#17191c]/10 py-3 mb-6 overflow-hidden">
       <div className="flex items-center justify-between gap-6 overflow-x-auto no-scrollbar scroll-smooth">
         {/* Category horizontal scroll tabs */}
         <div className="flex items-center gap-6 shrink-0">
