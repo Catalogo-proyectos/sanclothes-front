@@ -29,6 +29,10 @@ export default function PageHero({
             alt={title}
             fill
             priority
+            quality={70}
+            // Fondo a sangre completa que además va al 25% de opacidad, en
+            // escala de grises y desenfocado por contraste: no necesita detalle.
+            sizes="100vw"
             className="object-cover object-center grayscale contrast-125 brightness-75"
           />
         </div>

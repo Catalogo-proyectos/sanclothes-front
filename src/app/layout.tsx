@@ -25,9 +25,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={bebas.variable}>
-      <body className="min-h-screen flex flex-col antialiased bg-[#f6f8f9] text-[#17191c]">
+      <body className="min-h-screen antialiased bg-[#f6f8f9] text-[#17191c] relative overflow-x-hidden">
         <Header />
-        <main className="flex-1">{children}</main>
+        {/* z-10 + opaque background keeps <main> sliding over the fixed footer (Footer Reveal).
+            The reveal gap itself is rendered by <Footer /> so it always matches the footer's real height. */}
+        <main className="relative z-10 bg-[#f6f8f9] min-h-screen shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]">
+          {children}
+        </main>
         <Footer />
         <Toaster
           position="bottom-right"

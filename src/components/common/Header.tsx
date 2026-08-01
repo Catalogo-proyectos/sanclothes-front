@@ -138,7 +138,14 @@ export default function Header() {
     return () => { document.body.style.overflow = ''; };
   }, [isMobileMenuOpen]);
 
-  const isHeaderActive = !atTop || isHeaderHovered || hoveredCategory !== null || isSearchOpen;
+  // The transparent header with white text only works over a dark hero. Every route
+  // renders one behind the header (Hero on "/", PageHero elsewhere) except the product
+  // detail page, which opens straight onto the light surface — there, white-on-#f6f8f9
+  // measures ~1.05:1 contrast and the nav is effectively invisible. On those routes the
+  // header stays in its solid state from the very top.
+  const hasDarkHeroBehindHeader = !pathname.startsWith('/products/');
+  const isHeaderActive =
+    !hasDarkHeroBehindHeader || !atTop || isHeaderHovered || hoveredCategory !== null || isSearchOpen;
 
   const headerBg = isHeaderActive
     ? 'bg-white border-b border-[#17191c]/[0.08] shadow-sm'

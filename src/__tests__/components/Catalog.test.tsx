@@ -20,8 +20,8 @@ describe('Catalog Components with Mock Layer', () => {
     // Wait for mock API response to populate UI
     await waitFor(
       () => {
-        expect(screen.getByText('Remera Oversize TRECE13 Heavyweight')).toBeInTheDocument();
-        expect(screen.getByText('Hoodie Acid Wash Drop #01')).toBeInTheDocument();
+        expect(screen.getByText('Remera Oversize Heavyweight 240g')).toBeInTheDocument();
+        expect(screen.getByText('Hoodie Acid Wash Drop #01 400G')).toBeInTheDocument();
       },
       { timeout: 3000 }
     );

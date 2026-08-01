@@ -2,6 +2,7 @@
 
 import { useCart } from '@/hooks/useCart';
 import { formatCurrency } from '@/utils/format';
+import Image from 'next/image';
 import Link from 'next/link';
 
 interface CartDrawerProps {
@@ -54,9 +55,16 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   className="flex gap-4 p-3 bg-slate-50 rounded-xl border border-slate-100 items-center"
                 >
                   {item.image && (
-                    <img
+                    // Miniatura de 80px: con <img> el navegador se descargaba
+                    // la foto de producto entera (hasta 662 KB) por cada línea
+                    // del carrito. next/image sirve la variante de 96px.
+                    <Image
                       src={item.image}
                       alt={item.productName}
+                      width={80}
+                      height={80}
+                      quality={75}
+                      sizes="80px"
                       className="w-20 h-20 object-cover rounded-lg bg-slate-200"
                     />
                   )}

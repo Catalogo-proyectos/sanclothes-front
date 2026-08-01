@@ -27,7 +27,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: 'ARTS THROUGH GARMENTS — BACK PRINT',
     price: 280000,
     priceFormatted: '₲ 280.000',
-    image: '/img/products/brown-hoodie-set.jpg',
+    image: '/img/products/brown-hoodie-set.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -37,7 +37,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: 'TEXTURA SUEDE & EMBROIDERED NOVA',
     price: 390000,
     priceFormatted: '₲ 390.000',
-    image: '/img/products/black-suede-tracksuit.jpg',
+    image: '/img/products/black-suede-tracksuit.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -47,7 +47,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: '400G FRISO HEAVYWEIGHT · RELAXED FIT',
     price: 240000,
     priceFormatted: '₲ 240.000',
-    image: '/img/products/brown-pants-set.jpg',
+    image: '/img/products/brown-pants-set.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -57,7 +57,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: '240G ALGODÓN PEINADO · SILVER PRINT',
     price: 170000,
     priceFormatted: '₲ 170.000',
-    image: '/img/products/santclub-metallic-tee.jpg',
+    image: '/img/products/santclub-metallic-tee.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -67,7 +67,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: 'APLIQUÉ EMBROIDERED & COLD WOOL',
     price: 420000,
     priceFormatted: '₲ 420.000',
-    image: '/img/products/varsity-flat.png',
+    image: '/img/products/varsity-flat.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -77,7 +77,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: '400G COTTON HEAVYWEIGHT · BROWN',
     price: 340000,
     priceFormatted: '₲ 340.000',
-    image: '/img/products/zip-santis.png',
+    image: '/img/products/zip-santis.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -87,7 +87,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: 'LINO & ALGODÓN PREMIUM · RELAXED FIT',
     price: 220000,
     priceFormatted: '₲ 220.000',
-    image: '/img/col-4.png',
+    image: '/img/products/camisa-oversized-beige/IMG_5382.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -97,7 +97,7 @@ const FEATURED_GRID_PRODUCTS: GridProduct[] = [
     fabric: '240G ALGODÓN HEAVYWEIGHT · GRAPHIC',
     price: 180000,
     priceFormatted: '₲ 180.000',
-    image: '/img/products/tee-graffiti.png',
+    image: '/img/products/tee-graffiti.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
 ];
@@ -192,9 +192,9 @@ export default function FeaturedProductsGrid() {
                   style={{ borderRadius: '0px' }}
                 >
                   {/* Top-Left Tag Badge */}
-                  <div className="absolute top-3 left-3 z-10">
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-black bg-white px-2.5 py-1 border border-zinc-200 shadow-sm">
-                      {product.tag}
+                  <div className="absolute top-3 left-3 z-10 pointer-events-none">
+                    <span className="inline-block rounded-full bg-[#e3e1dc]/90 text-[#3a2d28] text-[11px] font-medium px-3.5 py-1 tracking-wide shadow-sm border border-black/5">
+                      New In
                     </span>
                   </div>
 
@@ -202,10 +202,9 @@ export default function FeaturedProductsGrid() {
                   <button
                     onClick={(e) => toggleWishlist(product.id, e)}
                     aria-label="Agregar a favoritos"
-                    className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm border border-zinc-200 flex items-center justify-center text-black hover:bg-black hover:text-white transition-all shadow-sm cursor-pointer"
-                    style={{ borderRadius: '0px' }}
+                    className="absolute top-3 right-3 z-10 text-zinc-800 hover:text-black hover:scale-110 transition-all p-1 cursor-pointer"
                   >
-                    <Heart className={`w-4 h-4 ${isFav ? 'fill-black text-black' : ''}`} />
+                    <Heart className={`w-5 h-5 stroke-[1.5] ${isFav ? 'fill-black text-black' : ''}`} />
                   </button>
 
                   {/* Garment Image */}
@@ -214,7 +213,9 @@ export default function FeaturedProductsGrid() {
                       src={product.image}
                       alt={product.name}
                       fill
-                      quality={95}
+                      quality={80}
+                      // Rejilla 1 / 2 / 4 columnas dentro de max-w-[1440px].
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                   </div>

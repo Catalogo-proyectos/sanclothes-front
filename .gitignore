@@ -20,6 +20,10 @@
 # production
 /build
 
+# originales de cámara archivados por scripts/optimize-images.mjs
+# (public/img sólo versiona los .webp ya acotados)
+/.image-originals
+
 # misc
 .DS_Store
 *.pem

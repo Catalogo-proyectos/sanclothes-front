@@ -1,5 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=League+Gothic&display=swap');
 @import "tailwindcss";
+
+/* Aquí había un `@import url(fonts.googleapis.com/...League+Gothic)`. Un @import
+   dentro del CSS encadena dos viajes de red en la ruta crítica: el navegador
+   tiene que descargar y parsear globals.css antes de descubrir siquiera la
+   petición a Google Fonts. Se ha eliminado porque la familia no se aplicaba en
+   ningún selector ni utilidad: la tipografía real son Bebas Neue (vía next/font
+   en app/layout.tsx) y la pila de sistema definida en --font-sans. */
 
 :root {
   /* ── Official Brand Palette ──
@@ -20,8 +26,6 @@
 
   --black: #17191c;
   --white: #ffffff;
-
-  --font-league-gothic: 'League Gothic', sans-serif;
 }
 
 @theme inline {

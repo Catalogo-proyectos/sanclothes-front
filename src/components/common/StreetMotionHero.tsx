@@ -24,10 +24,12 @@ export default function StreetMotionHero() {
               style={{ borderRadius: '0px' }}
             >
               <Image
-                src="/img/secciones/IMG_4279.jpg"
+                src="/img/secciones/IMG_4279.webp"
                 alt="SANTS CLOTHES — Atelier de Diseño y Confección"
                 fill
-                quality={95}
+                quality={80}
+                // 7 de 12 columnas dentro de max-w-7xl (1280px) => ~745px.
+                sizes="(min-width: 1024px) 58vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />

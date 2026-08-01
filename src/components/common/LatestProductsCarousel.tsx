@@ -27,7 +27,7 @@ const PRODUCTS_DATA: PresentationProduct[] = [
     fabric: 'BOXY FIT — EMBROIDERED 400G',
     price: 350000,
     priceFormatted: '₲ 350.000',
-    image: '/img/products/varsity-flat.png',
+    image: '/img/products/varsity-flat.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -37,7 +37,7 @@ const PRODUCTS_DATA: PresentationProduct[] = [
     fabric: 'ALGODÓN PREMIUM 240G',
     price: 180000,
     priceFormatted: '₲ 180.000',
-    image: '/img/products/shorts-set.png',
+    image: '/img/products/shorts-set.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -47,7 +47,7 @@ const PRODUCTS_DATA: PresentationProduct[] = [
     fabric: 'ALGODÓN BORDADO ECOUTEZ VOTRE COEUR',
     price: 280000,
     priceFormatted: '₲ 280.000',
-    image: '/img/products/zip-santis.png',
+    image: '/img/products/zip-santis.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -57,7 +57,7 @@ const PRODUCTS_DATA: PresentationProduct[] = [
     fabric: '100% ALGODÓN HEAVYWEIGHT 240G',
     price: 190000,
     priceFormatted: '₲ 190.000',
-    image: '/img/products/tee-graffiti.png',
+    image: '/img/products/tee-graffiti.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -67,7 +67,7 @@ const PRODUCTS_DATA: PresentationProduct[] = [
     fabric: 'SUEDE TEXTURED EMBROIDERED SET',
     price: 390000,
     priceFormatted: '₲ 390.000',
-    image: '/img/products/tracksuit-suede.png',
+    image: '/img/products/tracksuit-suede.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
 ];

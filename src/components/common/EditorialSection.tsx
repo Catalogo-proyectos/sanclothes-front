@@ -26,7 +26,7 @@ export default function EditorialSection() {
               style={{ borderRadius: '0px' }}
             >
               <Image
-                src="/img/secciones/rack-outfits-4.jpg"
+                src="/img/secciones/rack-outfits-4.webp"
                 alt="SANTS CLOTHES — Colección de Siluetas Atemporales"
                 fill
                 quality={95}
@@ -106,7 +106,7 @@ export default function EditorialSection() {
               style={{ borderRadius: '0px' }}
             >
               <Image
-                src="/img/secciones/IMG_4279.jpg"
+                src="/img/secciones/IMG_4279.webp"
                 alt="SANTS CLOTHES — Atelier de Diseño y Confección"
                 fill
                 quality={95}

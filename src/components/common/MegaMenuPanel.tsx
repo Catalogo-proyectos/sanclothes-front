@@ -1,6 +1,7 @@
 'use client';
 
 import { memo } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import type { NavCategory } from './navData';
@@ -86,14 +87,18 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
           onClick={onNavigate}
           className="block w-full h-full relative"
         >
-          <img
+          {/* El panel mide 320-380px, no 800: dejamos que next/image sirva la
+              variante justa. Sigue siendo eager con prioridad baja para que el
+              menú se sienta instantáneo sin competir con el LCP de la página. */}
+          <Image
             src={cat.featuredImage}
             alt={cat.displayTitle}
-            width={800}
-            height={672}
+            width={380}
+            height={320}
+            quality={75}
+            sizes="(min-width: 1280px) 380px, 320px"
             className="w-full h-[320px] object-cover object-center transition-transform duration-500 ease-out group-hover/card:scale-105"
             loading="eager"
-            decoding="async"
             fetchPriority="low"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none" />

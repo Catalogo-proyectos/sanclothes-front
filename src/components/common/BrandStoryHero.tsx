@@ -27,7 +27,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: 'TEXTURA SUEDE & EMBROIDERED NOVA',
     price: 390000,
     priceFormatted: '₲ 390.000',
-    image: '/img/products/black-suede-tracksuit.jpg',
+    image: '/img/products/black-suede-tracksuit.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -37,7 +37,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: 'APLIQUÉ EMBROIDERED & COLD WOOL',
     price: 420000,
     priceFormatted: '₲ 420.000',
-    image: '/img/products/varsity-flat.png',
+    image: '/img/products/varsity-flat.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -47,7 +47,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: '400G COTTON HEAVYWEIGHT · BROWN',
     price: 340000,
     priceFormatted: '₲ 340.000',
-    image: '/img/products/zip-santis.png',
+    image: '/img/products/zip-santis.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -57,7 +57,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: '400G FRISO HEAVYWEIGHT · BACK PRINT',
     price: 280000,
     priceFormatted: '₲ 280.000',
-    image: '/img/products/brown-hoodie-set.jpg',
+    image: '/img/products/brown-hoodie-set.webp',
     sizes: ['S', 'M', 'L', 'XL'],
   },
 ];
@@ -123,11 +123,13 @@ export default function BrandStoryHero() {
             >
               {/* Background Campaign Image */}
               <Image
-                src="/img/hero/IMG_2996.jpg"
+                src="/img/hero/IMG_2996.webp"
                 alt="SANTS CLOTHES — Colección Camperas & Chaquetas"
                 fill
-                priority
-                quality={95}
+                quality={80}
+                // Mitad izquierda de una rejilla de 12 columnas dentro de un
+                // contenedor de 1440px; a pantalla completa nunca pasa de 720px.
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
               />
 
@@ -209,7 +211,10 @@ export default function BrandStoryHero() {
                           src={product.image}
                           alt={product.name}
                           fill
-                          quality={95}
+                          quality={80}
+                          // Rejilla 2x2 dentro de la media columna derecha:
+                          // ~360px como mucho en escritorio.
+                          sizes="(min-width: 1024px) 25vw, 50vw"
                           className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
                       </div>

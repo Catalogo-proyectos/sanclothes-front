@@ -14,11 +14,12 @@ export default function StudioRackHero() {
       >
         {/* Background Studio Photoshoot Image (IMG_4390.jpg - Full Width Edge to Edge) */}
         <Image
-          src="/img/hero/IMG_4390.jpg"
+          src="/img/hero/IMG_4390.webp"
           alt="SANTS CLOTHES — Studio Experience & Design Atelier"
           fill
-          priority
-          quality={95}
+          quality={80}
+          // Banner a sangre completa.
+          sizes="100vw"
           className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
 

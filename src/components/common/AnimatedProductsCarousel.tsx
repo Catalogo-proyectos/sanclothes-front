@@ -28,7 +28,7 @@ const CAROUSEL_PRODUCTS: StudioProduct[] = [
     fabric: 'ARTS THROUGH GARMENTS — BACK PRINT',
     price: 280000,
     priceFormatted: '₲ 280.000',
-    image: '/img/products/brown-hoodie-set.jpg',
+    image: '/img/products/brown-hoodie-set.webp',
     category: 'Streetwear',
     sizes: ['S', 'M', 'L', 'XL'],
   },
@@ -39,7 +39,7 @@ const CAROUSEL_PRODUCTS: StudioProduct[] = [
     fabric: 'TEXTURA SUEDE & EMBROIDERED NOVA',
     price: 390000,
     priceFormatted: '₲ 390.000',
-    image: '/img/products/black-suede-tracksuit.jpg',
+    image: '/img/products/black-suede-tracksuit.webp',
     category: 'Old Money',
     sizes: ['S', 'M', 'L', 'XL'],
   },
@@ -50,7 +50,7 @@ const CAROUSEL_PRODUCTS: StudioProduct[] = [
     fabric: '400G FRISO HEAVYWEIGHT · RELAXED FIT',
     price: 240000,
     priceFormatted: '₲ 240.000',
-    image: '/img/products/brown-pants-set.jpg',
+    image: '/img/products/brown-pants-set.webp',
     category: 'Casual',
     sizes: ['S', 'M', 'L', 'XL'],
   },
@@ -61,7 +61,7 @@ const CAROUSEL_PRODUCTS: StudioProduct[] = [
     fabric: '240G ALGODÓN PEINADO · SILVER PRINT',
     price: 170000,
     priceFormatted: '₲ 170.000',
-    image: '/img/products/santclub-metallic-tee.jpg',
+    image: '/img/products/santclub-metallic-tee.webp',
     category: 'Streetwear',
     sizes: ['S', 'M', 'L', 'XL'],
   },
@@ -232,7 +232,9 @@ export default function AnimatedProductsCarousel() {
                       src={product.image}
                       alt={product.name}
                       fill
-                      quality={95}
+                      quality={80}
+                      // Rejilla 1 / 2 / 4 columnas dentro de max-w-7xl (1280px).
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                   </div>

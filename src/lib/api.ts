@@ -97,12 +97,23 @@ async function handleMockRequest<T>(
 
     let result = [...MOCK_PRODUCTS];
     if (cut) {
-      result = result.filter((p) => p.cuts.includes(cut as any));
+      const filteredByCut = result.filter((p) => p.cuts.includes(cut as any));
+      if (filteredByCut.length > 0) result = filteredByCut;
     }
     if (category) {
-      result = result.filter((p) => p.category === category);
+      const lowerCat = category.toLowerCase();
+      const filteredByCat = result.filter(
+        (p) =>
+          p.category.toLowerCase() === lowerCat ||
+          p.category.toLowerCase().includes(lowerCat) ||
+          p.slug.toLowerCase().includes(lowerCat) ||
+          p.title.toLowerCase().includes(lowerCat)
+      );
+      if (filteredByCat.length > 0) {
+        result = filteredByCat;
+      }
     }
-    return result as unknown as T;
+    return (result.length > 0 ? result : MOCK_PRODUCTS) as unknown as T;
   }
 
   // --- AUTH ENDPOINTS ---
