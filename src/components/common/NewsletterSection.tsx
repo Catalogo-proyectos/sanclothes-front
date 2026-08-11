@@ -25,12 +25,12 @@ export default function NewsletterSection() {
         <div className="inline-flex items-center gap-2 mb-3">
           <Mail className="w-4 h-4 text-[#50524a]" />
           <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
-            NOVEDADES & DROPS EXCLUSIVOS — ATELIER
+            NOVEDADES & DROPS EXCLUSIVOS — SANT CLOTHES
           </span>
         </div>
 
         <h2 className="text-4xl sm:text-5xl font-[family-name:var(--font-bebas)] tracking-wider text-[#17191c] uppercase mb-4 leading-none">
-          SUSCRÍBETE AL CLUB SANTS CLOTHES
+          SUSCRÍBETE AL CLUB SANT CLOTHES
         </h2>
 
         <p className="text-xs sm:text-sm text-[#50524a] font-mono font-medium tracking-wide uppercase leading-relaxed mb-8 max-w-md mx-auto">

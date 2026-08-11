@@ -10,7 +10,7 @@ export default function DualSplitHeroSection() {
     {
       id: 'sant-customs-ferrari',
       tag: 'CÁPSULA SPECIAL — SANT CUSTOMS',
-      title: 'SANT CUSTOMS ATELIER',
+      title: 'SANT CUSTOMS',
       subtitle: 'EDICIÓN EXCLUSIVA MOTORSPORT & STREETWEAR EN PARAGUAY',
       ctaText: 'VER CÁPSULA CUSTOMS',
       href: '/catalog?category=streetwear',

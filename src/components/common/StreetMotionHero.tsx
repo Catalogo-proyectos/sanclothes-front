@@ -28,7 +28,6 @@ export default function StreetMotionHero() {
                 alt="SANTS CLOTHES — Atelier de Diseño y Confección"
                 fill
                 quality={80}
-                // 7 de 12 columnas dentro de max-w-7xl (1280px) => ~745px.
                 sizes="(min-width: 1024px) 58vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
               />
@@ -37,7 +36,7 @@ export default function StreetMotionHero() {
               {/* Image Badge */}
               <div className="absolute bottom-6 left-6 z-10">
                 <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-black bg-white px-3 py-1.5 uppercase border border-white">
-                  ATELIER SANTS · PROCESO & CREACIÓN
+                  SANT CLOTHES · PROCESO & CREACIÓN
                 </span>
               </div>
             </div>
@@ -54,45 +53,45 @@ export default function StreetMotionHero() {
             <div className="flex items-center gap-2">
               <Compass className="w-4 h-4 text-[#50524a]" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
-                NUESTRA HISTORIA & ATELIER
+                NUESTRA HISTORIA & MARCA
               </span>
             </div>
 
             <h2 className="text-4xl sm:text-6xl md:text-7xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-[0.95] text-[#17191c]">
-              SANTS CLOTHES — EL ARTE DEL STREETWEAR ELEVADO
+              SANT CLOTHES — PIONEROS DEL STREETWEAR EN PARAGUAY
             </h2>
 
             <p className="text-xs sm:text-sm font-mono text-[#17191c] uppercase tracking-wide leading-relaxed">
-              Nacido en Asunción, SANTS CLOTHES redefine la intersección entre la cultura urbana, la sastrería moderna y el diseño arquitectónico. Cada prenda es concebida en nuestro atelier con un enfoque obsesivo en el calce, los textiles de gramaje pesado y los acabados de alta durabilidad.
+              SANT CLOTHES NACE EN PLENA PANDEMIA DESDE EL TALLER DE ALTA COSTURA DE NUESTRA MADRE. LOS HERMANOS MATÍAS Y LUCAS SANTOS TRANSFORMARON ESA HERENCIA ARTESANAL EN UNA MARCA URBANA PIONERA DEL STREETWEAR OVERSIZE EN PARAGUAY, CON FÁBRICA PROPIA Y VISIÓN INTERNACIONAL.
             </p>
 
             <p className="text-xs font-mono text-[#50524a] uppercase tracking-wider leading-relaxed">
-              Desde hoodies heavyweight de 400g hasta siluetas atelier, creamos piezas con identidad propia fabricadas con orgullo en Paraguay para quienes viven con determinación y actitud.
+              CADA DISEÑO LLEVA UN VALOR PERSONAL: FRASES QUE INSPIRAN Y MENSAJES QUE MOTIVAN. CREAMOS PARA LOS SOÑADORES QUE EMPIEZAN DESDE CERO. HOODIES HEAVYWEIGHT DE 400G, SILUETAS OVERSIZE Y PIEZAS CON IDENTIDAD PROPIA, FABRICADAS CON ORGULLO EN PARAGUAY.
             </p>
 
             {/* Feature Pills */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="p-3.5 bg-[#f6f8f9] border border-[#b6b2a7]">
                 <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase block">
-                  ATELIER PROPIO
+                  FUNDADORES
                 </span>
                 <span className="text-[9px] font-mono text-[#50524a] uppercase">
-                  DISEÑO & CONFECCIÓN PARAGUAYA
+                  MATÍAS & LUCAS SANTOS
                 </span>
               </div>
               <div className="p-3.5 bg-[#f6f8f9] border border-[#b6b2a7]">
                 <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase block">
-                  GRAMAJE PREMIUM
+                  FÁBRICA PROPIA
                 </span>
                 <span className="text-[9px] font-mono text-[#50524a] uppercase">
-                  COTTON 400G & SILUETAS OVERSIZED
+                  HECHO EN PARAGUAY · VISIÓN GLOBAL
                 </span>
               </div>
             </div>
 
             <div className="pt-4">
               <Link
-                href="/journal"
+                href="/nosotros"
                 className="inline-flex items-center gap-3 bg-[#17191c] text-[#f6f8f9] hover:bg-[#50524a] text-[11px] font-mono font-bold tracking-[0.2em] uppercase px-8 py-4 border border-[#17191c] transition-all shadow-xl"
                 style={{ borderRadius: '0px' }}
               >

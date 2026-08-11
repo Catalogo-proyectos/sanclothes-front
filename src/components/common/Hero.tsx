@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 
-interface TopColCategory {
+interface HeroCategory {
   id: string;
   title: string;
   subtitle: string;
@@ -13,14 +13,14 @@ interface TopColCategory {
   alt: string;
 }
 
-const TOP_CATEGORIES: TopColCategory[] = [
+const CATEGORIES: HeroCategory[] = [
   {
     id: 'casual',
     title: 'CASUAL',
     subtitle: 'CONFORT DIARIO',
     href: '/catalog?category=casual',
     imageSrc: '/img/hero/IMG_3202.webp',
-    alt: 'SANTS — Moda Casual',
+    alt: 'SANT — Moda Casual',
   },
   {
     id: 'streetwear',
@@ -28,112 +28,81 @@ const TOP_CATEGORIES: TopColCategory[] = [
     subtitle: 'EXPRESÁ TU ESTILO',
     href: '/catalog?category=streetwear',
     imageSrc: '/img/hero/IMG_3148.webp',
-    alt: 'SANTS — Streetwear Drop',
+    alt: 'SANT — Streetwear Drop',
+  },
+  {
+    id: 'old-money',
+    title: 'OLD MONEY',
+    subtitle: 'ELEGANCIA ATEMPORAL',
+    href: '/catalog?category=old-money',
+    imageSrc: '/img/hero/IMG_2334.webp',
+    alt: 'SANT — Old Money Collection',
   },
   {
     id: 'sports',
     title: 'SPORTS',
     subtitle: 'RENDÍ AL MÁXIMO',
-    href: '/catalog?category=performance',
-    imageSrc: '/img/hero/IMG_2334.webp',
-    alt: 'SANTS — Performance Sports',
+    href: '/catalog?category=sports',
+    imageSrc: '/img/hero/IMG_1460.webp',
+    alt: 'SANT — Performance Sports',
   },
 ];
 
-const BOTTOM_CATEGORY = {
-  id: 'old-money',
-  title: 'OLD MONEY',
-  subtitle: 'ELEGANCIA ATEMPORAL',
-  href: '/catalog?category=old-money',
-  imageSrc: '/img/hero/IMG_1460.webp',
-  alt: 'SANTS — Old Money Collection',
-};
-
 export default function Hero() {
   return (
-    <section className="relative w-full bg-[#17191c] text-[#f6f8f9] overflow-hidden select-none">
-      {/* ── DESKTOP LAYOUT (3 Equal Top Columns + 1 Full Width Bottom Banner) ── */}
-      <div className="hidden md:flex flex-col w-full h-[calc(100vh-72px)] min-h-[660px] max-h-[960px] bg-[#17191c]">
-        {/* Top 3 Columns Row (65% Height) */}
-        <div className="flex flex-row w-full h-[65%] border-b border-white/20">
-          {TOP_CATEGORIES.map((cat, index) => (
-            <Link
-              key={cat.id}
-              href={cat.href}
-              aria-label={`Explorar ${cat.title}`}
-              className="group relative flex-1 h-full block overflow-hidden border-r border-white/20 last:border-r-0"
-            >
-              {/* Background Photo */}
-              <div className="absolute inset-0 w-full h-full overflow-hidden">
-                <Image
-                  src={cat.imageSrc}
-                  alt={cat.alt}
-                  fill
-                  priority={index === 0}
-                  quality={85}
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  className="object-cover object-center scale-100 group-hover:scale-105 group-hover:brightness-110 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
-                />
-                {/* Contrast Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/15 group-hover:from-black/70 transition-colors duration-500" />
-              </div>
+    <section
+      id="hero-cover-zone"
+      className="relative w-full bg-[#17191c] text-[#f6f8f9] overflow-hidden select-none"
+    >
+      {/*
+        Empalme con el video hero: las fotos emergen desde #17191c en lugar de
+        aparecer con un corte horizontal duro contra la sección anterior.
+      */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-14 md:h-28 lg:h-36 bg-gradient-to-b from-[#17191c] via-[#17191c]/55 to-transparent" />
 
-              {/* Text & Action Arrow */}
-              <div className="absolute bottom-6 left-8 lg:bottom-10 lg:left-12 z-20 flex flex-col items-start gap-1">
-                <h2 className="text-4xl lg:text-5xl xl:text-6xl font-[family-name:var(--font-bebas)] tracking-[0.06em] uppercase text-white leading-none drop-shadow-md group-hover:translate-x-1 transition-transform duration-300">
-                  {cat.title}
-                </h2>
-                <p className="text-[10px] lg:text-xs font-semibold tracking-[0.22em] uppercase text-white/80 drop-shadow mb-1">
-                  {cat.subtitle}
-                </p>
-                <div className="flex items-center text-white mt-1 group-hover:translate-x-2 transition-transform duration-300">
-                  <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6 stroke-[2]" />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Bottom Full-Width Banner Row (35% Height) */}
-        <div className="relative w-full h-[35%]">
+      {/* ── DESKTOP LAYOUT (4 side-by-side columns, hovered one expands) ── */}
+      <div className="hidden md:flex flex-row w-full h-[calc(100vh-72px)] min-h-[600px] max-h-[900px] bg-[#17191c]">
+        {CATEGORIES.map((cat, index) => (
           <Link
-            href={BOTTOM_CATEGORY.href}
-            aria-label={`Explorar ${BOTTOM_CATEGORY.title}`}
-            className="group relative w-full h-full block overflow-hidden"
+            key={cat.id}
+            href={cat.href}
+            aria-label={`Explorar ${cat.title}`}
+            className="group relative h-full flex-1 hover:flex-[2.2] transition-[flex] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] block overflow-hidden border-r border-white/20 last:border-r-0"
           >
             {/* Background Photo */}
             <div className="absolute inset-0 w-full h-full overflow-hidden">
               <Image
-                src={BOTTOM_CATEGORY.imageSrc}
-                alt={BOTTOM_CATEGORY.alt}
+                src={cat.imageSrc}
+                alt={cat.alt}
                 fill
+                priority={index === 0}
                 quality={85}
-                sizes="(min-width: 768px) 100vw, 100vw"
+                sizes="(min-width: 768px) 25vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 group-hover:brightness-110 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
               />
-              {/* Contrast Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/15 group-hover:from-black/70 transition-colors duration-500" />
+              {/* Dark Gradient Overlay for Contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent group-hover:from-black/75 transition-colors duration-500" />
             </div>
 
-            {/* Text & Action Arrow */}
-            <div className="absolute bottom-6 left-8 lg:bottom-10 lg:left-12 z-20 flex flex-col items-start gap-1">
-              <h2 className="text-4xl lg:text-5xl xl:text-6xl font-[family-name:var(--font-bebas)] tracking-[0.06em] uppercase text-white leading-none drop-shadow-md group-hover:translate-x-1 transition-transform duration-300">
-                {BOTTOM_CATEGORY.title}
+            {/* White Title & Subtitle Overlay at Bottom of Each Column */}
+            <div className="absolute bottom-8 left-6 right-6 lg:bottom-12 lg:left-8 lg:right-8 z-20 flex flex-col items-start gap-1">
+              <h2 className="text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-[family-name:var(--font-bebas)] tracking-wider uppercase text-white leading-none drop-shadow-md group-hover:translate-x-1 transition-transform duration-300">
+                {cat.title}
               </h2>
-              <p className="text-[10px] lg:text-xs font-semibold tracking-[0.22em] uppercase text-white/80 drop-shadow mb-1">
-                {BOTTOM_CATEGORY.subtitle}
+              <p className="text-[10px] lg:text-xs font-mono font-semibold tracking-[0.2em] uppercase text-white/90 drop-shadow mt-1">
+                {cat.subtitle}
               </p>
-              <div className="flex items-center text-white mt-1 group-hover:translate-x-2 transition-transform duration-300">
+              <div className="pt-2 flex items-center gap-2 text-white group-hover:translate-x-2 transition-transform duration-300">
                 <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6 stroke-[2]" />
               </div>
             </div>
           </Link>
-        </div>
+        ))}
       </div>
 
       {/* ── MOBILE RESPONSIVE LAYOUT ── */}
       <div className="flex md:hidden flex-col w-full bg-[#17191c]">
-        {[...TOP_CATEGORIES, BOTTOM_CATEGORY].map((cat) => (
+        {CATEGORIES.map((cat) => (
           <Link
             key={cat.id}
             href={cat.href}
@@ -158,7 +127,7 @@ export default function Hero() {
                 <h2 className="text-3xl font-[family-name:var(--font-bebas)] tracking-[0.08em] uppercase text-white leading-none mb-1">
                   {cat.title}
                 </h2>
-                <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/80">
+                <p className="text-[10px] font-mono font-semibold tracking-[0.2em] uppercase text-white/90">
                   {cat.subtitle}
                 </p>
               </div>

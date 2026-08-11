@@ -51,7 +51,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
           className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
         />
         <span className="absolute top-4 left-4 bg-white/90 text-[#17191c] border border-black/5 text-[9px] font-mono font-bold px-3 py-1.5 uppercase tracking-widest shadow-sm">
-          EDICIÓN ATELIER SS26
+          EDICIÓN SANT SS26
         </span>
         <span className="absolute bottom-4 right-4 p-2.5 bg-white/90 text-black border border-black/5 shadow-sm transition-colors duration-200 group-hover:bg-black group-hover:text-white">
           <Maximize2 className="w-4 h-4" />

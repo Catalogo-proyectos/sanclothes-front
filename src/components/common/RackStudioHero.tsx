@@ -31,7 +31,7 @@ export default function RackStudioHero() {
             THE NEW ERA
           </h2>
           <p className="text-xs sm:text-sm font-mono font-medium tracking-wide uppercase text-[#50524a] max-w-lg mx-auto">
-            A NEW CHAPTER OF ELEVATED ESSENTIALS AND STATEMENT SILHOUETTES BY SANTS CLOTHES.
+            A NEW CHAPTER OF ELEVATED ESSENTIALS AND STATEMENT SILHOUETTES BY SANT CLOTHES.
           </p>
         </motion.div>
 
@@ -46,7 +46,7 @@ export default function RackStudioHero() {
         >
           <Image
             src="/img/editorial/rack-outfits-4.jpg"
-            alt="SANTS CLOTHES — The New Era 4 Outfits Rack Collection"
+            alt="SANT CLOTHES — The New Era 4 Outfits Rack Collection"
             fill
             priority
             quality={95}
@@ -89,7 +89,7 @@ export default function RackStudioHero() {
               NEVER BASIC
             </span>
             <span className="text-[10px] font-mono text-[#50524a] uppercase tracking-widest">
-              PARAGUAY ATELIER
+              PARAGUAY SANT CLOTHES
             </span>
           </div>
 

@@ -24,6 +24,10 @@
 # (public/img sólo versiona los .webp ya acotados)
 /.image-originals
 
+# másters 4K de video + frames sueltos, archivados fuera de git
+# (public/img/video sólo versiona los .mp4 ya optimizados para web)
+/.video-originals
+
 # misc
 .DS_Store
 *.pem
@@ -51,5 +55,7 @@ GEMINI.md
 nude-project.com.md
 TRECE13_FRONTEND_SPEC_DEVELOP_ARCHITECTURE.md
 scuffers.com.md
+nude-project.com.json
 scuffers.com.json
 SKILLS_GUIDE.md
+/.playwright-mcp

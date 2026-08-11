@@ -73,7 +73,7 @@ export default function CategoryGrid() {
               </span>
             </div>
             <h2 className="text-4xl sm:text-5xl font-[family-name:var(--font-bebas)] tracking-wider text-[#17191c] uppercase leading-none">
-              SELECCIÓN DE PRENDAS ATELIER
+              SELECCIÓN DE PRENDAS SANT CLOTHES
             </h2>
           </div>
           <Link

@@ -22,9 +22,8 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
       initial={false}
       animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
       transition={{ duration: 0.12, ease: 'easeOut' }}
-      className={`${
-        isActive ? 'flex' : 'hidden'
-      } items-stretch justify-between gap-8 lg:gap-12`}
+      className={`${isActive ? 'flex' : 'hidden'
+        } items-stretch justify-between gap-8 lg:gap-12`}
     >
       {/* 1. LEFT: Big Display Title */}
       <div className="w-48 sm:w-56 shrink-0 pt-1">
@@ -32,7 +31,7 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
           {cat.displayTitle}
         </h2>
         <p className="mt-3 text-[10px] font-bold tracking-[0.25em] uppercase text-[#17191c]/40">
-          SANCLOTHES ATELIER
+          SANT CLOTHES
         </p>
       </div>
 
@@ -49,11 +48,10 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
                 <Link
                   href={link.href}
                   onClick={onNavigate}
-                  className={`text-[13px] tracking-wide block transition-colors duration-150 ${
-                    idx === 0
+                  className={`text-[13px] tracking-wide block transition-colors duration-150 ${idx === 0
                       ? 'font-bold text-[#17191c] hover:underline'
                       : 'font-medium text-[#17191c]/75 hover:text-[#17191c]'
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>

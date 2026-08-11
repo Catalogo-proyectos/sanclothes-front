@@ -15,7 +15,7 @@ export default function StudioRackHero() {
         {/* Background Studio Photoshoot Image (IMG_4390.jpg - Full Width Edge to Edge) */}
         <Image
           src="/img/hero/IMG_4390.webp"
-          alt="SANTS CLOTHES — Studio Experience & Design Atelier"
+          alt="SANT CLOTHES — Studio Experience & Design Atelier"
           fill
           quality={80}
           // Banner a sangre completa.
@@ -30,7 +30,7 @@ export default function StudioRackHero() {
         <div className="relative z-10 p-6 sm:p-10 lg:p-12">
           <span className="inline-flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.25em] text-white bg-black/85 backdrop-blur-md px-4 py-2 uppercase border border-white/20">
             <Sparkles className="w-3.5 h-3.5 text-white" />
-            <span>SANTS ATELIER · STUDIO EDITORIAL DROP</span>
+            <span>SANT CLOTHES · COLECCIÓN STUDIO DROP</span>
           </span>
         </div>
 
@@ -43,11 +43,11 @@ export default function StudioRackHero() {
           className="relative z-10 p-6 sm:p-12 lg:p-16 space-y-4 max-w-4xl text-white"
         >
           <h2 className="text-4xl sm:text-6xl lg:text-8xl font-[family-name:var(--font-bebas)] tracking-wider uppercase leading-none text-white drop-shadow-lg">
-            COLLECTIONS & CUSTOMS — THE STUDIO EXPERIENCE
+            SANT CLOTHES — FUNDADA POR MATÍAS & LUCAS SANTOS
           </h2>
 
           <p className="text-xs sm:text-sm font-mono tracking-wide uppercase text-zinc-300 leading-relaxed max-w-xl">
-            DISEÑO ARQUITECTÓNICO, CORTE ATELIER Y SASTRERÍA STREETWEAR. CADA PRENDA ES CONCEBIDA, CORTADA Y PRUEBADA EN NUESTRO TALLER DE ASUNCIÓN.
+            FUNDADA POR LOS HERMANOS MATÍAS Y LUCAS SANTOS, SANT NACE DEL TALLER DE ALTA COSTURA FAMILIAR. HOY, CON FÁBRICA PROPIA EN PARAGUAY, CADA PRENDA ES CONCEBIDA, CORTADA Y CONFECCIONADA BAJO NUESTRO CONTROL TOTAL.
           </p>
 
           <div className="pt-3">

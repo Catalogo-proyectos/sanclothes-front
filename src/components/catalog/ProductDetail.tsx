@@ -89,7 +89,7 @@ export default function ProductDetail({ product, recommended }: ProductDetailPro
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
             <div>
               <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-zinc-500 block mb-1">
-                COMPLETÁ EL LOOK · SANCLOTHES ATELIER
+                COMPLETÁ EL LOOK · SANT CLOTHES
               </span>
               <h2 id="recommended-heading" className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#17191c]">
                 TAMBIÉN TE PUEDE INTERESAR

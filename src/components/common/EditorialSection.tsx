@@ -27,7 +27,7 @@ export default function EditorialSection() {
             >
               <Image
                 src="/img/secciones/rack-outfits-4.webp"
-                alt="SANTS CLOTHES — Colección de Siluetas Atemporales"
+                alt="SANT CLOTHES — Colección de Siluetas Atemporales"
                 fill
                 quality={95}
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
@@ -36,7 +36,7 @@ export default function EditorialSection() {
 
               <div className="absolute bottom-3 left-3 z-10">
                 <span className="text-[9px] font-mono font-bold tracking-[0.2em] text-black bg-white px-2.5 py-1 uppercase border border-white">
-                  SANTS ATELIER · 400G & SILUETAS ATEMPORALES
+                  SANT CLOTHES · 400G & SILUETAS ATEMPORALES
                 </span>
               </div>
             </div>
@@ -45,7 +45,7 @@ export default function EditorialSection() {
             <div className="flex items-center gap-2.5">
               <span className="w-2.5 h-2.5 bg-[#17191c] rounded-full" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
-                MANIFIESTO SANTS CLOTHES
+                MANIFIESTO SANT CLOTHES
               </span>
             </div>
 
@@ -56,7 +56,7 @@ export default function EditorialSection() {
 
             {/* Body Paragraphs */}
             <p className="text-xs sm:text-sm text-[#17191c] font-mono font-medium tracking-wide uppercase leading-relaxed">
-              EN SANTS CLOTHES CREEMOS EN LA FUERZA DE LO SIMPLE. ELIMINAMOS ADORNOS INNECESARIOS PARA ENFOCAR TODA LA ATENCIÓN EN SILUETAS, VOLUMEN Y TEXTURA DE MATERIAS PRIMAS HEAVYWEIGHT.
+              EN SANT CLOTHES CREEMOS EN LA FUERZA DE LO SIMPLE. ELIMINAMOS ADORNOS INNECESARIOS PARA ENFOCAR TODA LA ATENCIÓN EN SILUETAS, VOLUMEN Y TEXTURA DE MATERIAS PRIMAS HEAVYWEIGHT.
             </p>
 
             <p className="text-xs text-[#50524a] font-mono tracking-wide uppercase leading-relaxed">
@@ -71,7 +71,7 @@ export default function EditorialSection() {
               </div>
               <div className="p-3 bg-[#f6f8f9] border border-[#b6b2a7] text-center">
                 <span className="text-[10px] font-mono font-bold uppercase text-[#17191c] block">BOXY FIT</span>
-                <span className="text-[9px] font-mono uppercase text-[#50524a]">CORTE ATELIER</span>
+                <span className="text-[9px] font-mono uppercase text-[#50524a]">CORTE PRECISO</span>
               </div>
               <div className="p-3 bg-[#f6f8f9] border border-[#b6b2a7] text-center">
                 <span className="text-[10px] font-mono font-bold uppercase text-[#17191c] block">PARAGUAY</span>
@@ -86,13 +86,13 @@ export default function EditorialSection() {
                 className="inline-flex items-center justify-center gap-3 w-full sm:w-auto bg-[#17191c] hover:bg-[#50524a] text-white text-[11px] font-mono font-bold tracking-[0.2em] uppercase px-8 py-4 border border-[#17191c] transition-all shadow-lg"
                 style={{ borderRadius: '0px' }}
               >
-                <span>EXPLORAR CATÁLOGO ATELIER</span>
+                <span>EXPLORAR CATÁLOGO SANT CLOTHES</span>
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
           </motion.div>
 
-          {/* ── RIGHT COLUMN (50%): SANTS CLOTHES — EL ARTE DEL STREETWEAR ELEVADO ── */}
+          {/* ── RIGHT COLUMN (50%): SANT CLOTHES — EL ARTE DEL STREETWEAR ELEVADO ── */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -107,7 +107,7 @@ export default function EditorialSection() {
             >
               <Image
                 src="/img/secciones/IMG_4279.webp"
-                alt="SANTS CLOTHES — Atelier de Diseño y Confección"
+                alt="SANT CLOTHES — Atelier de Diseño y Confección"
                 fill
                 quality={95}
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
@@ -116,7 +116,7 @@ export default function EditorialSection() {
 
               <div className="absolute bottom-3 left-3 z-10">
                 <span className="text-[9px] font-mono font-bold tracking-[0.2em] text-black bg-white px-2.5 py-1 uppercase border border-white">
-                  ATELIER SANTS · PROCESO & CREACIÓN
+                  SANT CLOTHES · PROCESO & CREACIÓN
                 </span>
               </div>
             </div>
@@ -125,29 +125,29 @@ export default function EditorialSection() {
             <div className="flex items-center gap-2">
               <Compass className="w-4 h-4 text-[#50524a]" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
-                NUESTRA HISTORIA & ATELIER
+                NUESTRA HISTORIA & MARCA
               </span>
             </div>
 
             {/* Main Headline */}
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-[family-name:var(--font-bebas)] tracking-wider text-[#17191c] leading-[0.95] uppercase">
-              SANTS CLOTHES — EL ARTE DEL STREETWEAR ELEVADO
+              SANT CLOTHES — EL ARTE DEL STREETWEAR ELEVADO
             </h2>
 
             {/* Body Paragraphs */}
             <p className="text-xs sm:text-sm text-[#17191c] font-mono font-medium tracking-wide uppercase leading-relaxed">
-              NACIDO EN ASUNCIÓN, SANTS CLOTHES REDEFINE LA INTERSECCIÓN ENTRE LA CULTURA URBANA, LA SASTRERÍA MODERNA Y EL DISEÑO ARQUITECTÓNICO.
+              SANT CLOTHES NACE EN PLENA PANDEMIA DESDE EL TALLER DE ALTA COSTURA DE NUESTRA MADRE. LOS HERMANOS MATÍAS Y LUCAS SANTOS TRANSFORMARON ESA HERENCIA ARTESANAL EN UNA MARCA URBANA PIONERA EN PARAGUAY.
             </p>
 
             <p className="text-xs text-[#50524a] font-mono tracking-wide uppercase leading-relaxed">
-              DESDE HOODIES HEAVYWEIGHT DE 400G HASTA SILUETAS ATELIER, CREAMOS PIEZAS CON IDENTIDAD PROPIA FABRICADAS CON ORGULLO EN PARAGUAY.
+              CADA DISEÑO LLEVA UN VALOR PERSONAL: FRASES QUE INSPIRAN Y MENSAJES QUE MOTIVAN. HOY CON FÁBRICA PROPIA Y TIENDAS EN CIUDAD DEL ESTE, CREAMOS PARA LOS SOÑADORES QUE EMPIEZAN DESDE CERO.
             </p>
 
             {/* Feature Pills */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="p-3 bg-[#f6f8f9] border border-[#b6b2a7]">
                 <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase block">
-                  ATELIER PROPIO
+                  CONFECCIÓN PROPIA
                 </span>
                 <span className="text-[9px] font-mono text-[#50524a] uppercase">
                   DISEÑO & CONFECCIÓN
@@ -166,7 +166,7 @@ export default function EditorialSection() {
             {/* CTA Button */}
             <div className="pt-4">
               <Link
-                href="/journal"
+                href="/nosotros"
                 className="inline-flex items-center justify-center gap-3 w-full sm:w-auto bg-[#17191c] hover:bg-[#50524a] text-white text-[11px] font-mono font-bold tracking-[0.2em] uppercase px-8 py-4 border border-[#17191c] transition-all shadow-lg"
                 style={{ borderRadius: '0px' }}
               >

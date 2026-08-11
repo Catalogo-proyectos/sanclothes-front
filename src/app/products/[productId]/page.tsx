@@ -37,11 +37,11 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const product = await getProduct(productId);
 
   if (!product) {
-    return { title: 'Prenda no encontrada — SANTS CLOTHES®' };
+    return { title: 'Prenda no encontrada — SANT CLOTHES®' };
   }
 
   const price = product.discountPrice ?? product.price;
-  const title = `${product.title} — SANTS CLOTHES®`;
+  const title = `${product.title} — SANT CLOTHES®`;
   const description = product.description.slice(0, 160);
   const image = product.images?.[0]?.url;
 
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
       title,
       description,
       url: `${config.app.url}/products/${product.productId}`,
-      siteName: 'SANTS CLOTHES®',
+      siteName: 'SANT CLOTHES®',
       locale: 'es_PY',
       images: image ? [{ url: image, alt: product.images[0].alt || product.title }] : undefined,
     },
@@ -97,7 +97,7 @@ export default async function ProductDetailPage({ params }: PageParams) {
         image: product.images?.map((img) => img.url) ?? [],
         sku: product.variants?.[0]?.sku ?? product.slug,
         category: product.category,
-        brand: { '@type': 'Brand', name: 'SANTS CLOTHES' },
+        brand: { '@type': 'Brand', name: 'SANT CLOTHES' },
         offers: {
           '@type': 'Offer',
           price,

@@ -14,8 +14,8 @@ const bebas = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: 'SANTS CLOTHES® — Modern Elevated Fashion & Atelier',
-  description: 'Plataforma oficial de prendas streetwear, hoodies y drops exclusivos SANTS CLOTHES®.',
+  title: 'SANT CLOTHES® — Modern Elevated Fashion & Atelier',
+  description: 'Plataforma oficial de prendas streetwear, hoodies y drops exclusivos SANT CLOTHES®.',
 };
 
 export default function RootLayout({

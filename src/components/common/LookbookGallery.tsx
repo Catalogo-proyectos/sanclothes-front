@@ -64,7 +64,7 @@ export default function LookbookGallery() {
               </span>
             </div>
             <h2 className="text-4xl sm:text-5xl font-[family-name:var(--font-bebas)] tracking-wider text-[#f6f8f9] uppercase leading-none">
-              GALERÍA EDITORIAL & STYLING ATELIER
+              GALERÍA EDITORIAL & STYLING SANT CLOTHES
             </h2>
           </div>
 
@@ -155,7 +155,7 @@ export default function LookbookGallery() {
 
             <div className="pt-6 border-t border-[#50524a]">
               <p className="text-[11px] text-[#b6b2a7] uppercase tracking-widest leading-relaxed mb-6 font-medium">
-                TODAS LAS PRENDAS SON DISEÑADAS CON ALGODÓN 100% HEAVYWEIGHT Y CONFECCIONADAS BAJO ESTÁNDARES EDITORIALES SANTS CLOTHES.
+                TODAS LAS PRENDAS SON DISEÑADAS CON ALGODÓN 100% HEAVYWEIGHT Y CONFECCIONADAS BAJO ESTÁNDARES EDITORIALES SANT CLOTHES.
               </p>
               <Link
                 href="/catalog"

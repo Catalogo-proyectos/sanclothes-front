@@ -34,8 +34,8 @@ const CAROUSEL_PRODUCTS: StudioProduct[] = [
   },
   {
     id: 'le-sants-suede-set',
-    tag: 'CÁPSULA SPECIAL — LE SANTS',
-    name: 'LE SANTS CLUB SUEDE TRACKSUIT',
+    tag: 'CÁPSULA SPECIAL — LE SANT',
+    name: 'LE SANT CLUB SUEDE TRACKSUIT',
     fabric: 'TEXTURA SUEDE & EMBROIDERED NOVA',
     price: 390000,
     priceFormatted: '₲ 390.000',
@@ -56,7 +56,7 @@ const CAROUSEL_PRODUCTS: StudioProduct[] = [
   },
   {
     id: 'santclub-metallic-tee',
-    tag: 'WOMEN ATELIER — CHROME',
+    tag: 'WOMEN — CHROME',
     name: 'SANTCLUB METALLIC SCRIPT TEE',
     fabric: '240G ALGODÓN PEINADO · SILVER PRINT',
     price: 170000,
@@ -96,7 +96,7 @@ export default function AnimatedProductsCarousel() {
     e.stopPropagation();
     setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
     toast.success(wishlist[id] ? 'QUITADO DE FAVORITOS' : 'AGREGADO A FAVORITOS', {
-      description: 'CÁPSULA SANTS CLOTHES',
+      description: 'CÁPSULA SANT CLOTHES',
     });
   };
 
@@ -129,21 +129,21 @@ export default function AnimatedProductsCarousel() {
 
   return (
     <section
-      className="w-full bg-[#f6f8f9] text-[#17191c] py-20 px-6 sm:px-12 border-b border-[#b6b2a7]/40 overflow-hidden"
+      className="w-full bg-[#17191c] text-[#f6f8f9] py-20 px-6 sm:px-12 border-b border-white/10 overflow-hidden"
       onMouseEnter={() => setIsAutoplay(false)}
       onMouseLeave={() => setIsAutoplay(true)}
     >
       <div className="max-w-7xl mx-auto">
         {/* Header Bar with Navigation Controls */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-zinc-200">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-white/10">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4 text-black" />
-              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.25em] text-zinc-500">
+              <Sparkles className="w-4 h-4 text-white" />
+              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.25em] text-zinc-400">
                 NUEVO DROPS EXCLUSIVOS — MODO PRESENTACIÓN
               </span>
             </div>
-            <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-none">
+            <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-none text-white">
               NUEVAS PRENDAS DESTACADAS
             </h2>
           </div>
@@ -156,7 +156,7 @@ export default function AnimatedProductsCarousel() {
                   key={i}
                   onClick={() => setCurrentIndex(i)}
                   className={`h-1.5 transition-all duration-300 ${
-                    currentIndex === i ? 'w-8 bg-black' : 'w-2 bg-zinc-300 hover:bg-zinc-500'
+                    currentIndex === i ? 'w-8 bg-white' : 'w-2 bg-zinc-700 hover:bg-zinc-500'
                   }`}
                   aria-label={`Ir al producto ${i + 1}`}
                   style={{ borderRadius: '0px' }}
@@ -167,7 +167,7 @@ export default function AnimatedProductsCarousel() {
             <button
               onClick={handlePrev}
               aria-label="Producto anterior"
-              className="w-11 h-11 border border-zinc-300 bg-white hover:bg-black hover:text-white hover:border-black text-black flex items-center justify-center transition-all shadow-sm active:scale-95"
+              className="w-11 h-11 border border-white/20 bg-black/60 hover:bg-white hover:text-black hover:border-white text-white flex items-center justify-center transition-all shadow-sm active:scale-95 cursor-pointer"
               style={{ borderRadius: '0px' }}
             >
               <ChevronLeft className="w-5 h-5" />
@@ -176,7 +176,7 @@ export default function AnimatedProductsCarousel() {
             <button
               onClick={handleNext}
               aria-label="Siguiente producto"
-              className="w-11 h-11 border border-zinc-300 bg-white hover:bg-black hover:text-white hover:border-black text-black flex items-center justify-center transition-all shadow-sm active:scale-95"
+              className="w-11 h-11 border border-white/20 bg-black/60 hover:bg-white hover:text-black hover:border-white text-white flex items-center justify-center transition-all shadow-sm active:scale-95 cursor-pointer"
               style={{ borderRadius: '0px' }}
             >
               <ChevronRight className="w-5 h-5" />
@@ -204,28 +204,11 @@ export default function AnimatedProductsCarousel() {
               >
                 {/* Presentation Card Container */}
                 <div
-                  className={`relative aspect-[3/4] w-full bg-[#f6f6f6] border overflow-hidden mb-4 transition-all duration-300 ${
-                    isSelected ? 'border-black shadow-xl' : 'border-zinc-200 group-hover:border-zinc-400'
+                  className={`relative aspect-[3/4] w-full bg-[#0d0e10] border overflow-hidden mb-2.5 transition-all duration-300 ${
+                    isSelected ? 'border-white shadow-2xl' : 'border-white/10 group-hover:border-white/30'
                   }`}
                   style={{ borderRadius: '0px' }}
                 >
-                  {/* Top-Left Tag */}
-                  <div className="absolute top-3 left-3 z-10">
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-black bg-white px-2.5 py-1 border border-zinc-200 shadow-sm">
-                      {product.tag}
-                    </span>
-                  </div>
-
-                  {/* Top-Right Wishlist Button */}
-                  <button
-                    onClick={(e) => toggleWishlist(product.id, e)}
-                    aria-label="Agregar a favoritos"
-                    className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm border border-zinc-200 flex items-center justify-center text-black hover:bg-black hover:text-white transition-all shadow-sm"
-                    style={{ borderRadius: '0px' }}
-                  >
-                    <Heart className={`w-4 h-4 ${isFav ? 'fill-black text-black' : ''}`} />
-                  </button>
-
                   {/* Studio Presentation Garment Image */}
                   <div className="relative w-full h-full p-4 flex items-center justify-center">
                     <Image
@@ -233,59 +216,63 @@ export default function AnimatedProductsCarousel() {
                       alt={product.name}
                       fill
                       quality={80}
-                      // Rejilla 1 / 2 / 4 columnas dentro de max-w-7xl (1280px).
                       sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                   </div>
+                </div>
 
-                  {/* Hover Quick Add Overlay Bar */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/90 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-2">
-                    {/* Sizes selector */}
-                    <div className="flex items-center justify-center gap-1">
+                {/* ── LOWER CONTENT AREA: TITLE & PRICE / REPLACED BY SIZES & CART ON HOVER ── */}
+                <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
+                  {/* 1. DEFAULT CONTENT (Title, Subtitle & Price) — Fades out on hover */}
+                  <div className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2">
+                    <span className="text-[9px] font-mono font-bold tracking-[0.18em] text-zinc-400 uppercase truncate">
+                      {product.fabric}
+                    </span>
+
+                    <h3 className="text-sm font-extrabold uppercase tracking-tight text-white leading-snug line-clamp-2">
+                      {product.name}
+                    </h3>
+
+                    <div className="flex items-center justify-between mt-0.5">
+                      <span className="text-xs font-mono font-bold text-white tabular-nums">
+                        {product.priceFormatted}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">
+                        TALLES: {currentSize}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 2. HOVER QUICK ADD PANEL — Fades & slides in where the title was! */}
+                  <div className="absolute inset-0 z-20 bg-black/95 text-white p-2.5 border border-white/20 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-xl">
+                    {/* Sizes Selector */}
+                    <div className="flex items-center justify-center gap-1.5">
                       {product.sizes.map((sz) => (
                         <button
                           key={sz}
+                          type="button"
                           onClick={(e) => handleSizeSelect(product.id, sz, e)}
-                          className={`text-[10px] font-mono font-bold w-7 h-7 flex items-center justify-center transition-colors border ${
+                          className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border cursor-pointer ${
                             currentSize === sz
-                              ? 'bg-white text-black border-white'
+                              ? 'bg-white text-black border-white shadow-2xs'
                               : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-white'
                           }`}
-                          style={{ borderRadius: '0px' }}
                         >
                           {sz}
                         </button>
                       ))}
                     </div>
 
-                    {/* Add Button */}
+                    {/* Add to Cart Button */}
                     <button
+                      type="button"
                       onClick={(e) => handleAddToCart(product, e)}
-                      className="w-full bg-white text-black hover:bg-zinc-200 text-[10px] font-mono font-bold tracking-[0.2em] uppercase py-2 flex items-center justify-center gap-2 border border-white transition-colors"
-                      style={{ borderRadius: '0px' }}
+                      className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.98]"
                     >
-                      <ShoppingBag className="w-3.5 h-3.5" />
+                      <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
                       <span>AÑADIR AL CARRITO</span>
                     </button>
-                  </div>
-                </div>
-
-                {/* Metadata Below Card */}
-                <div className="flex flex-col gap-1">
-                  <span className="text-[9px] font-mono font-bold tracking-[0.2em] text-zinc-500 uppercase">
-                    {product.fabric}
-                  </span>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-black leading-tight group-hover:underline">
-                    {product.name}
-                  </h3>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs font-mono font-bold text-black tracking-widest">
-                      {product.priceFormatted}
-                    </span>
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase">
-                      TALLES: {currentSize}
-                    </span>
                   </div>
                 </div>
               </motion.div>

@@ -1,35 +1,42 @@
+import ScrollLogoHero from '@/components/common/ScrollLogoHero';
 import Hero from '@/components/common/Hero';
-import AnimatedProductsCarousel from '@/components/common/AnimatedProductsCarousel';
 import BrandStoryHero from '@/components/common/BrandStoryHero';
+import BrandVideoBanner from '@/components/common/BrandVideoBanner';
 import StudioRackHero from '@/components/common/StudioRackHero';
 import FeaturedProductsGrid from '@/components/common/FeaturedProductsGrid';
 import StreetMotionHero from '@/components/common/StreetMotionHero';
+import ShowroomExperience from '@/components/common/ShowroomExperience';
+import FinalVideoBanner from '@/components/common/FinalVideoBanner';
 
 export default function HomePage() {
   return (
     <div className="bg-[#f6f8f9] text-[#17191c]">
-      {/* 1. Hero Editorial */}
+      {/* 0. Scroll-Driven Logo Animation (frame-by-frame con scroll) */}
+      <ScrollLogoHero />
+
+      {/* 1. Hero Editorial (4 columnas: Casual, Streetwear, Sports, Old Money) */}
       <Hero />
 
-      {/* 2. Animated Products Showcase Carousel */}
-      <AnimatedProductsCarousel />
-
-      {/* 3. Brand Story Hero (Camperas & Chaquetas + 2x2 Product Grid) */}
+      {/* 2. Brand Story Hero (Camperas & Chaquetas — SANT CLOTHES) */}
       <BrandStoryHero />
 
-      {/* 5. Studio Experience Hero (IMG_4390.jpg) */}
+      {/* 3. Brand Campaign Video Banner (Full Width Edge-to-Edge) */}
+      <BrandVideoBanner />
+
+      {/* 4. Studio Experience Hero (IMG_4390.jpg) */}
       <StudioRackHero />
 
-      {/* 6. Featured Products Grid (Atelier Drop) */}
+      {/* 5. Featured Products Grid (Atelier Drop) */}
       <FeaturedProductsGrid />
 
-      {/* 7. Atelier Brand Story Section */}
+      {/* 6. Atelier Brand Story Section */}
       <StreetMotionHero />
+
+      {/* 7. Video Banner Final de Campaña (/img/video/video2.mp4) */}
+      <FinalVideoBanner />
+
+      {/* 8. Showroom & Studio Experience */}
+      <ShowroomExperience />
     </div>
   );
 }
-
-
-
-
-

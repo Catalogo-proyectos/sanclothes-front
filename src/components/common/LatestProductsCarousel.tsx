@@ -33,7 +33,7 @@ const PRODUCTS_DATA: PresentationProduct[] = [
   {
     id: 'shorts-trio-sants',
     tag: 'DAILY ESSENTIALS',
-    name: 'SHORTS ATELIER TRIO PACK',
+    name: 'SHORTS SANT TRIO PACK',
     fabric: 'ALGODÓN PREMIUM 240G',
     price: 180000,
     priceFormatted: '₲ 180.000',
@@ -63,7 +63,7 @@ const PRODUCTS_DATA: PresentationProduct[] = [
   {
     id: 'tracksuit-suede-set',
     tag: 'SUEDE EDITION',
-    name: 'LE SANTS CLUB SUEDE TRACKSUIT',
+    name: 'LE SANT CLUB SUEDE TRACKSUIT',
     fabric: 'SUEDE TEXTURED EMBROIDERED SET',
     price: 390000,
     priceFormatted: '₲ 390.000',
@@ -82,7 +82,7 @@ export default function LatestProductsCarousel() {
     e.stopPropagation();
     setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
     toast.success(wishlist[id] ? 'QUITADO DE FAVORITOS' : 'AGREGADO A FAVORITOS', {
-      description: 'CÁPSULA SANTS CLOTHES',
+      description: 'CÁPSULA SANT CLOTHES',
     });
   };
 
@@ -122,7 +122,7 @@ export default function LatestProductsCarousel() {
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2.5 h-2.5 bg-[#17191c]" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.25em] text-[#50524a]">
-                LATEST DROPS — CÁPSULA ATELIER
+                LATEST DROPS — CÁPSULA SANT
               </span>
             </div>
             <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-none text-[#17191c]">

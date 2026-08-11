@@ -20,7 +20,9 @@ export default function PageHero({
   compact = false,
 }: PageHeroProps) {
   return (
-    <section className={`relative w-full bg-zinc-950 text-white overflow-hidden border-b border-zinc-900 ${compact ? 'py-12 sm:py-16' : 'py-20 sm:py-28'}`}>
+    // Top padding clears the fixed header, which is now two rows tall (bar +
+    // category chip rail) — 116px at sm and up.
+    <section className={`relative w-full bg-zinc-950 text-white overflow-hidden border-b border-zinc-900 ${compact ? 'pt-28 pb-12 sm:pt-32 sm:pb-16' : 'pt-32 pb-20 sm:pt-40 sm:pb-28'}`}>
       {/* Background Image with Dark Vignette Overlay */}
       {image && (
         <div className="absolute inset-0 z-0 opacity-25">

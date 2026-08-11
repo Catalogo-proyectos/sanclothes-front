@@ -5,17 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, LogOut, Search, X, Menu } from 'lucide-react';
+import SearchModal from './SearchModal';
 import CartIcon from './CartIcon';
 import CartDrawer from '../checkout/CartDrawer';
 import { useAuth } from '@/hooks/useAuth';
+import { useCatalogFilter } from '@/hooks/useCatalogFilter';
 import { NAV_CATEGORIES } from './navData';
-import MegaMenuPanel from './MegaMenuPanel';
 
 /* ── Throttled & Optimized Hide-on-scroll-down Hook ── */
 
 function useScrollDirection() {
   const [hidden, setHidden] = useState(false);
-  const [atTop, setAtTop] = useState(true);
   const lastY = useRef(0);
   const tickingRef = useRef(false);
 
@@ -25,9 +25,6 @@ function useScrollDirection() {
       if (!tickingRef.current) {
         window.requestAnimationFrame(() => {
           const y = window.scrollY;
-          const newAtTop = y < 20;
-          setAtTop((prev) => (prev !== newAtTop ? newAtTop : prev));
-
           if (Math.abs(y - lastY.current) >= threshold) {
             const newHidden = y > lastY.current && y > 80;
             setHidden((prev) => (prev !== newHidden ? newHidden : prev));
@@ -42,33 +39,35 @@ function useScrollDirection() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  return { hidden, atTop };
+  return { hidden };
 }
 
-/* ── Decode dropdown artwork while the main thread is idle ── */
+/* ── Tracks whether the home hero has been fully scrolled past ──
+   Home renders a "#hero-cover-zone" element exactly as tall as the hero (see Hero.tsx);
+   other routes don't have one. Once its bottom edge scrolls above the viewport, the hero
+   is completely gone and the header should never hide again — only while the hero is still
+   partly on screen does the normal hide-on-scroll-down behavior apply. Routes without the
+   marker (no hero) are treated as "past" immediately, matching their existing solid header. */
+function useIsPastHero(pathname: string) {
+  const [isPastHero, setIsPastHero] = useState(false);
 
-function useDecodeNavImages() {
   useEffect(() => {
-    let cancelled = false;
-    const run = () => {
-      if (cancelled) return;
-      for (const cat of NAV_CATEGORIES) {
-        const img = new Image();
-        img.fetchPriority = 'low';
-        img.src = cat.featuredImage;
-        void img.decode().catch(() => {});
-      }
-    };
-    const hasIdle = typeof window.requestIdleCallback === 'function';
-    const handle = hasIdle
-      ? window.requestIdleCallback(run, { timeout: 2500 })
-      : window.setTimeout(run, 1200);
-    return () => {
-      cancelled = true;
-      if (hasIdle) window.cancelIdleCallback(handle);
-      else clearTimeout(handle);
-    };
-  }, []);
+    const el = document.getElementById('hero-cover-zone');
+    if (!el) {
+      setIsPastHero(true);
+      return;
+    }
+    setIsPastHero(false);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsPastHero(entry.boundingClientRect.bottom <= 0),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  return isPastHero;
 }
 
 /* ── Header Component ── */
@@ -78,18 +77,27 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const leaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isLoggedIn = useAuth((s) => s.isLoggedIn);
   const user = useAuth((s) => s.user);
   const logout = useAuth((s) => s.logout);
-  const { hidden, atTop } = useScrollDirection();
+  const { hidden } = useScrollDirection();
   const pathname = usePathname();
+  const isPastHero = useIsPastHero(pathname);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  useDecodeNavImages();
+  // Read from the store rather than useSearchParams: this header sits in the root
+  // layout, and useSearchParams there would force every route to render dynamically.
+  // ProductGrid writes the style whenever /catalog reads `?category=`, and the
+  // pathname guard keeps a stale value from marking a link on other routes.
+  const activeStyle = useCatalogFilter((s) => s.style);
+  const activeCategoryId = pathname === '/catalog' ? activeStyle : null;
+
+  // The catch-all sits next to the four style lines: same route, no `?category=`,
+  // so it's the active one exactly when no style is.
+  const isFullCatalogActive = pathname === '/catalog' && activeStyle === null;
 
   // Smooth hover handlers with grace period debounce
   const handleMouseEnterHeader = useCallback(() => {
@@ -99,19 +107,9 @@ export default function Header() {
 
   const handleMouseLeaveHeader = useCallback(() => {
     if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
-    leaveTimerRef.current = setTimeout(() => {
-      setIsHeaderHovered(false);
-      setHoveredCategory(null);
-    }, 120);
+    leaveTimerRef.current = setTimeout(() => setIsHeaderHovered(false), 120);
   }, []);
 
-  const handleMouseEnterCategory = useCallback((catId: string) => {
-    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
-    setIsHeaderHovered(true);
-    setHoveredCategory(catId);
-  }, []);
-
-  const closeDropdown = useCallback(() => setHoveredCategory(null), []);
   const openCart = useCallback(() => setIsCartOpen(true), []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
 
@@ -122,7 +120,6 @@ export default function Header() {
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
-    setHoveredCategory(null);
   }, [pathname]);
 
   // Focus search input when opened
@@ -142,21 +139,22 @@ export default function Header() {
   // renders one behind the header (Hero on "/", PageHero elsewhere) except the product
   // detail page, which opens straight onto the light surface — there, white-on-#f6f8f9
   // measures ~1.05:1 contrast and the nav is effectively invisible. On those routes the
-  // header stays in its solid state from the very top.
-  const hasDarkHeroBehindHeader = !pathname.startsWith('/products/');
-  const isHeaderActive =
-    !hasDarkHeroBehindHeader || !atTop || isHeaderHovered || hoveredCategory !== null || isSearchOpen;
+  // header stays in its solid state from the very top. On "/" it flips to solid black
+  // text only once the hero has been fully scrolled past (isPastHero), not on the first
+  // pixel of scroll — while any part of the hero is still on screen the header stays
+  // transparent with white text.
+  const hasDarkHeroBehindHeader = !pathname.startsWith('/products/') && !pathname.startsWith('/catalog');
+  const isHeaderActive = !hasDarkHeroBehindHeader || isPastHero || isSearchOpen;
 
-  const headerBg = isHeaderActive
-    ? 'bg-white border-b border-[#17191c]/[0.08] shadow-sm'
-    : 'bg-transparent border-b border-transparent';
+  // Header is transparent with backdrop blur
+  const headerBg = 'bg-black/30 backdrop-blur-md border-b border-white/10 text-white';
 
-  const textColor = isHeaderActive ? 'text-[#17191c]' : 'text-white';
-  const activeLineBg = isHeaderActive ? 'bg-[#17191c]' : 'bg-white';
-  const logoFilter = isHeaderActive ? '' : 'brightness-0 invert';
+  // Text, icons, and logo are white when header is transparent
+  const textColor = 'text-white';
+  const logoFilter = 'brightness-0 invert';
 
-  const shouldHideHeader = hidden && !isMobileMenuOpen && !isHeaderHovered && !hoveredCategory && !isSearchOpen;
-  const isDropdownOpen = hoveredCategory !== null;
+  // Never hide header on scroll - stays fixed and transparent at all times
+  const shouldHideHeader = false;
 
   return (
     <>
@@ -169,9 +167,8 @@ export default function Header() {
       <header
         onMouseEnter={handleMouseEnterHeader}
         onMouseLeave={handleMouseLeaveHeader}
-        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out will-change-transform transform-gpu ${headerBg} ${
-          shouldHideHeader ? '-translate-y-full' : 'translate-y-0'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out will-change-transform transform-gpu ${headerBg} ${shouldHideHeader ? '-translate-y-full' : 'translate-y-0'
+          }`}
       >
         {/* ── Main Bar ── */}
         <div className="w-full px-5 sm:px-8 lg:px-12 h-16 sm:h-[72px] flex items-center justify-between relative">
@@ -181,45 +178,58 @@ export default function Header() {
             <Link href="/" className="group flex items-center gap-2.5" aria-label="Ir al inicio">
               <img
                 src="/img/logo/Sant_ISO_Negro.png"
-                alt="SANTS CLOTHES"
+                alt="SANT CLOTHES"
                 width={144}
                 height={144}
                 className={`h-8 sm:h-9 w-auto object-contain transition-all duration-300 group-hover:scale-110 ${logoFilter}`}
               />
               <span className={`font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-[0.15em] font-black leading-none hidden sm:block drop-shadow-sm transition-colors duration-300 ${textColor}`}>
-                SANTS
+                SANT
               </span>
             </Link>
           </div>
 
           {/* CENTER: Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-            {NAV_CATEGORIES.map((cat) => (
-              <div
-                key={cat.id}
-                onMouseEnter={() => handleMouseEnterCategory(cat.id)}
-                className="relative"
-              >
+          <nav className="hidden md:flex items-center gap-3 sm:gap-4 lg:gap-6 xl:gap-8 absolute left-1/2 -translate-x-1/2">
+            {NAV_CATEGORIES.map((cat) => {
+              const isActive = cat.id === activeCategoryId;
+              return (
                 <Link
+                  key={cat.id}
                   href={cat.href}
-                  className={`text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-300 py-6 block ${
-                    hoveredCategory === cat.id
-                      ? `${textColor} opacity-100 scale-105`
-                      : `${textColor} hover:opacity-75`
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`relative block whitespace-nowrap py-6 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-opacity duration-300 ${textColor} ${
+                    isActive || !activeCategoryId
+                      ? 'opacity-100 hover:opacity-75'
+                      : 'opacity-60 hover:opacity-100'
                   }`}
                 >
                   {cat.name}
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-category-underline"
+                      aria-hidden
+                      className="absolute left-0 right-0 bottom-4 h-[2px] bg-white"
+                      transition={{ type: 'spring', stiffness: 520, damping: 42, mass: 0.7 }}
+                    />
+                  )}
                 </Link>
-                {/* GPU-Accelerated Active indicator line */}
-                <div
-                  className={`absolute bottom-4 left-0 right-0 h-[2px] ${activeLineBg} transition-transform duration-300 ease-out origin-center ${
-                    hoveredCategory === cat.id ? 'scale-x-100' : 'scale-x-0'
-                  }`}
-                />
-              </div>
-            ))}
+              );
+            })}
 
-
+            {/* The style links are plain text; this one carries a border so it reads
+                as the way out of a filtered view rather than a fifth style. */}
+            <Link
+              href="/catalog"
+              aria-current={isFullCatalogActive ? 'page' : undefined}
+              className={`flex h-8 shrink-0 items-center whitespace-nowrap border px-3 sm:px-4 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-colors duration-300 ${
+                isFullCatalogActive
+                  ? 'border-white bg-white text-[#17191c]'
+                  : 'border-white/40 text-white hover:border-white hover:bg-white/10'
+              }`}
+            >
+              Catálogo
+            </Link>
           </nav>
 
           {/* RIGHT: Actions */}
@@ -262,7 +272,7 @@ export default function Header() {
             )}
 
             {/* Cart */}
-            <CartIcon onClick={openCart} isWhiteText={!isHeaderActive} />
+            <CartIcon onClick={openCart} isWhiteText={true} />
 
             {/* Mobile Menu Toggle */}
             <button
@@ -279,73 +289,10 @@ export default function Header() {
           </div>
         </div>
 
-        {/* ── Desktop Mega-Dropdown ── */}
-        {/* Stays mounted (collapsed) so the artwork is fetched and decoded long before
-            the first hover. The reveal uses the grid-template-rows 0fr→1fr technique so
-            the browser resolves the open height itself — no JS measurement pass, which
-            is what made the first open mis-size. `contain` scopes the reflow. */}
-        <div
-          className={`hidden lg:grid overflow-hidden bg-white border-b border-[#17191c]/[0.08] shadow-2xl [contain:layout_style] transition-[grid-template-rows,opacity] duration-[180ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            isDropdownOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-          }`}
-          style={{ pointerEvents: isDropdownOpen ? 'auto' : 'none' }}
-          aria-hidden={!isDropdownOpen}
-          inert={!isDropdownOpen}
-          onMouseEnter={handleMouseEnterHeader}
-          onMouseLeave={handleMouseLeaveHeader}
-        >
-          <div className="min-h-0 overflow-hidden">
-            <div className="max-w-7xl mx-auto pl-8 sm:pl-12 lg:pl-16 pr-0 py-8 relative">
-              {NAV_CATEGORIES.map((cat) => (
-                <MegaMenuPanel
-                  key={cat.id}
-                  cat={cat}
-                  isActive={cat.id === hoveredCategory}
-                  onNavigate={closeDropdown}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Search Overlay ── */}
-        <AnimatePresence>
-          {isSearchOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-[60] bg-[#f6f8f9]/98 backdrop-blur-xl flex flex-col items-center justify-start pt-[20vh]"
-            >
-              <button
-                onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
-                className="absolute top-6 right-6 sm:right-8 w-10 h-10 flex items-center justify-center text-[#17191c]/40 hover:text-[#17191c] transition-colors"
-                aria-label="Cerrar búsqueda"
-              >
-                <X className="w-5 h-5 stroke-[1.8]" />
-              </button>
-
-              <div className="w-full max-w-xl px-6">
-                <div className="border-b-2 border-[#17191c] pb-3 flex items-center gap-4">
-                  <Search className="w-5 h-5 text-[#17191c]/40 shrink-0" />
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    placeholder="Buscar productos..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-transparent text-[#17191c] text-xl sm:text-2xl font-light tracking-tight focus:outline-none placeholder:text-[#17191c]/25"
-                  />
-                </div>
-                <p className="mt-4 text-[11px] tracking-[0.15em] uppercase text-[#17191c]/30 font-medium">
-                  Hoodies · Remeras · Pantalones · Polos
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
+
+      {/* ── Search Modal ── */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       {/* ── Mobile Full-Screen Menu ── */}
       <AnimatePresence>
@@ -368,9 +315,20 @@ export default function Header() {
                   <Link
                     href={cat.href}
                     onClick={() => setIsMobileMenuOpen(false)}
+                    aria-current={cat.id === activeCategoryId ? 'page' : undefined}
                     className="block py-3 border-b border-[#17191c]/[0.06]"
                   >
-                    <span className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl tracking-[0.08em] text-[#17191c] leading-none">
+                    <span
+                      className={`font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl tracking-[0.08em] leading-none ${
+                        cat.id === activeCategoryId
+                          ? 'text-[#17191c] underline decoration-2 underline-offset-8'
+                          : // Only dim the others once something is actually selected —
+                            // with no filter on, the four read as equals.
+                            activeCategoryId
+                            ? 'text-[#17191c]/45'
+                            : 'text-[#17191c]'
+                      }`}
+                    >
                       {cat.name}
                     </span>
                   </Link>
@@ -400,7 +358,12 @@ export default function Header() {
                 <Link
                   href="/catalog"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-[12px] font-semibold tracking-[0.18em] uppercase text-[#17191c]/60 hover:text-[#17191c] transition-colors"
+                  aria-current={isFullCatalogActive ? 'page' : undefined}
+                  className={`self-start border px-5 py-3 text-[12px] font-semibold tracking-[0.18em] uppercase transition-colors ${
+                    isFullCatalogActive
+                      ? 'border-[#17191c] bg-[#17191c] text-white'
+                      : 'border-[#17191c]/25 text-[#17191c]/60 hover:border-[#17191c] hover:text-[#17191c]'
+                  }`}
                 >
                   CATÁLOGO COMPLETO
                 </Link>
