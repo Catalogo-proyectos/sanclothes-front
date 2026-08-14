@@ -1,6 +1,7 @@
 import { config } from './config';
 import { getStoredToken } from './auth';
 import { MOCK_CUTS, MOCK_PRODUCTS } from '@/mocks/catalog';
+import { toBackendProduct } from '@/mocks/toBackend';
 import { MOCK_AUTH_RESPONSE, MOCK_USER, generateMockJWT } from '@/mocks/auth';
 import { MOCK_ORDERS, MOCK_TICKETS, createMockOrder } from '@/mocks/checkout';
 import { CheckoutRequest, CustomerProfile, TicketDetail, TicketMessage } from '@/types/api';
@@ -81,13 +82,17 @@ async function handleMockRequest<T>(
     return MOCK_CUTS as unknown as T;
   }
 
+  // El catálogo simulado emite el MISMO modelo que la API real (BackendProduct),
+  // no el modelo de vista. Así el modo mock ejercita el adaptador y la capa de
+  // slots de imagen en vez de saltárselos, que es justo donde se rompen las cosas
+  // al conectar el backend de verdad.
   if (method === 'GET' && path.startsWith('/catalog/')) {
     const productId = path.replace('/catalog/', '');
     const product = MOCK_PRODUCTS.find((p) => p.productId === productId || p.slug === productId);
     if (!product) {
       throw new Error('Product not found');
     }
-    return product as unknown as T;
+    return toBackendProduct(product) as unknown as T;
   }
 
   if (method === 'GET' && (path === '/catalog' || path.startsWith('/catalog?'))) {
@@ -97,7 +102,7 @@ async function handleMockRequest<T>(
 
     let result = [...MOCK_PRODUCTS];
     if (cut) {
-      const filteredByCut = result.filter((p) => p.cuts.includes(cut as any));
+      const filteredByCut = result.filter((p) => p.cuts.includes(cut));
       if (filteredByCut.length > 0) result = filteredByCut;
     }
     if (category) {
@@ -113,7 +118,7 @@ async function handleMockRequest<T>(
         result = filteredByCat;
       }
     }
-    return (result.length > 0 ? result : MOCK_PRODUCTS) as unknown as T;
+    return (result.length > 0 ? result : MOCK_PRODUCTS).map(toBackendProduct) as unknown as T;
   }
 
   // --- AUTH ENDPOINTS ---

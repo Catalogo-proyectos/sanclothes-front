@@ -24,9 +24,16 @@ if (typeof window !== 'undefined' || process.env.NODE_ENV === 'production') {
 
 export const config = {
   api: {
-    baseUrl: env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
-    healthUrl: env.NEXT_PUBLIC_HEALTH_URL || 'http://localhost:3001/health',
+    baseUrl: env.NEXT_PUBLIC_API_URL || 'http://localhost:5014/api',
+    healthUrl: env.NEXT_PUBLIC_HEALTH_URL || 'http://localhost:5014/health',
     useMock: env.NEXT_PUBLIC_USE_MOCK === 'true' || env.NEXT_PUBLIC_USE_MOCK === undefined,
+    /**
+     * Host vigente de media. Las URLs de imagen se congelan en la base al subirlas
+     * y traen el host del entorno donde se subió la foto (cdn.trecepy.com,
+     * localhost:5012 de MinIO o localhost:5014/uploads del fallback local).
+     * normalizeImageUrl() las reapunta acá. Vacío = usar la URL tal cual vino.
+     */
+    mediaOrigin: env.NEXT_PUBLIC_MEDIA_ORIGIN || '',
   },
   app: {
     url: env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',

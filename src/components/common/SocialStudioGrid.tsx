@@ -8,22 +8,22 @@ export default function SocialStudioGrid() {
   const images = [
     {
       id: 1,
-      url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+      url: '/img/hero/IMG_3202.webp',
       alt: 'SANCLOTHES Studio — Detalle Remera',
     },
     {
       id: 2,
-      url: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&auto=format&fit=crop&q=80',
+      url: '/img/hero/IMG_4390.webp',
       alt: 'SANCLOTHES Studio — Sudadera Heavyweight',
     },
     {
       id: 3,
-      url: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&auto=format&fit=crop&q=80',
+      url: '/img/hero/IMG_1460.webp',
       alt: 'SANCLOTHES Studio — Pantalón Gabardina',
     },
     {
       id: 4,
-      url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&auto=format&fit=crop&q=80',
+      url: '/img/hero/IMG_2334.webp',
       alt: 'SANCLOTHES Studio — Estilo Neutro',
     },
   ];

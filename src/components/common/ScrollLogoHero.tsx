@@ -8,9 +8,9 @@ import { ArrowDown } from 'lucide-react';
  * Looping Video Hero component for SANT CLOTHES.
  * Replaces the frame-by-frame scroll hero with a seamless, continuous video loop.
  *
- * Watermark: removed at the source (ffmpeg `delogo` sobre el sparkle inferior derecho)
- * y guardado como "/img/video/ofi-3-clean.mp4", por lo que el video ya no necesita
- * ningún recorte/escalado por CSS y se muestra centrado.
+ * "/img/video/ofi-3-clean.mp4" sale del máster archivado en /.video-originals:
+ * se le quita la marca de agua con `delogo` y se reescala a 1080p, todo en un
+ * solo paso para no encadenar recompresiones. No necesita recorte por CSS.
  */
 export default function ScrollLogoHero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -35,7 +35,7 @@ export default function ScrollLogoHero() {
   const handleEnded = () => {
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
     }
   };
 
@@ -55,7 +55,7 @@ export default function ScrollLogoHero() {
         />
       </div>
 
-      {/* Top scrim: legibilidad del header sobre el fondo claro del video */}
+      {/* Top scrim: legibilidad del header sobre el fondo blanco del video */}
       <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/35 to-transparent pointer-events-none" />
 
       {/*
@@ -72,9 +72,6 @@ export default function ScrollLogoHero() {
         transition={{ duration: 1, delay: 0.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
       >
-        <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase">
-          SCROLL TO EXPLORE
-        </span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}

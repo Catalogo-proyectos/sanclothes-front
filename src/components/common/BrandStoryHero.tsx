@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Flame, Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { toast } from 'sonner';
 
@@ -27,7 +27,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: 'TEXTURA SUEDE & EMBROIDERED NOVA',
     price: 390000,
     priceFormatted: '₲ 390.000',
-    image: '/img/products/black-suede-tracksuit.webp',
+    image: '/img/Placeholer.jpeg',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -37,7 +37,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: 'APLIQUÉ EMBROIDERED & COLD WOOL',
     price: 420000,
     priceFormatted: '₲ 420.000',
-    image: '/img/products/varsity-flat.webp',
+    image: '/img/Placeholer.jpeg',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -47,7 +47,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: '400G COTTON HEAVYWEIGHT · BROWN',
     price: 340000,
     priceFormatted: '₲ 340.000',
-    image: '/img/products/zip-santis.webp',
+    image: '/img/Placeholer.jpeg',
     sizes: ['S', 'M', 'L', 'XL'],
   },
   {
@@ -57,7 +57,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
     fabric: '400G FRISO HEAVYWEIGHT · BACK PRINT',
     price: 280000,
     priceFormatted: '₲ 280.000',
-    image: '/img/products/brown-hoodie-set.webp',
+    image: '/img/Placeholer.jpeg',
     sizes: ['S', 'M', 'L', 'XL'],
   },
 ];
@@ -118,7 +118,7 @@ export default function BrandStoryHero() {
             className="lg:col-span-6 flex flex-col h-full"
           >
             <div
-              className="relative w-full h-full min-h-[580px] lg:min-h-full bg-[#17191c] overflow-hidden border border-[#b6b2a7] group flex flex-col justify-between"
+              className="relative w-full h-full min-h-[580px] lg:min-h-full bg-[#17191c] overflow-hidden border border-[#b6b2a7] group flex flex-col justify-end"
               style={{ borderRadius: '0px' }}
             >
               {/* Background Campaign Image */}
@@ -136,14 +136,6 @@ export default function BrandStoryHero() {
               {/* Gradient Vignette for Text Contrast */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20 pointer-events-none" />
 
-              {/* Top Tag Badge */}
-              <div className="relative z-10 p-6 sm:p-8">
-                <span className="inline-flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.25em] text-white bg-black/80 backdrop-blur-md px-3.5 py-1.5 uppercase border border-white/20">
-                  <Flame className="w-3.5 h-3.5 text-white" />
-                  <span>COLECCIÓN CAMPERAS · SANT DROP</span>
-                </span>
-              </div>
-
               {/* Bottom Content Overlay */}
               <div className="relative z-10 p-6 sm:p-10 space-y-4 text-white">
                 <motion.h2
@@ -159,17 +151,6 @@ export default function BrandStoryHero() {
                 <p className="text-xs font-mono tracking-wide uppercase text-zinc-300 leading-relaxed max-w-lg">
                   CONFECCIONADAS CON MATERIALES PESADOS, TEXTURAS SUEDE Y BORDADOS DE ALTA PRECISIÓN. SILUETAS RELAJADAS Y ACABADOS DE ALTA DURABILIDAD.
                 </p>
-
-                <div className="pt-2">
-                  <Link
-                    href="/catalog?category=old-money"
-                    className="inline-flex items-center gap-3 bg-white text-black hover:bg-zinc-200 text-[11px] font-mono font-extrabold tracking-[0.2em] uppercase px-7 py-3.5 border border-white transition-all duration-300 shadow-xl group/btn"
-                    style={{ borderRadius: '0px' }}
-                  >
-                    <span>VER COLECCIÓN CAMPERAS</span>
-                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                  </Link>
-                </div>
               </div>
             </div>
           </motion.div>
@@ -190,27 +171,30 @@ export default function BrandStoryHero() {
                 return (
                   <div key={product.id} className="group flex flex-col justify-between transition-all duration-300">
                     {/* Presentation Card Container */}
-                    <div
-                      className="relative aspect-[3/4] w-full bg-[#f6f6f6] border border-zinc-200 group-hover:border-black overflow-hidden mb-2.5 transition-all duration-300"
+                    <Link
+                      href={`/products/${product.id}`}
+                      aria-label={`Ver precompra de ${product.name}`}
+                      className="relative block aspect-[3/4] w-full bg-[#f6f6f6] border border-zinc-200 group-hover:border-black overflow-hidden mb-2.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
                       style={{ borderRadius: '0px' }}
                     >
-                      {/* Garment Image */}
-                      <div className="relative w-full h-full p-4 flex items-center justify-center">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          quality={80}
-                          sizes="(min-width: 1024px) 25vw, 50vw"
-                          className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                        />
-                      </div>
-                    </div>
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        quality={80}
+                        sizes="(min-width: 1024px) 25vw, 50vw"
+                        className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                    </Link>
 
                     {/* ── LOWER CONTENT AREA: TITLE & PRICE / REPLACED BY SIZES & CART ON HOVER ── */}
                     <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
                       {/* 1. DEFAULT CONTENT (Title, Subtitle & Price) — Fades out on hover */}
-                      <div className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2">
+                      <Link
+                        href={`/products/${product.id}`}
+                        aria-label={`Ver precompra de ${product.name}`}
+                        className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
+                      >
                         <span className="text-[9px] font-mono font-bold tracking-[0.18em] text-zinc-500 uppercase truncate">
                           {product.fabric}
                         </span>
@@ -222,7 +206,7 @@ export default function BrandStoryHero() {
                         <span className="text-xs font-mono font-bold text-[#17191c] tabular-nums mt-0.5">
                           {product.priceFormatted}
                         </span>
-                      </div>
+                      </Link>
 
                       {/* 2. HOVER QUICK ADD PANEL — Fades & slides in where the title was! */}
                       <div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">

@@ -11,13 +11,9 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('Catalog Components with Mock Layer', () => {
-  it('should render catalog filter tabs and product cards from mock dataset', async () => {
+  it('renders product cards from the catalog once it loads', async () => {
     render(<ProductGrid />);
 
-    // Should display category filter tabs
-    expect(screen.getByText(/Novedades/i)).toBeInTheDocument();
-
-    // Wait for mock API response to populate UI
     await waitFor(
       () => {
         expect(screen.getByText('Remera Oversize Heavyweight 240g')).toBeInTheDocument();
@@ -25,5 +21,40 @@ describe('Catalog Components with Mock Layer', () => {
       },
       { timeout: 3000 }
     );
+  });
+
+  it('shows the catalog piece count in the header', async () => {
+    render(<ProductGrid />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/\d+ piezas/i)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * La card debe mostrar el slot 0 (principal), no el 1. Las dos imágenes son
+   * `fill` sin z-index, así que el orden en el DOM decide cuál se ve: la de hover
+   * va primero para quedar debajo. Este test es el que atrapa una regresión ahí.
+   */
+  it('paints the main image on top of the hover image', async () => {
+    render(<ProductGrid />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Remera Oversize Heavyweight 240g')).toBeInTheDocument();
+    });
+
+    const principales = screen.getAllByAltText(/vista principal$/);
+    const traseras = screen.getAllByAltText(/vista trasera$/);
+
+    expect(principales.length).toBeGreaterThan(0);
+    expect(traseras.length).toBeGreaterThan(0);
+
+    // Dentro de una misma card, la trasera (hover) precede a la principal.
+    const card = principales[0].closest('a');
+    const imagesInCard = card ? Array.from(card.querySelectorAll('img')) : [];
+
+    expect(imagesInCard).toHaveLength(2);
+    expect(imagesInCard[0].getAttribute('alt')).toMatch(/vista trasera$/);
+    expect(imagesInCard[1].getAttribute('alt')).toMatch(/vista principal$/);
   });
 });

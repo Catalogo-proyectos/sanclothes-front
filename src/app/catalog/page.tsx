@@ -23,7 +23,7 @@ export default async function CatalogPage({
       {/* z-10 + opaque background keeps the grid sliding over the fixed hero (Hero Cover),
           matching the home page. The cover gap itself is rendered by <CatalogHero /> so it
           always matches the hero's real height. */}
-      <div className="relative z-10 bg-[#f6f8f9] shadow-[0_-25px_50px_-12px_rgba(0,0,0,0.25)]">
+      <div id="productos" className="relative z-10 scroll-mt-24 bg-[#f6f8f9] shadow-[0_-25px_50px_-12px_rgba(0,0,0,0.25)]">
         <Suspense fallback={<div className="py-12 text-center text-xs font-semibold text-zinc-400 uppercase tracking-widest">Cargando catálogo...</div>}>
           <ProductGrid />
         </Suspense>

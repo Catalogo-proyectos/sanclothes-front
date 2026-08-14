@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import { ShoppingBag } from 'lucide-react';
 import { CatalogProduct } from '@/types/api';
 import { formatCurrency } from '@/utils/format';
 import { useCart } from '@/hooks/useCart';
+import { cardSlots } from '@/lib/images/slots';
 
 interface ProductCardProps {
   product: CatalogProduct;
@@ -27,8 +28,14 @@ function ProductCard({ product }: ProductCardProps) {
 
   const [selectedSize, setSelectedSize] = useState<string>(availableSizes[0] || 'S');
 
-  const mainImage = product.images?.[0]?.url || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800';
-  const hoverImage = product.images?.[1]?.url || mainImage;
+  // Slots 0 y 1 del corte por defecto. Con una sola foto no se monta la segunda
+  // capa: cruzar una imagen contra sí misma solo produce un parpadeo.
+  const { main, hover, count } = useMemo(
+    () => cardSlots(product.images ?? []),
+    [product.images]
+  );
+  const hasHoverImage = count > 1;
+
   const effectivePrice = product.discountPrice || product.price;
 
   const fabricSubtitle = product.description
@@ -55,7 +62,7 @@ function ProductCard({ product }: ProductCardProps) {
       size: selectedSize,
       cut: selectedVariant.cut,
       unitPrice: effectivePrice,
-      image: mainImage,
+      image: main.url,
       quantity: 1,
     });
 
@@ -69,24 +76,33 @@ function ProductCard({ product }: ProductCardProps) {
     <div className="group flex flex-col justify-between transition-all duration-300 select-none">
       {/* Product Card Image Container */}
       <div className="relative aspect-[3/4] w-full bg-[#f6f6f6] border border-zinc-200 group-hover:border-black overflow-hidden mb-2.5 transition-all duration-300">
+        {/* La foto de hover va PRIMERO en el DOM para quedar debajo: las dos son
+            `fill` y sin z-index gana la última pintada. Con el orden inverso la
+            card mostraba siempre el slot 1 y la principal quedaba tapada. */}
         <Link href={`/products/${product.productId}`} className="relative block w-full h-full">
+          {hasHoverImage && (
+            <Image
+              src={hover.url}
+              alt={hover.alt}
+              fill
+              loading="lazy"
+              sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1440px) 25vw, 340px"
+              quality={75}
+              className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
+            />
+          )}
           <Image
-            src={mainImage}
-            alt={product.title}
+            src={main.url}
+            alt={main.alt}
             fill
             loading="lazy"
             sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1440px) 25vw, 340px"
             quality={75}
-            className="object-cover object-center group-hover:opacity-0 transition-opacity duration-500 ease-out"
-          />
-          <Image
-            src={hoverImage}
-            alt={`${product.title} vista 2`}
-            fill
-            loading="lazy"
-            sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1440px) 25vw, 340px"
-            quality={75}
-            className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
+            className={
+              hasHoverImage
+                ? 'object-cover object-center group-hover:opacity-0 transition-opacity duration-500 ease-out'
+                : 'object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-700 ease-out'
+            }
           />
         </Link>
       </div>

@@ -5,10 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { useFetch } from '@/hooks/useFetch';
-import { CatalogProduct } from '@/types/api';
-import { MOCK_PRODUCTS } from '@/mocks/catalog';
+import { useCatalog } from '@/hooks/useCatalog';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
 import { filterByChip, filterByStyle, getChip, getStyle, isStyleId } from '@/lib/catalogFilters';
 import ProductCard from './ProductCard';
@@ -21,67 +18,46 @@ import ProductCard from './ProductCard';
  */
 
 interface BandPanel {
-  eyebrow: string;
   title: string;
   copy: string;
-  cta: string;
-  href: string;
   image: string;
   alt: string;
 }
 
 const BAND_PANELS: BandPanel[] = [
   {
-    eyebrow: 'Colección camperas · Atelier drop',
     title: 'Camperas & chaquetas — Sant Atelier',
     copy: 'Confeccionadas con materiales pesados, texturas suede y bordados atelier. Siluetas relajadas y acabados de alta durabilidad.',
-    cta: 'Ver colección camperas',
-    href: '/catalog?category=camperas',
     image: '/img/hero/IMG_2996.webp',
     alt: 'Campera suede marrón de la colección Atelier',
   },
   {
-    eyebrow: 'Fleece pesado · 400–450 g',
     title: 'Hoodies & buzos de gramaje alto',
     copy: 'Algodón perchado de 400 y 450 gramos, puños acanalados y caída estructurada que no se deforma con el uso.',
-    cta: 'Ver hoodies',
-    href: '/catalog?category=hoodies',
     image: '/img/secciones/rack-outfits-4.webp',
     alt: 'Rack de hoodies y buzos heavyweight',
   },
   {
-    eyebrow: 'Conjuntos completos · Drop #01',
     title: 'Tracksuits en suede y algodón',
     copy: 'Sets de dos piezas pensados para usarse juntos o por separado. Cierre metálico bidireccional y bordado frontal Nova.',
-    cta: 'Ver tracksuits',
-    href: '/catalog?category=tracksuits',
     image: '/img/hero/IMG_4390.webp',
     alt: 'Conjunto tracksuit completo Le Sant Club',
   },
   {
-    eyebrow: 'Jersey 240–280 g · Boxy fit',
     title: 'Remeras de base, tejidas para durar',
     copy: 'La capa que sostiene el resto del guardarropa. Cuello reforzado, hombro caído y lavados que envejecen sin perder color.',
-    cta: 'Ver remeras',
-    href: '/catalog?category=remeras',
     image: '/img/hero/IMG_3202.webp',
     alt: 'Remeras heavyweight de la colección base',
   },
   {
-    eyebrow: 'Pantalones · Wide-leg & cargo',
     title: 'Bases anchas, caída limpia',
     copy: 'Denim carpenter, cargos tácticos y sweatpants de gramaje alto. Tiro medio y pierna amplia sin exceso de volumen.',
-    cta: 'Ver pantalones',
-    href: '/catalog?category=pantalones',
     image: '/img/hero/IMG_1460.webp',
     alt: 'Pantalones wide-leg y cargo de la colección',
   },
   {
-    eyebrow: 'Archivo · Unidades limitadas',
     title: 'Piezas de archivo y últimas unidades',
     copy: 'Prendas de drops anteriores que no vuelven a producirse. Stock limitado por talle, sin reposición.',
-    cta: 'Ver archivo',
-    href: '/catalog?category=archivo',
     image: '/img/secciones/IMG_4279.webp',
     alt: 'Taller Sanclothes con moldes y piezas de archivo',
   },
@@ -98,19 +74,16 @@ export default function ProductGrid() {
   const cut = searchParams.get('cut');
   const category = searchParams.get('category');
 
-  // Build request query
-  const queryParams = new URLSearchParams();
-  if (cut) queryParams.set('cut', cut);
-  if (category) queryParams.set('category', category);
+  const { products, loading } = useCatalog({
+    cut: cut ?? undefined,
+    category: category ?? undefined,
+  });
 
-  const path = queryParams.toString() ? `/catalog?${queryParams.toString()}` : '/catalog';
-  const { data: products, loading } = useFetch<CatalogProduct[]>('GET', path);
-
-  // If backend returns fewer than 24 products, use full mock list so user gets complete view
-  const displayedProducts = useMemo(() => {
-    if (products && products.length >= 24) return products;
-    return MOCK_PRODUCTS;
-  }, [products]);
+  // Antes, si el backend devolvía menos de 24 productos se reemplazaba la
+  // respuesta por la lista de mocks completa. Eso disfrazaba un catálogo vacío o
+  // un backend caído de catálogo lleno, y encima anulaba el filtrado del server.
+  // Ahora se muestra lo que hay, y si no hay nada se muestra el estado vacío.
+  const displayedProducts = products;
 
   // The header chip rail is the live filter: it never navigates, so the grid
   // recomputes from the same fetched list instead of refetching per selection.
@@ -120,8 +93,9 @@ export default function ProductGrid() {
   const activeChip = getChip(chip);
 
   // `?category=` is the header nav's selection. The grid still filters locally
-  // because the mock fallback below can replace the backend's (already filtered)
-  // response with the full list — without this the style link would be a no-op.
+  // because the backend's `category` filter is an exact match against the code
+  // the admin assigned to the product, while the style lines here group several
+  // of those codes — the server-side filter alone would drop valid pieces.
   const activeStyle = isStyleId(category) ? getStyle(category) : null;
 
   // Mirror it into the store so the header can underline the active nav link.
@@ -142,8 +116,8 @@ export default function ProductGrid() {
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 flex flex-col gap-16">
           {Array.from({ length: 2 }, (_, b) => (
             <div key={b} className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              <div className="bg-zinc-200 animate-pulse min-h-[420px] lg:min-h-[640px]" />
-              <div className="grid grid-cols-2 gap-4 sm:gap-6">
+              <div className="bg-zinc-200 animate-pulse min-h-[500px] sm:min-h-[600px] lg:min-h-[820px] xl:min-h-[960px] 2xl:min-h-[1050px]" />
+              <div className="grid grid-cols-2 content-start gap-4 sm:gap-6">
                 {Array.from({ length: 4 }, (_, i) => (
                   <div key={i} className="bg-zinc-200 aspect-[3/4] animate-pulse" />
                 ))}
@@ -171,7 +145,7 @@ export default function ProductGrid() {
             )}
           </h2>
           <p className="font-mono text-[10px] uppercase leading-none tracking-[0.16em] text-[#17191c]/40 sm:text-[11px]">
-            {visibleProducts.length} {visibleProducts.length === 1 ? 'pieza' : 'piezas'} · {activeStyle ? activeStyle.caption : activeChip.caption}
+            {visibleProducts.length} {visibleProducts.length === 1 ? 'pieza' : 'piezas'}
           </p>
         </header>
 
@@ -210,7 +184,7 @@ export default function ProductGrid() {
             >
               {/* ── CAMPAIGN PANEL ── */}
               <article
-                className={`group relative overflow-hidden bg-[#17191c] min-h-[440px] sm:min-h-[520px] lg:min-h-0 ${
+                className={`group relative overflow-hidden bg-[#17191c] min-h-[500px] sm:min-h-[600px] lg:min-h-[820px] xl:min-h-[960px] 2xl:min-h-[1050px] ${
                   imageOnRight ? 'lg:order-2' : 'lg:order-1'
                 }`}
               >
@@ -226,12 +200,6 @@ export default function ProductGrid() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45" />
 
-                {/* Eyebrow chip, top-left */}
-                <span className="absolute top-6 left-6 z-10 flex items-center gap-2 border border-white/25 bg-black/55 px-3.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-md">
-                  <span aria-hidden className="block h-1.5 w-1.5 bg-white" />
-                  {panel.eyebrow}
-                </span>
-
                 {/* Panel content, bottom-left */}
                 <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-4 p-6 sm:p-8 lg:p-10">
                   <h2 className="max-w-[16ch] font-[family-name:var(--font-bebas)] text-3xl uppercase leading-[0.95] tracking-[0.04em] text-white sm:text-4xl lg:text-5xl">
@@ -240,19 +208,12 @@ export default function ProductGrid() {
                   <p className="max-w-[46ch] font-mono text-[10px] uppercase leading-[1.7] tracking-[0.14em] text-white/70 sm:text-[11px]">
                     {panel.copy}
                   </p>
-                  <Link
-                    href={panel.href}
-                    className="mt-1 flex h-11 items-center gap-3 border border-white/70 px-6 font-[family-name:var(--font-bebas)] text-lg uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-white hover:text-[#17191c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:text-xl"
-                  >
-                    {panel.cta}
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
-                  </Link>
                 </div>
               </article>
 
               {/* ── 2×2 PRODUCT BLOCK ── */}
               <div
-                className={`grid grid-cols-2 gap-4 sm:gap-6 ${
+                className={`grid grid-cols-2 content-start gap-4 sm:gap-6 ${
                   imageOnRight ? 'lg:order-1' : 'lg:order-2'
                 }`}
               >

@@ -24,7 +24,7 @@ const STORES: StoreLocation[] = [
     badge: 'CASA MATRIZ',
     name: 'SANT B. OBRERO MATRIZ',
     address: 'B. OBRERO, CIUDAD DEL ESTE, PARAGUAY',
-    hours: 'LUNES A SÁBADOS: 08:00 A 18:00 HS',
+    hours: 'LUNES A SÁBADOS: 09:00 A 18:00 HS',
     mapsUrl: 'https://maps.app.goo.gl/S3xY7CYL5RiJ2DAy6',
   },
   {
@@ -34,7 +34,7 @@ const STORES: StoreLocation[] = [
     badge: 'SUCURSAL BOQUERÓN',
     name: 'SANT BOQUERÓN',
     address: 'BOQUERÓN, CIUDAD DEL ESTE, PARAGUAY',
-    hours: 'LUNES A SÁBADOS: 08:00 A 18:00 HS',
+    hours: 'LUNES A SÁBADOS: 09:00 A 18:00 HS',
     mapsUrl: 'https://www.google.com/maps/place/Sant+Boquer%C3%B3n/@-25.5249877,-54.6229725,16.29z/data=!4m6!3m5!1s0x94f68f365d684f4b:0x904bbfb5b342490!8m2!3d-25.5249068!4d-54.6228907!16s%2Fg%2F11tx25q9l2',
   },
 ];
@@ -48,7 +48,7 @@ export default function ShowroomExperience() {
   };
 
   return (
-    <section id="showroom" className="w-full bg-[#17191c] text-[#f6f8f9] relative overflow-hidden border-b border-[#b6b2a7]/30">
+    <section id="showroom" className="w-full scroll-mt-24 bg-[#17191c] text-[#f6f8f9] relative overflow-hidden border-b border-[#b6b2a7]/30">
       <div className="relative w-full min-h-[640px] lg:min-h-[720px] overflow-hidden group flex flex-col justify-between p-6 sm:p-12 lg:p-16">
         
         {/* Background Image - Showroom Atelier Design Table */}

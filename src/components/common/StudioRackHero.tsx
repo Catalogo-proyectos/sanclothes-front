@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default function StudioRackHero() {
   return (
     <section className="w-full bg-[#17191c] text-[#f6f8f9] relative overflow-hidden border-b border-[#b6b2a7]/30">
       <div
-        className="relative w-full h-[600px] sm:h-[700px] lg:h-[750px] overflow-hidden group flex flex-col justify-between"
+        className="relative w-full h-[600px] sm:h-[700px] lg:h-[750px] overflow-hidden group flex flex-col justify-end"
         style={{ borderRadius: '0px' }}
       >
         {/* Background Studio Photoshoot Image (IMG_4390.jpg - Full Width Edge to Edge) */}
@@ -25,14 +25,6 @@ export default function StudioRackHero() {
 
         {/* Vignette Overlay for Text Legibility */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 pointer-events-none" />
-
-        {/* Top Tag Badge */}
-        <div className="relative z-10 p-6 sm:p-10 lg:p-12">
-          <span className="inline-flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.25em] text-white bg-black/85 backdrop-blur-md px-4 py-2 uppercase border border-white/20">
-            <Sparkles className="w-3.5 h-3.5 text-white" />
-            <span>SANT CLOTHES · COLECCIÓN STUDIO DROP</span>
-          </span>
-        </div>
 
         {/* Bottom Content Overlay */}
         <motion.div
@@ -56,7 +48,7 @@ export default function StudioRackHero() {
               className="inline-flex items-center gap-3 bg-white text-black hover:bg-zinc-200 text-[11px] font-mono font-extrabold tracking-[0.2em] uppercase px-8 py-4 border border-white transition-all duration-300 shadow-2xl group/btn"
               style={{ borderRadius: '0px' }}
             >
-              <span>EXPLORAR COLECCIÓN STUDIO</span>
+              <span>EXPLORAR COLECCIÓN</span>
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </Link>
           </div>

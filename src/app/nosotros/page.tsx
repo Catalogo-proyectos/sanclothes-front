@@ -4,8 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  Flame,
-  Sparkles,
   Play,
   ArrowUpRight,
   MapPin,
@@ -13,8 +11,6 @@ import {
   ShieldCheck,
   Award,
   HeartHandshake,
-  Compass,
-  Tv,
 } from 'lucide-react';
 
 export default function NosotrosPage() {
@@ -66,7 +62,7 @@ export default function NosotrosPage() {
     },
     {
       icon: ShieldCheck,
-      title: 'ALGODÓN HEAVYWEIGHT 400G',
+      title: 'ALGODÓN 400G',
       description:
         'No escatimamos en materia prima. Nuestras telas mantienen su estructura, caída pesada y suavidad lavado tras lavado.',
     },
@@ -87,7 +83,7 @@ export default function NosotrosPage() {
   return (
     <div className="bg-[#f6f8f9] text-[#17191c] min-h-screen">
       {/* ── HERO SECTION: DRAMATIC OVERSIZED IMPACT ── */}
-      <section className="relative w-full min-h-[75vh] lg:min-h-[85vh] bg-[#17191c] text-[#f6f8f9] flex flex-col justify-end overflow-hidden border-b border-[#b6b2a7]/30 pt-24 pb-16 px-6 sm:px-12 lg:px-20">
+      <section id="nosotros-hero" className="relative w-full min-h-[75vh] scroll-mt-24 lg:min-h-[85vh] bg-[#17191c] text-[#f6f8f9] flex flex-col justify-end overflow-hidden border-b border-[#b6b2a7]/30 pt-24 pb-16 px-6 sm:px-12 lg:px-20">
         {/* Hero Background Image */}
         <Image
           src="/img/hero/IMG_4390.webp"
@@ -103,17 +99,6 @@ export default function NosotrosPage() {
 
         {/* Content Container */}
         <div className="relative z-10 max-w-6xl mx-auto w-full space-y-6">
-          {/* Eyebrow Pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2.5 text-[10px] sm:text-xs font-mono font-bold tracking-[0.3em] uppercase text-zinc-300 bg-black/60 backdrop-blur-md px-4 py-2 border border-white/20"
-          >
-            <Flame className="w-3.5 h-3.5 text-amber-400" />
-            <span>SANT CLOTHES · LA HISTORIA DETRÁS DE LA MARCA</span>
-          </motion.div>
-
           {/* Main Hero Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 25 }}
@@ -139,15 +124,11 @@ export default function NosotrosPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/15 max-w-4xl"
+            className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6 border-t border-white/15 max-w-3xl"
           >
             <div>
               <span className="block font-[family-name:var(--font-bebas)] text-3xl sm:text-4xl text-white tracking-wider">2020</span>
               <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">AÑO DE FUNDACIÓN</span>
-            </div>
-            <div>
-              <span className="block font-[family-name:var(--font-bebas)] text-3xl sm:text-4xl text-white tracking-wider">400G</span>
-              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">GRAMAJE HEAVYWEIGHT</span>
             </div>
             <div>
               <span className="block font-[family-name:var(--font-bebas)] text-3xl sm:text-4xl text-white tracking-wider">100%</span>
@@ -162,17 +143,12 @@ export default function NosotrosPage() {
       </section>
 
       {/* ── PODCAST & VIDEO BANNER HIGHLIGHT ── */}
-      <section className="py-16 sm:py-20 bg-[#17191c] text-white border-b border-[#b6b2a7]/20 relative overflow-hidden">
+      <section id="podcast" className="py-16 sm:py-20 scroll-mt-24 bg-[#17191c] text-white border-b border-[#b6b2a7]/20 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 sm:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
+
             {/* Left Col: Podcast Context */}
             <div className="lg:col-span-6 space-y-6">
-              <div className="inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-amber-400 bg-amber-400/10 px-3 py-1 border border-amber-400/20">
-                <Tv className="w-3.5 h-3.5" />
-                <span>EPISODIO #01 · SANT CLOTHES PODCAST</span>
-              </div>
-
               <h2 className="text-3xl sm:text-5xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-none text-white">
                 "NO BUSCÁBAMOS SEGUIR TENDENCIAS, CREAMOS LO QUE NOSOTROS QUERÍAMOS USAR"
               </h2>
@@ -192,9 +168,6 @@ export default function NosotrosPage() {
                   <span>VER PODCAST EN YOUTUBE</span>
                 </a>
 
-                <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">
-                  DURACIÓN: ~45 MIN · MINUTO CLAVE 02:56
-                </span>
               </div>
             </div>
 
@@ -229,22 +202,16 @@ export default function NosotrosPage() {
       </section>
 
       {/* ── TIMELINE SECTION: LA EVOLUCIÓN DETALLADA ── */}
-      <section className="py-20 sm:py-28 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
+      <section id="cronologia" className="py-20 sm:py-28 scroll-mt-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
         <div className="max-w-6xl mx-auto px-6 sm:px-12 space-y-16">
-          
+
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2">
-              <Compass className="w-4 h-4 text-[#50524a]" />
-              <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
-                CRONOLOGÍA & HITOS CLAVE
-              </span>
-            </div>
             <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-none">
               EL CAMINO DE MATÍAS & LUCAS SANTOS
             </h2>
             <p className="text-xs sm:text-sm font-mono text-[#50524a] uppercase tracking-wide leading-relaxed">
-              De los primeros tapabocas en el taller de alta costura a dominar el segmento de ropa urbana heavyweight en Paraguay.
+              De los primeros tapabocas en el taller de alta costura a dominar el segmento de ropa urbana en Paraguay.
             </p>
           </div>
 
@@ -294,14 +261,14 @@ export default function NosotrosPage() {
       </section>
 
       {/* ── BRAND PILLARS / NUESTROS VALORES ── */}
-      <section className="py-20 sm:py-24 bg-[#17191c] text-white border-b border-[#b6b2a7]/30">
+      <section id="pilares" className="py-20 sm:py-24 scroll-mt-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
         <div className="max-w-7xl mx-auto px-6 sm:px-12 space-y-16">
-          
+
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-zinc-400 block">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a] block">
               LOS PILARES DE SANT CLOTHES
             </span>
-            <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-white leading-none">
+            <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-none">
               LO QUE NOS HACE DIFERENTES
             </h2>
           </div>
@@ -316,15 +283,15 @@ export default function NosotrosPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-black/60 border border-white/15 p-6 sm:p-8 space-y-4 hover:border-white/40 transition-colors"
+                  className="bg-white border border-[#b6b2a7] p-6 sm:p-8 space-y-4 hover:border-[#17191c] transition-colors shadow-sm"
                 >
-                  <div className="w-12 h-12 bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-[#f6f8f9] border border-[#b6b2a7]/60 flex items-center justify-center shrink-0">
+                    <Icon className="w-6 h-6 text-[#17191c]" />
                   </div>
-                  <h3 className="font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-wider text-white uppercase leading-tight">
+                  <h3 className="font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-wider text-[#17191c] uppercase leading-tight">
                     {pillar.title}
                   </h3>
-                  <p className="text-xs font-mono text-zinc-400 uppercase leading-relaxed tracking-wide">
+                  <p className="text-xs font-mono text-[#50524a] uppercase leading-relaxed tracking-wide">
                     {pillar.description}
                   </p>
                 </motion.div>
@@ -338,9 +305,15 @@ export default function NosotrosPage() {
       {/* ── FOUNDERS STATEMENT / MANIFIESTO FINAL ── */}
       <section className="py-20 sm:py-28 bg-[#f6f8f9] text-[#17191c] relative overflow-hidden">
         <div className="max-w-5xl mx-auto px-6 sm:px-12 text-center space-y-8 relative z-10">
-          
-          <div className="w-16 h-16 bg-[#17191c] text-white mx-auto flex items-center justify-center rounded-none shadow-xl">
-            <Sparkles className="w-8 h-8" />
+
+          <div className="w-16 sm:w-20 mx-auto">
+            <Image
+              src="/img/logo/logo-iso-negro.png"
+              alt="Sant Clothes"
+              width={96}
+              height={96}
+              className="h-auto w-full object-contain"
+            />
           </div>
 
           <h2 className="text-4xl sm:text-6xl lg:text-7xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-[0.95] text-[#17191c]">

@@ -15,7 +15,7 @@ export default function PageHero({
   category = 'SANCLOTHES / COLECCIÓN CONTEMPORÁNEA',
   title,
   subtitle,
-  image = 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&auto=format&fit=crop&q=85',
+  image = '/img/hero/Hero-Catalogo2.jpeg',
   align = 'center',
   compact = false,
 }: PageHeroProps) {

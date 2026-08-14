@@ -5,7 +5,12 @@
 
 // --- Catalog Types ---
 
-export type CutCode = 'FEMENINO' | 'MASCULINO' | 'UNISEX';
+/**
+ * Los cortes son dinámicos: el admin los da de alta en la tabla `cuts` del
+ * backend (CLASSIC, OVERSIZED, FEMENINO, MASCULINO, …), así que el front no
+ * puede cerrar la unión sin quedar desactualizado cada vez que agregan uno.
+ */
+export type CutCode = string;
 export type StockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
 
 export interface ProductImage {
@@ -35,7 +40,13 @@ export interface CatalogProduct {
   description: string;
   price: number;
   discountPrice: number | null;
+  /** Imágenes del corte por defecto, ya normalizadas al host de media vigente. */
   images: ProductImage[];
+  /**
+   * Imágenes agrupadas por corte. Es lo que permite reemplazar toda la galería
+   * cuando el cliente cambia de corte en la ficha, sin volver a pedir el producto.
+   */
+  imagesByCut?: Record<CutCode, ProductImage[]>;
   cuts: CutCode[];
   category: string;
   sizes: string[];
@@ -44,6 +55,12 @@ export interface CatalogProduct {
   reviewCount?: number;
   variants?: ProductVariant[];
   flashSale?: FlashSaleInfo | null;
+  /** Etiqueta del admin (NUEVO, ÚLTIMAS UNIDADES…). */
+  badge?: string | null;
+  /** Marcado en el admin para el Bento Grid 2×2 de la portada. */
+  isFeatured?: boolean;
+  isLimitedDrop?: boolean;
+  tags?: string[];
 }
 
 export interface CutInfo {

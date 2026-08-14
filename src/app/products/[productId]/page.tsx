@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ProductDetail from '@/components/catalog/ProductDetail';
-import { apiCall } from '@/lib/api';
+import { fetchCatalog, fetchProduct } from '@/lib/services/catalog';
 import { config } from '@/lib/config';
 import { CatalogProduct } from '@/types/api';
 
@@ -16,16 +16,12 @@ interface PageParams {
  * loading flash that used to shift the layout.
  */
 async function getProduct(productId: string): Promise<CatalogProduct | null> {
-  try {
-    return await apiCall<CatalogProduct>('GET', `/catalog/${productId}`);
-  } catch {
-    return null;
-  }
+  return fetchProduct(productId);
 }
 
 async function getRecommended(productId: string): Promise<CatalogProduct[]> {
   try {
-    const all = await apiCall<CatalogProduct[]>('GET', '/catalog');
+    const all = await fetchCatalog();
     return all.filter((p) => p.productId !== productId).slice(0, 8);
   } catch {
     return [];
@@ -42,7 +38,9 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
   const price = product.discountPrice ?? product.price;
   const title = `${product.title} — SANT CLOTHES®`;
-  const description = product.description.slice(0, 160);
+  // El catálogo puede llegar sin `description` (el backend no la propaga a Redis
+  // todavía), así que la metadescripción cae al nombre de la prenda.
+  const description = (product.description || product.title).slice(0, 160);
   const image = product.images?.[0]?.url;
 
   return {

@@ -188,6 +188,10 @@ if (lockUtilizable) {
   }
   dropLock();
   log('puerto liberado.');
+  // Dar 300ms al stack TCP del sistema operativo para liberar completamente el puerto 3000
+  try {
+    execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', 'Start-Sleep -Milliseconds 300'], { stdio: 'ignore' });
+  } catch {}
   process.exit(0);
 }
 

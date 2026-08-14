@@ -24,14 +24,41 @@ const nextConfig: NextConfig = {
     // nombre del archivo), así que se pueden cachear un año.
     minimumCacheTTL: 31536000,
 
+    // Las fotos del catálogo llegan como URLs absolutas desde el backend, y el
+    // host depende de cómo esté configurado el almacenamiento en ese entorno:
+    // CDN_URL si existe, el endpoint directo de MinIO si no, y /uploads del
+    // propio API como último fallback (backend/src/lib/minio.ts:135-186).
+    // Los tres tienen que estar acá o next/image aborta el render de la card.
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.unsplash.com",
+        hostname: "cdn.trecepy.com",
+      },
+      {
+        // Productos cargados antes del rename de la marca.
+        protocol: "https",
+        hostname: "cdn.trece13.com",
       },
       {
         protocol: "https",
-        hostname: "api.example.com",
+        hostname: "api.santclothes.com.py",
+      },
+      {
+        // MinIO en desarrollo (docker-compose expone el bucket en 5012).
+        protocol: "http",
+        hostname: "localhost",
+        port: "5012",
+      },
+      {
+        // Fallback a disco del backend: /uploads/catalog/*.
+        protocol: "http",
+        hostname: "localhost",
+        port: "5014",
+      },
+      {
+        // Solo para los mocks de desarrollo. Sale junto con src/mocks/.
+        protocol: "https",
+        hostname: "images.unsplash.com",
       },
     ],
   },

@@ -1,12 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { toast } from 'sonner';
+import { useCatalog } from '@/hooks/useCatalog';
+import { heroSlot } from '@/lib/images/slots';
+import { formatCurrency } from '@/utils/format';
+import type { CatalogProduct, ProductVariant } from '@/types/api';
+
+/** Cuántas prendas muestra el carrusel. */
+const CAROUSEL_CAPACITY = 4;
 
 export interface PresentationProduct {
   id: string;
@@ -16,66 +23,48 @@ export interface PresentationProduct {
   price: number;
   priceFormatted: string;
   image: string;
+  imageAlt: string;
   sizes: string[];
+  variants: ProductVariant[];
 }
 
-const PRODUCTS_DATA: PresentationProduct[] = [
-  {
-    id: 'varsity-jacket-brown',
-    tag: 'LIMITED DROP',
-    name: 'VARSITY JACKET BROWN & WHITE "S"',
-    fabric: 'BOXY FIT — EMBROIDERED 400G',
-    price: 350000,
-    priceFormatted: '₲ 350.000',
-    image: '/img/products/varsity-flat.webp',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-  {
-    id: 'shorts-trio-sants',
-    tag: 'DAILY ESSENTIALS',
-    name: 'SHORTS SANT TRIO PACK',
-    fabric: 'ALGODÓN PREMIUM 240G',
-    price: 180000,
-    priceFormatted: '₲ 180.000',
-    image: '/img/products/shorts-set.webp',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-  {
-    id: 'santis-club-zip',
-    tag: 'NUEVA COLECCIÓN',
-    name: 'LE SANTI\'S CLUB 1/4 ZIP SWEATSHIRT',
-    fabric: 'ALGODÓN BORDADO ECOUTEZ VOTRE COEUR',
-    price: 280000,
-    priceFormatted: '₲ 280.000',
-    image: '/img/products/zip-santis.webp',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-  {
-    id: 'graffiti-art-tee',
-    tag: 'STREET ARCHITECTS',
-    name: 'GRAFFITI ART OVERSIZED TEE BLACK',
-    fabric: '100% ALGODÓN HEAVYWEIGHT 240G',
-    price: 190000,
-    priceFormatted: '₲ 190.000',
-    image: '/img/products/tee-graffiti.webp',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-  {
-    id: 'tracksuit-suede-set',
-    tag: 'SUEDE EDITION',
-    name: 'LE SANT CLUB SUEDE TRACKSUIT',
-    fabric: 'SUEDE TEXTURED EMBROIDERED SET',
-    price: 390000,
-    priceFormatted: '₲ 390.000',
-    image: '/img/products/tracksuit-suede.webp',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-];
+
+/**
+ * Mapea un producto del catálogo a la forma que consume el carrusel.
+ * Slot de imagen 0 del corte por defecto: la card no tiene hover cruzado.
+ */
+function toPresentationProduct(product: CatalogProduct): PresentationProduct {
+  const effectivePrice = product.discountPrice ?? product.price;
+  const image = heroSlot(product.images ?? []);
+
+  return {
+    id: product.productId,
+    tag: product.badge || (product.isLimitedDrop ? 'LIMITED DROP' : 'NUEVO'),
+    name: product.title,
+    fabric: product.description
+      ? product.description.split('.')[0].toUpperCase()
+      : product.category.toUpperCase(),
+    price: effectivePrice,
+    priceFormatted: formatCurrency(effectivePrice),
+    image: image.url,
+    imageAlt: image.alt,
+    sizes: product.sizes?.length ? product.sizes.slice(0, 4) : ['S', 'M', 'L', 'XL'],
+    variants: product.variants ?? [],
+  };
+}
 
 export default function LatestProductsCarousel() {
   const { addItem } = useCart();
   const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
+
+  // `sort=newest` lo resuelve el backend por fecha de alta del producto.
+  const { products, loading } = useCatalog({ sort: 'newest' });
+
+  const carouselProducts = useMemo(
+    () => products.slice(0, CAROUSEL_CAPACITY).map(toPresentationProduct),
+    [products]
+  );
 
   const toggleWishlist = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,21 +86,28 @@ export default function LatestProductsCarousel() {
     e.stopPropagation();
     const chosenSize = selectedSizes[product.id] || product.sizes[0];
 
+    // El SKU real de la variante: el checkout reserva stock por SKU, así que uno
+    // inventado hace fallar la orden entera.
+    const variant = product.variants.find((v) => v.size === chosenSize);
+
     addItem({
-      variantId: `${product.id}-${chosenSize}`,
+      variantId: variant?.variantId ?? `${product.id}-${chosenSize}`,
       productId: String(product.id),
       productName: product.name,
-      sku: `SKU-${product.id}-${chosenSize}`,
+      sku: variant?.sku ?? `${product.id}-${chosenSize}`,
       size: chosenSize,
-      cut: 'REGULAR',
+      cut: variant?.cut ?? 'REGULAR',
       unitPrice: product.price,
       image: product.image,
+      maxStock: variant?.stock,
     });
 
     toast.success('¡AÑADIDO AL CARRITO!', {
       description: `${product.name} · TALLE ${chosenSize}`,
     });
   };
+
+  if (!loading && carouselProducts.length === 0) return null;
 
   return (
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-20 px-6 sm:px-12 border-b border-[#b6b2a7]/40">
@@ -141,7 +137,15 @@ export default function LatestProductsCarousel() {
 
         {/* Presentation Product Cards Carousel Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {PRODUCTS_DATA.slice(0, 4).map((product, idx) => {
+          {loading &&
+            Array.from({ length: CAROUSEL_CAPACITY }, (_, i) => (
+              <div key={`skeleton-${i}`} className="flex flex-col gap-4">
+                <div className="aspect-[3/4] w-full bg-zinc-200 animate-pulse" />
+                <div className="h-24 bg-zinc-100 animate-pulse" />
+              </div>
+            ))}
+
+          {carouselProducts.map((product, idx) => {
             const isFav = !!wishlist[product.id];
             const currentSize = selectedSizes[product.id] || product.sizes[0];
 
@@ -180,7 +184,7 @@ export default function LatestProductsCarousel() {
                   <div className="relative w-full h-full p-6 flex items-center justify-center">
                     <Image
                       src={product.image}
-                      alt={product.name}
+                      alt={product.imageAlt}
                       fill
                       quality={95}
                       className="object-contain object-center p-4 group-hover:scale-105 transition-transform duration-500 ease-out"

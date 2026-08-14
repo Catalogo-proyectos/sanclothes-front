@@ -12,13 +12,19 @@ export default function HomePage() {
   return (
     <div className="bg-[#f6f8f9] text-[#17191c]">
       {/* 0. Scroll-Driven Logo Animation (frame-by-frame con scroll) */}
-      <ScrollLogoHero />
+      <div id="inicio" className="scroll-mt-24">
+        <ScrollLogoHero />
+      </div>
 
       {/* 1. Hero Editorial (4 columnas: Casual, Streetwear, Sports, Old Money) */}
-      <Hero />
+      <div id="colecciones" className="scroll-mt-24">
+        <Hero />
+      </div>
 
       {/* 2. Brand Story Hero (Camperas & Chaquetas — SANT CLOTHES) */}
-      <BrandStoryHero />
+      <div id="historia" className="scroll-mt-24">
+        <BrandStoryHero />
+      </div>
 
       {/* 3. Brand Campaign Video Banner (Full Width Edge-to-Edge) */}
       <BrandVideoBanner />
@@ -27,7 +33,9 @@ export default function HomePage() {
       <StudioRackHero />
 
       {/* 5. Featured Products Grid (Atelier Drop) */}
-      <FeaturedProductsGrid />
+      <div id="destacados" className="scroll-mt-24">
+        <FeaturedProductsGrid />
+      </div>
 
       {/* 6. Atelier Brand Story Section */}
       <StreetMotionHero />

@@ -64,7 +64,7 @@ export default function CatalogHero({ styleId }: CatalogHeroProps) {
        stay put. */
     <div
       id="catalog-hero-cover"
-      className="w-full"
+      className="w-full scroll-mt-24"
       style={{ height: coverHeight ?? undefined, clipPath: 'inset(0)' }}
     >
       {/* Pinned below the fixed header rather than at top-0 — unlike home's, this header

@@ -24,6 +24,9 @@ interface ProductPurchasePanelProps {
   product: CatalogProduct;
   images: GalleryImage[];
   onPreviewImage: (index: number) => void;
+  /** Corte activo. Lo posee ProductDetail porque también manda sobre la galería. */
+  selectedCut: string;
+  onSelectCut: (cut: string) => void;
 }
 
 const LOW_STOCK_THRESHOLD = 5;
@@ -33,16 +36,34 @@ export default function ProductPurchasePanel({
   product,
   images,
   onPreviewImage,
+  selectedCut,
+  onSelectCut,
 }: ProductPurchasePanelProps) {
   const router = useRouter();
   const addItem = useCart((state) => state.addItem);
 
-  const availableSizes = useMemo(
-    () => (product.sizes?.length ? product.sizes : ['XS', 'S', 'M', 'L', 'XL']),
-    [product.sizes]
-  );
+  const activeCut = selectedCut;
 
-  const [selectedSize, setSelectedSize] = useState<string>(availableSizes[0]);
+  // Los talles dependen del corte: el backend guarda las variantes anidadas
+  // corte → talle, y un corte puede ofrecer menos talles que otro.
+  const availableSizes = useMemo(() => {
+    const sizesForCut = (product.variants ?? [])
+      .filter((v) => v.cut === activeCut)
+      .map((v) => v.size);
+
+    const unique = [...new Set(sizesForCut)];
+    if (unique.length > 0) return unique;
+
+    return product.sizes?.length ? product.sizes : ['XS', 'S', 'M', 'L', 'XL'];
+  }, [product.variants, product.sizes, activeCut]);
+
+  const [pickedSize, setSelectedSize] = useState<string>(availableSizes[0]);
+
+  // Talle efectivo. Al cambiar de corte el talle elegido puede no existir en el
+  // nuevo, así que se deriva en render en vez de sincronizarse con un efecto:
+  // evita el render en cascada y que quede seleccionado un talle fantasma que
+  // después falla al agregar al carrito.
+  const selectedSize = availableSizes.includes(pickedSize) ? pickedSize : availableSizes[0];
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [addedSuccess, setAddedSuccess] = useState(false);
@@ -57,7 +78,6 @@ export default function ProductPurchasePanel({
   }, []);
 
   const effectivePrice = product.discountPrice ?? product.price;
-  const activeCut = product.cuts?.[0] ?? 'UNISEX';
   const isSoldOut = product.stockStatus === 'OUT_OF_STOCK';
 
   const findVariant = useCallback(
@@ -164,14 +184,33 @@ export default function ProductPurchasePanel({
       {/* ── BRAND EYEBROW & HIGH-CONTRAST HEADLINE ── */}
       <div>
         <div className="flex items-center flex-wrap gap-2 mb-3">
-          {product.cuts.map((cut) => (
-            <span
-              key={cut}
-              className="bg-white text-[#17191c] border border-[#17191c]/15 text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-[0.2em] shadow-2xs"
-            >
-              {cut}
-            </span>
-          ))}
+          {/* Con más de un corte esto deja de ser decorativo: cada corte tiene su
+              propio set de fotos (imagesByCut) y sus propios talles, así que
+              seleccionarlo repinta la galería entera. */}
+          {product.cuts.map((cut) =>
+            product.cuts.length > 1 ? (
+              <button
+                key={cut}
+                type="button"
+                aria-pressed={cut === activeCut}
+                onClick={() => onSelectCut(cut)}
+                className={`text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-[0.2em] shadow-2xs border cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c] ${
+                  cut === activeCut
+                    ? 'bg-[#17191c] text-white border-[#17191c]'
+                    : 'bg-white text-[#17191c] border-[#17191c]/15 hover:border-[#17191c]'
+                }`}
+              >
+                {cut}
+              </button>
+            ) : (
+              <span
+                key={cut}
+                className="bg-white text-[#17191c] border border-[#17191c]/15 text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-[0.2em] shadow-2xs"
+              >
+                {cut}
+              </span>
+            )
+          )}
           <span
             className={`text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-[0.2em] shadow-2xs ${
               isSoldOut

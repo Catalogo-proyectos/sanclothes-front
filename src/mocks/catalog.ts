@@ -11,17 +11,21 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     productId: 'prod_trece_01',
     slug: 'le-sants-club-suede-tracksuit',
     title: 'LE SANT CLUB SUEDE TRACKSUIT',
+    // Destacados del Bento 2×2: espeja lo que el admin marca en
+    // Catálogo → Bento Grid / Destacados 2×2 (products.is_featured).
+    isFeatured: true,
+    badge: 'NUEVO',
     description: 'Conjunto tracksuit completo confeccionado en gamuza sintética táctil pesada. Bordado frontal Nova Collection y cierre metálico bidireccional.',
     price: 390000,
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Le Sant Club Suede Tracksuit frente',
         cutVariant: 'UNISEX',
       },
       {
-        url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Le Sant Club Suede Tracksuit espalda',
         cutVariant: 'UNISEX',
       },
@@ -48,12 +52,12 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 135000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Frente Remera Oversize TRECE13',
         cutVariant: 'UNISEX',
       },
       {
-        url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Espalda Remera Oversize TRECE13',
         cutVariant: 'UNISEX',
       },
@@ -84,12 +88,12 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Polo Canalé Old Money',
         cutVariant: 'MASCULINO',
       },
       {
-        url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Polo Canalé detalle',
         cutVariant: 'MASCULINO',
       },
@@ -109,6 +113,8 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     productId: 'prod_trece_04',
     slug: 'hoodie-acid-wash-drop01',
     title: 'Hoodie Acid Wash Drop #01 400G',
+    isFeatured: true,
+    isLimitedDrop: true,
     description: 'Hoodie frizado pesado con proceso de acid wash artesanal. Capucha de doble capa y bolsillo canguro.',
     price: 320000,
     discountPrice: null,
@@ -154,7 +160,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 245000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Camisa Lino Cream',
         cutVariant: 'MASCULINO',
       },
@@ -179,7 +185,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Pantalón Cargo Tactical',
         cutVariant: 'UNISEX',
       },
@@ -204,7 +210,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 95000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Top Cropped Raw Edge',
         cutVariant: 'FEMENINO',
       },
@@ -229,7 +235,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Suéter Cable Knit',
         cutVariant: 'UNISEX',
       },
@@ -249,17 +255,18 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     productId: 'prod_trece_09',
     slug: 'chaqueta-bomber-satin-edition',
     title: 'Chaqueta Bomber Satin Edition',
+    isFeatured: true,
     description: 'Chaqueta estilo bomber confeccionada en satén técnico brillante con forro acolchado térmico e iso metálico.',
     price: 380000,
     discountPrice: 340000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Chaqueta Bomber Satin frente',
         cutVariant: 'UNISEX',
       },
       {
-        url: 'https://images.unsplash.com/photo-1548883354-7622d03aca27?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Chaqueta Bomber Satin espalda',
         cutVariant: 'UNISEX',
       },
@@ -284,7 +291,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 160000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Remera Oversize Acid Black',
         cutVariant: 'UNISEX',
       },
@@ -309,7 +316,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Sweatpants Baggy Heavyweight',
         cutVariant: 'UNISEX',
       },
@@ -334,7 +341,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 285000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Camisa Corduroy Moss',
         cutVariant: 'UNISEX',
       },
@@ -354,12 +361,13 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     productId: 'prod_trece_13',
     slug: 'hoodie-zip-up-heavy-fleece',
     title: 'Hoodie Zip-Up Heavy Fleece 450G',
+    isFeatured: true,
     description: 'Hoodie con cierre metálico completo bidireccional y algodón frisado ultra pesado de 450G.',
     price: 360000,
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Hoodie Zip-Up Heavy Fleece',
         cutVariant: 'UNISEX',
       },
@@ -384,7 +392,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 140000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Remera Boxy Fit Vintage Wash',
         cutVariant: 'UNISEX',
       },
@@ -409,7 +417,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Pantalón Denim Carpenter',
         cutVariant: 'UNISEX',
       },
@@ -434,7 +442,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 310000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Chaleco Puffer Quilted',
         cutVariant: 'UNISEX',
       },
@@ -459,12 +467,12 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 165000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Remera Graphic Chrome World frente',
         cutVariant: 'UNISEX',
       },
       {
-        url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Remera Graphic Chrome World espalda',
         cutVariant: 'UNISEX',
       },
@@ -489,7 +497,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Hoodie Oversized Monogram Black',
         cutVariant: 'UNISEX',
       },
@@ -514,7 +522,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Pantalón Cargo Olive',
         cutVariant: 'UNISEX',
       },
@@ -539,7 +547,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 375000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Chaqueta Denim Vintage',
         cutVariant: 'UNISEX',
       },
@@ -564,7 +572,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 230000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Polo Piqué Minimalist',
         cutVariant: 'MASCULINO',
       },
@@ -589,7 +597,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Sweatpants Flare Heavyweight',
         cutVariant: 'UNISEX',
       },
@@ -614,7 +622,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: null,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Remera Heavyweight Off-White',
         cutVariant: 'UNISEX',
       },
@@ -639,7 +647,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     discountPrice: 420000,
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=800&auto=format&fit=crop&q=80',
+        url: '/img/Placeholer.jpeg',
         alt: 'Chaqueta Puffer Oversize Black',
         cutVariant: 'UNISEX',
       },

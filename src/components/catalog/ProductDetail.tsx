@@ -24,50 +24,33 @@ interface ProductDetailProps {
  */
 export default function ProductDetail({ product, recommended }: ProductDetailProps) {
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
+  const [selectedCut, setSelectedCut] = useState<string>(product.cuts?.[0] ?? '');
 
-  // Only fall back to stock photography for whichever slots are actually missing —
-  // previously 4 unrelated Unsplash photos were always injected regardless of how
-  // many real product images existed, which padded the gallery with off-brand
-  // filler and cost 3 extra network requests per page view.
+  // Cada corte trae su propio set de fotos (imagesByCut en el backend), así que
+  // cambiarlo reemplaza la galería completa sin volver a pedir el producto.
+  // El array plano `images` queda como respaldo para productos legacy que se
+  // cargaron antes de que existiera el agrupado por corte.
   const galleryImages = useMemo<GalleryImage[]>(() => {
-    if (product.images && product.images.length > 0) {
-      return product.images.map((img, i) => ({
-        url: img.url,
-        alt: img.alt || `${product.title} vista ${i + 1}`,
-      }));
-    }
-    return [
-      {
-        url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80',
-        alt: `${product.title} vista principal`,
-      },
-    ];
-  }, [product.images, product.title]);
+    const source = product.imagesByCut?.[selectedCut] ?? product.images ?? [];
+
+    return source.map((img, i) => ({
+      url: img.url,
+      alt: img.alt || `${product.title} vista ${i + 1}`,
+    }));
+  }, [product.imagesByCut, product.images, product.title, selectedCut]);
 
   const openZoom = useCallback((index: number) => setZoomIndex(index), []);
   const closeZoom = useCallback(() => setZoomIndex(null), []);
 
+  // Al cambiar de corte el índice viejo puede apuntar fuera del set nuevo.
+  const handleSelectCut = useCallback((cut: string) => {
+    setSelectedCut(cut);
+    setZoomIndex(null);
+  }, []);
+
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-8 sm:py-12 text-[#17191c]">
-      <nav aria-label="Ruta de navegación" className="mb-5 sm:mb-7">
-        <ol className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-[#50524a] flex-wrap">
-          <li>
-            <Link href="/" className="inline-block py-1.5 hover:text-[#17191c] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]">
-              Inicio
-            </Link>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li>
-            <Link href="/catalog" className="inline-block py-1.5 hover:text-[#17191c] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]">
-              Catálogo
-            </Link>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li aria-current="page" className="text-[#17191c] font-bold truncate max-w-[50vw]">
-            {product.title}
-          </li>
-        </ol>
-      </nav>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         <div className="lg:col-span-7 xl:col-span-8">
@@ -80,7 +63,13 @@ export default function ProductDetail({ product, recommended }: ProductDetailPro
             Capping it to the visible area and letting it scroll internally keeps every
             control reachable; scroll chaining still hands off to the page at the end. */}
         <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
-          <ProductPurchasePanel product={product} images={galleryImages} onPreviewImage={openZoom} />
+          <ProductPurchasePanel
+            product={product}
+            images={galleryImages}
+            onPreviewImage={openZoom}
+            selectedCut={selectedCut}
+            onSelectCut={handleSelectCut}
+          />
         </div>
       </div>
 

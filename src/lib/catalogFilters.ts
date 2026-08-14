@@ -21,7 +21,7 @@ const ESSENTIAL_CATEGORIES = new Set(['remeras', 'polos', 'pantalones']);
 export const CATALOG_CHIPS: CatalogChip[] = [
   {
     id: 'todo',
-    label: 'Todo',
+    label: 'Catálogo Completo',
     caption: 'Catálogo completo · Todas las líneas',
     matches: () => true,
   },

@@ -1,7 +1,6 @@
 'use client';
 
-import { useFetch } from '@/hooks/useFetch';
-import { CatalogProduct } from '@/types/api';
+import { useCatalog } from '@/hooks/useCatalog';
 import ProductCard from '@/components/catalog/ProductCard';
 
 /**
@@ -18,7 +17,7 @@ interface HomeProductGridProps {
 }
 
 export default function HomeProductGrid({ position }: HomeProductGridProps) {
-  const { data: products, loading, error } = useFetch<CatalogProduct[]>('GET', '/catalog');
+  const { products, loading, error } = useCatalog();
 
   if (error) {
     return (
@@ -33,7 +32,7 @@ export default function HomeProductGrid({ position }: HomeProductGridProps) {
     );
   }
 
-  if (loading || !products) {
+  if (loading) {
     return (
       <section className="w-full px-4 sm:px-6 md:px-8 py-4 bg-[#f6f8f9]">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
