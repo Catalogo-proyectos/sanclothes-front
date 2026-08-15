@@ -1,15 +1,10 @@
 /**
- * API Data Transfer Objects & Domain Models for TRECE13 Storefront.
- * Matches backend Fastify specification contracts.
+ * API Data Transfer Objects & Domain Models for Santclothes Storefront.
+ * Matches STOREFRONT-INTEGRATION.md (2026-08-14) against real backend handlers.
  */
 
 // --- Catalog Types ---
 
-/**
- * Los cortes son dinámicos: el admin los da de alta en la tabla `cuts` del
- * backend (CLASSIC, OVERSIZED, FEMENINO, MASCULINO, …), así que el front no
- * puede cerrar la unión sin quedar desactualizado cada vez que agregan uno.
- */
 export type CutCode = string;
 export type StockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
 
@@ -40,12 +35,7 @@ export interface CatalogProduct {
   description: string;
   price: number;
   discountPrice: number | null;
-  /** Imágenes del corte por defecto, ya normalizadas al host de media vigente. */
   images: ProductImage[];
-  /**
-   * Imágenes agrupadas por corte. Es lo que permite reemplazar toda la galería
-   * cuando el cliente cambia de corte en la ficha, sin volver a pedir el producto.
-   */
   imagesByCut?: Record<CutCode, ProductImage[]>;
   cuts: CutCode[];
   category: string;
@@ -55,22 +45,95 @@ export interface CatalogProduct {
   reviewCount?: number;
   variants?: ProductVariant[];
   flashSale?: FlashSaleInfo | null;
-  /** Etiqueta del admin (NUEVO, ÚLTIMAS UNIDADES…). */
   badge?: string | null;
-  /** Marcado en el admin para el Bento Grid 2×2 de la portada. */
   isFeatured?: boolean;
   isLimitedDrop?: boolean;
   tags?: string[];
 }
 
 export interface CutInfo {
-  code: CutCode;
-  label: string;
-  productCount: number;
+  code: string;
+  name: string;
+  productsCount: number;
 }
 
-// --- Auth Types ---
+// --- Search (§4) ---
 
+export interface SearchSuggestion {
+  id: string;
+  name: string;
+  slug: string;
+  thumbnailUrl: string | null;
+  price: number;
+}
+
+// --- Reviews (§4) ---
+
+export interface ProductReview {
+  id: string;
+  productId: string;
+  rating: number;
+  comment?: string;
+  guestName?: string;
+  photoUrl?: string;
+  status: string;
+  createdAt: string;
+}
+
+// --- Auth Types (§3) ---
+
+/** POST /auth/login response */
+export interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  };
+}
+
+/** POST /auth/register response */
+export interface RegisterResponse {
+  success: true;
+  message: string;
+  token: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  };
+}
+
+/** POST /auth/google response */
+export interface GoogleAuthResponse {
+  token: string;
+  isNewUser: boolean;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    avatarUrl?: string;
+    role: string;
+  };
+}
+
+/** Register 409 conflict error data */
+export interface RegisterConflictError {
+  statusCode: number;
+  error: string;
+  message: string;
+  isGuestAccount?: boolean;
+}
+
+/**
+ * @deprecated Use LoginResponse/RegisterResponse/GoogleAuthResponse instead.
+ * Kept for backward compat with mock layer.
+ */
 export interface AuthResponse {
   userId: string;
   email: string;
@@ -80,88 +143,184 @@ export interface AuthResponse {
   expiresIn: number;
 }
 
+// --- Customer Profile (§3) ---
+
+/** GET /me response */
 export interface CustomerProfile {
-  userId: string;
-  email: string;
+  id: string;
   firstName: string;
   lastName: string;
+  email: string;
   phone?: string | null;
-  address?: string | null;
-  city?: string | null;
-  state?: string | null;
-  zipCode?: string | null;
-  country?: string | null;
-  createdAt?: string;
-  isVIP?: boolean;
-  isUnsubscribed?: boolean;
+  addresses: unknown[];
 }
 
-// --- Checkout & Orders ---
-
-export interface CheckoutItemRequest {
-  variantId: string;
-  quantity: number;
+/** PATCH /me response */
+export interface UpdateProfileResponse {
+  success: true;
+  message: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string | null;
+  };
 }
 
-export interface CheckoutRequest {
-  items: CheckoutItemRequest[];
-  firstName: string;
-  lastName: string;
+// --- Orders (§3) ---
+
+/** GET /me/orders — flat array item */
+export interface OrderSummaryItem {
+  id: string;
+  orderNumber: string;
+  createdAt: string;
+  total: number;
+  currency: 'PYG';
+  status: 'pending' | 'processing' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'returned';
+  itemCount: number;
+}
+
+/** GET /me/orders/:id */
+export interface OrderDetail {
+  id: string;
+  orderNumber: string;
+  createdAt: string;
+  status: string;
+  currency: string;
+  paymentMethod?: string;
+  totals: {
+    subtotal: number;
+    shipping: number;
+    total: number;
+  };
+  shippingAddress: {
+    street: string;
+    city: string;
+    postalCode: string;
+  };
+  items: Array<{
+    productId: string;
+    name: string;
+    quantity: number;
+    price: number;
+    image?: string;
+  }>;
+  returnReason?: string;
+}
+
+// --- Checkout (§6) ---
+
+/** POST /checkout/verify-email */
+export interface VerifyEmailRequest {
   email: string;
-  phone: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  benefitId?: string | null;
-  referralCode?: string | null;
+  turnstileToken?: string;
 }
 
-export interface OrderItemDetail {
-  variantId: string;
-  productName: string;
-  sku?: string;
-  quantity: number;
-  unitPrice: number;
-  subtotal: number;
+/** POST /checkout/confirm-otp */
+export interface ConfirmOtpRequest {
+  email: string;
+  otp: string;
 }
 
+export interface ConfirmOtpResponse {
+  checkoutSessionToken: string;
+  guestCartToken: string;
+  existingAccount: boolean;
+  message: string;
+}
+
+/** POST /checkout request body */
+export interface CheckoutRequest {
+  items: Array<{
+    sku: string;
+    productId: string;
+    size: string;
+    qty: number;
+    unitPrice: number;
+  }>;
+  customer: {
+    email: string;
+    fullName: string;
+    phone: string;
+  };
+  shipping: {
+    address: string;
+    locality: string;
+    province: string;
+    postalCode: string;
+  };
+  wantsClubMembership: boolean;
+  couponCode?: string;
+  requestsInvoice?: boolean;
+  invoiceData?: {
+    ruc?: string;
+    razonSocial?: string;
+    direccionFiscal?: string;
+  };
+}
+
+/** POST /checkout response */
 export interface CheckoutResponse {
   orderId: string;
-  orderNumber: string;
   status: string;
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  discount: number;
-  total: number;
-  items: OrderItemDetail[];
-  createdAt: string;
-  paidAt?: string | null;
-  guestAutoLoginToken?: string;
-  paymentRef?: string | null;
-  customer?: Partial<CustomerProfile>;
-  notes?: string;
+  expiresAt: string;
+  message: string;
+  orderAccessToken: string;
 }
 
-export interface OrderSummaryItem {
-  orderId: string;
-  orderNumber: string;
+/** GET /checkout/:id (with orderAccessToken) */
+export interface CheckoutOrderDetail {
+  id: string;
+  totalAmount: number;
   status: string;
-  total: number;
-  itemCount: number;
+  dropType?: string;
+  paymentReceiptUrl: string | null;
   createdAt: string;
+  items: Array<{
+    productId: string;
+    name: string;
+    quantity: number;
+    price: number;
+    sku: string;
+  }>;
 }
 
-export interface PaginatedList<T> {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
+/** POST /checkout/:id/receipt response */
+export interface ReceiptUploadResponse {
+  success: true;
+  url: string;
+  message: string;
 }
 
-// --- Support Tickets ---
+// --- Cart (§5) ---
+
+export interface CartSyncResponse {
+  items: unknown[];
+  updatedAt?: string;
+}
+
+// --- Tiers (§7) ---
+
+export interface CustomerTier {
+  currentTier: {
+    id: string;
+    name: string;
+    discountPercentage: number;
+    earlyAccessHours: number;
+  } | null;
+  totalSpent: number;
+  progressPercentage: number;
+  centsToNextTier: number;
+  nextTier: {
+    id: string;
+    name: string;
+    discountPercentage: number;
+    earlyAccessHours: number;
+  } | null;
+}
+
+// --- Support Tickets (§3) ---
 
 export interface TicketMessage {
   messageId: string;
@@ -184,12 +343,32 @@ export interface TicketDetail extends TicketSummary {
   messages: TicketMessage[];
 }
 
-// --- Error Responses ---
+// --- Error Responses (§1) ---
 
+/** Auth module errors */
+export interface AuthErrorResponse {
+  statusCode: number;
+  error: string;
+  message: string;
+}
+
+/** Checkout/catalog/cart errors */
 export interface ApiErrorResponse {
   error: string;
   code: string;
+  sku?: string;
+  productId?: string;
+  minutesLeft?: number;
   variantId?: string;
   availableStock?: number;
   requestedQuantity?: number;
 }
+
+// --- Legacy aliases for backward compat ---
+
+export type PaginatedList<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+};

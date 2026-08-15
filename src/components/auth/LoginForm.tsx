@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
-import { apiCall } from '@/lib/api';
+import { apiCall, ApiError } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
-import { AuthResponse } from '@/types/api';
+import { LoginResponse, RegisterResponse, GoogleAuthResponse } from '@/types/api';
+import { config } from '@/lib/config';
 
 type AuthMode = 'login' | 'register' | 'forgot';
 
@@ -27,7 +28,7 @@ interface LoginFormProps {
 
 export default function LoginForm({ initialEmail = '', initialMode = 'login' }: LoginFormProps) {
   const router = useRouter();
-  const login = useAuth((state) => state.login);
+  const { login: authLogin, setAvatarUrl } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>(initialMode);
 
@@ -57,12 +58,18 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     setSuccessMessage('');
 
     try {
-      const response = await apiCall<AuthResponse>('POST', '/auth/login', {
+      const response = await apiCall<LoginResponse>('POST', '/auth/login', {
         email,
         password,
       });
 
-      login(response.token);
+      authLogin(response.token, {
+        userId: response.user.id,
+        email: response.user.email,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName,
+        role: response.user.role,
+      });
       setSuccessMessage('Autenticación exitosa. Redirigiendo…');
       setTimeout(() => {
         router.push('/dashboard');
@@ -81,24 +88,108 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     setSuccessMessage('');
 
     try {
-      const response = await apiCall<AuthResponse>('POST', '/auth/register', {
+      const response = await apiCall<RegisterResponse>('POST', '/auth/register', {
         firstName,
         lastName,
         email: regEmail,
         password: regPassword,
       });
 
-      login(response.token);
+      authLogin(response.token, {
+        userId: response.user.id,
+        email: response.user.email,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName,
+        role: response.user.role,
+      });
       setSuccessMessage('Cuenta creada. Bienvenido a SANT CLUB.');
       setTimeout(() => {
         router.push('/dashboard');
       }, 800);
     } catch (err) {
-      setError((err as Error).message || 'No se pudo completar el registro.');
+      // §3: 409 with isGuestAccount → suggest login instead
+      if (err instanceof ApiError && err.status === 409 && err.data?.isGuestAccount) {
+        setError('Ya existe una cuenta con ese email (creada durante un checkout anterior). Iniciá sesión en vez de registrarte.');
+      } else {
+        setError((err as Error).message || 'No se pudo completar el registro.');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const handleGoogleAuth = async (idToken: string) => {
+    setLoading(true);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      const response = await apiCall<GoogleAuthResponse>('POST', '/auth/google', { idToken });
+
+      authLogin(response.token, {
+        userId: response.user.id,
+        email: response.user.email,
+        firstName: response.user.firstName,
+        lastName: response.user.lastName,
+        role: response.user.role,
+      });
+
+      // §3: avatarUrl only comes from /auth/google, not from GET /me
+      if (response.user.avatarUrl) {
+        setAvatarUrl(response.user.avatarUrl);
+      }
+
+      if (response.isNewUser) {
+        setSuccessMessage('¡Bienvenido a SANT CLUB! Tu cuenta fue creada con Google.');
+      } else {
+        setSuccessMessage('Autenticación exitosa con Google. Redirigiendo…');
+      }
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 800);
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'GOOGLE_NOT_CONFIGURED') {
+        setError('El inicio con Google no está disponible en este momento.');
+      } else {
+        setError((err as Error).message || 'Error al iniciar sesión con Google.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initialize Google Identity Services
+  useEffect(() => {
+    if (!config.google.enabled || mode === 'forgot') return;
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: config.google.clientId,
+          callback: (response: { credential: string }) => {
+            handleGoogleAuth(response.credential);
+          },
+        });
+        const btnContainer = document.getElementById('google-signin-btn');
+        if (btnContainer) {
+          google.accounts.id.renderButton(btnContainer, {
+            theme: 'filled_black',
+            size: 'large',
+            width: btnContainer.offsetWidth,
+            text: mode === 'register' ? 'signup_with' : 'signin_with',
+            shape: 'rectangular',
+          });
+        }
+      }
+    };
+    document.head.appendChild(script);
+    return () => { script.remove(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +199,8 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
 
     try {
       await apiCall('POST', '/auth/forgot-password', { email });
-      setSuccessMessage('Te enviamos un enlace de recuperación a tu correo.');
+      // §3: always 200 (anti-enumeration)
+      setSuccessMessage('Si el correo existe, te enviamos un enlace de recuperación.');
     } catch (err) {
       setError((err as Error).message || 'No se pudo enviar el correo de recuperación.');
     } finally {
@@ -334,7 +426,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     required
-                    minLength={mode === 'register' ? 6 : undefined}
+                    minLength={mode === 'register' ? 8 : undefined}
                     autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
                     aria-invalid={error ? true : undefined}
                     aria-describedby={mode === 'register' ? 'password-hint' : undefined}
@@ -362,7 +454,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
                 </div>
                 {mode === 'register' && (
                   <p id="password-hint" className="text-[10px] font-mono text-[#b6b2a7]">
-                    Mínimo 6 caracteres.
+                    Mínimo 8 caracteres.
                   </p>
                 )}
               </div>
@@ -379,6 +471,18 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
                 aria-hidden="true"
               />
             </button>
+
+            {/* Google Sign-In (§3) */}
+            {mode !== 'forgot' && config.google.enabled && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="h-px flex-1 bg-[#b6b2a7]/20" />
+                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#b6b2a7]">o</span>
+                  <span className="h-px flex-1 bg-[#b6b2a7]/20" />
+                </div>
+                <div id="google-signin-btn" className="flex justify-center" />
+              </div>
+            )}
 
             {mode === 'forgot' && (
               <button
@@ -404,4 +508,16 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
       </div>
     </div>
   );
+}
+
+// Google Identity Services type declaration
+declare global {
+  const google: {
+    accounts: {
+      id: {
+        initialize: (config: { client_id: string; callback: (response: { credential: string }) => void }) => void;
+        renderButton: (element: HTMLElement, options: Record<string, unknown>) => void;
+      };
+    };
+  } | undefined;
 }

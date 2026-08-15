@@ -1,71 +1,72 @@
-import { CheckoutRequest, CheckoutResponse, OrderSummaryItem, TicketDetail } from '@/types/api';
+import { CheckoutRequest, CheckoutResponse, TicketDetail } from '@/types/api';
 
-export const MOCK_ORDERS: CheckoutResponse[] = [
+/**
+ * Mock order type used internally — the real CheckoutResponse is leaner,
+ * but the mock layer needs richer data for the dashboard preview.
+ */
+interface MockOrder {
+  orderId: string;
+  orderNumber: string;
+  status: string;
+  total: number;
+  items: Array<{
+    productId: string;
+    name: string;
+    quantity: number;
+    price: number;
+    sku: string;
+  }>;
+  createdAt: string;
+  currency: 'PYG';
+  itemCount: number;
+}
+
+export const MOCK_ORDERS: MockOrder[] = [
   {
-    orderId: 'order_xyz789',
-    orderNumber: 'ORD-2026-001',
-    status: 'Pendiente de Pago',
-    subtotal: 280000,
-    tax: 0,
-    shipping: 20000,
-    discount: 0,
+    orderId: 'ord_1',
+    orderNumber: 'TR-10001',
+    status: 'pending',
     total: 300000,
+    currency: 'PYG',
+    itemCount: 2,
     items: [
       {
-        variantId: 'var_001',
-        productName: 'Remera Oversize TRECE13 Heavyweight',
+        productId: 'prod_001',
+        name: 'Remera Oversize TRECE13 Heavyweight',
         sku: 'REM-TR13-FEM-S',
         quantity: 2,
-        unitPrice: 140000,
-        subtotal: 280000,
+        price: 140000,
       },
     ],
     createdAt: '2026-07-18T12:00:00.000Z',
-    customer: {
-      firstName: 'Juan',
-      lastName: 'Pérez',
-      email: 'customer@example.com',
-      phone: '+595981234567',
-      address: 'Av. España 1420',
-      city: 'Asunción',
-    },
   },
   {
-    orderId: 'order_xyz790',
-    orderNumber: 'ORD-2026-002',
-    status: 'Pagado',
-    subtotal: 320000,
-    tax: 0,
-    shipping: 0,
-    discount: 0,
+    orderId: 'ord_2',
+    orderNumber: 'TR-10002',
+    status: 'delivered',
     total: 320000,
+    currency: 'PYG',
+    itemCount: 1,
     items: [
       {
-        variantId: 'var_005',
-        productName: 'Hoodie Acid Wash Drop #01',
+        productId: 'prod_005',
+        name: 'Hoodie Acid Wash Drop #01',
         sku: 'HD-ACID-MAS-M',
         quantity: 1,
-        unitPrice: 320000,
-        subtotal: 320000,
+        price: 320000,
       },
     ],
     createdAt: '2026-07-10T14:30:00.000Z',
-    paidAt: '2026-07-10T15:00:00.000Z',
-    customer: {
-      firstName: 'Juan',
-      lastName: 'Pérez',
-      email: 'customer@example.com',
-    },
   },
 ];
 
 export const MOCK_TICKETS: TicketDetail[] = [
   {
-    ticketId: 'ticket_abc123',
+    ticketId: 'tkt_1',
     ticketNumber: 'TKT-2026-0001',
-    subject: 'Consulta sobre envío de pedido ORD-2026-001',
+    subject: 'Consulta sobre envío de pedido TR-10001',
     status: 'Abierto',
-    orderId: 'order_xyz789',
+    orderId: 'ord_1',
     createdAt: '2026-07-18T14:00:00.000Z',
     lastReplyAt: '2026-07-18T15:30:00.000Z',
     messages: [
@@ -86,44 +87,30 @@ export const MOCK_TICKETS: TicketDetail[] = [
 ];
 
 export function createMockOrder(request: CheckoutRequest): CheckoutResponse {
-  const orderId = `order_mock_${Date.now()}`;
-  const orderNumber = `ORD-2026-${Math.floor(100 + Math.random() * 900)}`;
+  const orderId = `ord_${Date.now()}`;
 
-  const items = request.items.map((item, idx) => ({
-    variantId: item.variantId,
-    productName: idx % 2 === 0 ? 'Remera Oversize TRECE13 Heavyweight' : 'Hoodie Acid Wash Drop #01',
-    sku: `SKU-MOCK-${item.variantId}`,
-    quantity: item.quantity,
-    unitPrice: 150000,
-    subtotal: item.quantity * 150000,
-  }));
-
-  const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-  const shipping = 25000;
-  const total = subtotal + shipping;
-
-  const newOrder: CheckoutResponse = {
+  MOCK_ORDERS.unshift({
     orderId,
-    orderNumber,
-    status: 'Pendiente de Pago',
-    subtotal,
-    tax: 0,
-    shipping,
-    discount: 0,
-    total,
-    items,
+    orderNumber: `TR-${10000 + MOCK_ORDERS.length + 1}`,
+    status: 'pending',
+    total: request.items.reduce((sum, i) => sum + i.unitPrice * i.qty, 0),
+    currency: 'PYG',
+    itemCount: request.items.reduce((sum, i) => sum + i.qty, 0),
+    items: request.items.map((i) => ({
+      productId: i.productId,
+      name: 'Mock Product',
+      quantity: i.qty,
+      price: i.unitPrice,
+      sku: i.sku,
+    })),
     createdAt: new Date().toISOString(),
-    customer: {
-      firstName: request.firstName,
-      lastName: request.lastName,
-      email: request.email,
-      phone: request.phone,
-      address: request.address,
-      city: request.city,
-    },
-    guestAutoLoginToken: `mock_guest_token_${orderId}`,
-  };
+  });
 
-  MOCK_ORDERS.unshift(newOrder);
-  return newOrder;
+  return {
+    orderId,
+    status: 'Pedido Pendiente de Confirmación',
+    expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    message: 'Orden creada exitosamente',
+    orderAccessToken: `mock_oat_${orderId}`,
+  };
 }

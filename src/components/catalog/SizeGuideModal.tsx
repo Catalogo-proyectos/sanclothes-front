@@ -1,14 +1,16 @@
 'use client';
 
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Ruler, X } from 'lucide-react';
+import { fetchSizeGuide } from '@/lib/services/catalog';
 
 interface SizeGuideModalProps {
   activeSize: string;
+  category?: string;
   onClose: () => void;
 }
 
-const SIZE_CHART = [
+const FALLBACK_CHART = [
   { size: 'XS', chest: 98, length: 68, shoulder: 48 },
   { size: 'S', chest: 104, length: 70, shoulder: 50 },
   { size: 'M', chest: 110, length: 72, shoulder: 52 },
@@ -16,11 +18,23 @@ const SIZE_CHART = [
   { size: 'XL', chest: 122, length: 76, shoulder: 56 },
 ] as const;
 
-export default function SizeGuideModal({ activeSize, onClose }: SizeGuideModalProps) {
+export default function SizeGuideModal({ activeSize, category, onClose }: SizeGuideModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
   const titleId = useId();
+
+  // §4: fetch from /api/v1/catalog/size-guide/:category (never 404)
+  const [apiChart, setApiChart] = useState<Record<string, Record<string, string>> | null>(null);
+
+  useEffect(() => {
+    if (!category) return;
+    fetchSizeGuide(category).then((data) => {
+      if (data.chart && Object.keys(data.chart).length > 0) {
+        setApiChart(data.chart);
+      }
+    }).catch(() => { /* fallback to hardcoded */ });
+  }, [category]);
 
   useEffect(() => {
     const { body } = document;
@@ -72,6 +86,12 @@ export default function SizeGuideModal({ activeSize, onClose }: SizeGuideModalPr
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
+  // Derive columns and rows from API chart or fallback
+  const apiSizes = apiChart ? Object.keys(apiChart) : [];
+  const apiColumns = apiChart && apiSizes.length > 0
+    ? Object.keys(apiChart[apiSizes[0]])
+    : [];
+
   return (
     <div
       className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4"
@@ -108,41 +128,63 @@ export default function SizeGuideModal({ activeSize, onClose }: SizeGuideModalPr
         </p>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <caption className="sr-only">Medidas en centímetros por talle</caption>
-            <thead>
-              <tr className="border-b border-zinc-200 bg-zinc-50 text-zinc-600 font-bold uppercase tracking-wider">
-                <th scope="col" className="py-2.5 px-3">
-                  Talle
-                </th>
-                <th scope="col" className="py-2.5 px-3">
-                  Pecho
-                </th>
-                <th scope="col" className="py-2.5 px-3">
-                  Largo
-                </th>
-                <th scope="col" className="py-2.5 px-3">
-                  Hombro
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 font-mono">
-              {SIZE_CHART.map((row) => {
-                const isActive = activeSize === row.size;
-                return (
-                  <tr key={row.size} className={isActive ? 'bg-zinc-100 font-bold' : ''}>
-                    <th scope="row" className="py-2.5 px-3 font-sans font-bold text-left">
-                      {row.size}
-                      {isActive && <span className="sr-only"> (talle seleccionado)</span>}
-                    </th>
-                    <td className="py-2.5 px-3">{row.chest} cm</td>
-                    <td className="py-2.5 px-3">{row.length} cm</td>
-                    <td className="py-2.5 px-3">{row.shoulder} cm</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          {apiChart && apiSizes.length > 0 ? (
+            <table className="w-full text-left text-xs">
+              <caption className="sr-only">Medidas en centímetros por talle</caption>
+              <thead>
+                <tr className="border-b border-zinc-200 bg-zinc-50 text-zinc-600 font-bold uppercase tracking-wider">
+                  <th scope="col" className="py-2.5 px-3">Talle</th>
+                  {apiColumns.map((col) => (
+                    <th key={col} scope="col" className="py-2.5 px-3">{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 font-mono">
+                {apiSizes.map((size) => {
+                  const isActive = activeSize === size;
+                  return (
+                    <tr key={size} className={isActive ? 'bg-zinc-100 font-bold' : ''}>
+                      <th scope="row" className="py-2.5 px-3 font-sans font-bold text-left">
+                        {size}
+                        {isActive && <span className="sr-only"> (talle seleccionado)</span>}
+                      </th>
+                      {apiColumns.map((col) => (
+                        <td key={col} className="py-2.5 px-3">{apiChart[size][col]}</td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <table className="w-full text-left text-xs">
+              <caption className="sr-only">Medidas en centímetros por talle</caption>
+              <thead>
+                <tr className="border-b border-zinc-200 bg-zinc-50 text-zinc-600 font-bold uppercase tracking-wider">
+                  <th scope="col" className="py-2.5 px-3">Talle</th>
+                  <th scope="col" className="py-2.5 px-3">Pecho</th>
+                  <th scope="col" className="py-2.5 px-3">Largo</th>
+                  <th scope="col" className="py-2.5 px-3">Hombro</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 font-mono">
+                {FALLBACK_CHART.map((row) => {
+                  const isActive = activeSize === row.size;
+                  return (
+                    <tr key={row.size} className={isActive ? 'bg-zinc-100 font-bold' : ''}>
+                      <th scope="row" className="py-2.5 px-3 font-sans font-bold text-left">
+                        {row.size}
+                        {isActive && <span className="sr-only"> (talle seleccionado)</span>}
+                      </th>
+                      <td className="py-2.5 px-3">{row.chest} cm</td>
+                      <td className="py-2.5 px-3">{row.length} cm</td>
+                      <td className="py-2.5 px-3">{row.shoulder} cm</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
 
         <button

@@ -1,23 +1,16 @@
 import { AuthResponse, CustomerProfile } from '@/types/api';
 
 export const MOCK_USER: CustomerProfile = {
-  userId: 'user_trece_001',
+  id: 'user_trece_001',
   email: 'customer@example.com',
   firstName: 'Juan',
   lastName: 'Pérez',
   phone: '+595981234567',
-  address: 'Av. España 1420',
-  city: 'Asunción',
-  state: 'Central',
-  zipCode: '1429',
-  country: 'Paraguay',
-  createdAt: '2026-01-15T10:00:00.000Z',
-  isVIP: true,
-  isUnsubscribed: false,
+  addresses: [],
 };
 
 // Simple base64 token generator for mock JWT testing
-export function generateMockJWT(payload: Partial<CustomerProfile>): string {
+export function generateMockJWT(payload: { userId?: string; email?: string; firstName?: string; lastName?: string }): string {
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body = btoa(
     JSON.stringify({
@@ -35,10 +28,10 @@ export function generateMockJWT(payload: Partial<CustomerProfile>): string {
 }
 
 export const MOCK_AUTH_RESPONSE: AuthResponse = {
-  userId: MOCK_USER.userId,
+  userId: MOCK_USER.id,
   email: MOCK_USER.email,
   firstName: MOCK_USER.firstName,
   lastName: MOCK_USER.lastName,
-  token: generateMockJWT(MOCK_USER),
+  token: generateMockJWT({ userId: MOCK_USER.id, email: MOCK_USER.email }),
   expiresIn: 86400,
 };

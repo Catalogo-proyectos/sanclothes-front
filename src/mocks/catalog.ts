@@ -1,9 +1,9 @@
 import { CatalogProduct, CutInfo } from '@/types/api';
 
 export const MOCK_CUTS: CutInfo[] = [
-  { code: 'FEMENINO', label: 'Colección Femenina', productCount: 12 },
-  { code: 'MASCULINO', label: 'Colección Masculina', productCount: 14 },
-  { code: 'UNISEX', label: 'Colección Unisex (Drop)', productCount: 8 },
+  { code: 'FEMENINO', name: 'Colección Femenina', productsCount: 12 },
+  { code: 'MASCULINO', name: 'Colección Masculina', productsCount: 14 },
+  { code: 'UNISEX', name: 'Colección Unisex (Drop)', productsCount: 8 },
 ];
 
 export const MOCK_PRODUCTS: CatalogProduct[] = [

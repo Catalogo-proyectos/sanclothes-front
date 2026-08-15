@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItem, CartState } from '@/types/cart';
+import { fetchUserCart, saveUserCart, fetchGuestCart, saveGuestCart } from '@/lib/services/cart';
 
 export const useCart = create<CartState>()(
   persist(
@@ -70,6 +71,33 @@ export const useCart = create<CartState>()(
 
       getTotal: () => {
         return get().getSubtotal() + get().getShippingCost();
+      },
+
+      // §5: Sync cart with backend (best-effort, local is source of truth for UX)
+      syncToServer: async (mode: 'user' | 'guest') => {
+        const { items } = get();
+        try {
+          if (mode === 'user') {
+            await saveUserCart(items);
+          } else {
+            await saveGuestCart(items);
+          }
+        } catch {
+          // §2.5: Redis failures are silent — nothing we can do
+        }
+      },
+
+      syncFromServer: async (mode: 'user' | 'guest') => {
+        try {
+          const res = mode === 'user'
+            ? await fetchUserCart()
+            : await fetchGuestCart();
+          if (res.items && Array.isArray(res.items) && res.items.length > 0) {
+            set({ items: res.items as CartItem[] });
+          }
+        } catch {
+          // §2.5: Redis failures return empty cart, can't distinguish
+        }
       },
     }),
     {

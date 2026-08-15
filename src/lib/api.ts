@@ -4,24 +4,46 @@ import { MOCK_CUTS, MOCK_PRODUCTS } from '@/mocks/catalog';
 import { toBackendProduct } from '@/mocks/toBackend';
 import { MOCK_AUTH_RESPONSE, MOCK_USER, generateMockJWT } from '@/mocks/auth';
 import { MOCK_ORDERS, MOCK_TICKETS, createMockOrder } from '@/mocks/checkout';
-import { CheckoutRequest, CustomerProfile, TicketDetail, TicketMessage } from '@/types/api';
+import { CheckoutRequest, TicketDetail, TicketMessage } from '@/types/api';
+
+/**
+ * Structured API error that preserves HTTP status, backend error code,
+ * and the full response body. Both error formats coexist (§1):
+ * - Auth: { statusCode, error, message }
+ * - Checkout/catalog/Google: { error, code }
+ */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly code?: string,
+    public readonly data?: Record<string, unknown>,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
 
 /**
  * Universal API Client with automatic Mock Data Router fallback.
  * When config.api.useMock === true, requests are handled by Mock Repositories.
  * When config.api.useMock === false, requests execute fetch() against Fastify backend.
  */
+/**
+ * @param requireAuth  `true` = use session token from storage.
+ *                     A string = use that literal token as Bearer value.
+ */
 export async function apiCall<T = any>(
   method: string,
   path: string,
   body?: any,
-  requireAuth: boolean = false
+  requireAuth: boolean | string = false
 ): Promise<T> {
   const normalizedMethod = method.toUpperCase();
 
   // If mock mode is ON, execute mock handlers
   if (config.api.useMock) {
-    return handleMockRequest<T>(normalizedMethod, path, body, requireAuth);
+    return handleMockRequest<T>(normalizedMethod, path, body, !!requireAuth);
   }
 
   // Real backend call
@@ -30,7 +52,7 @@ export async function apiCall<T = any>(
   };
 
   if (requireAuth) {
-    const token = getStoredToken();
+    const token = typeof requireAuth === 'string' ? requireAuth : getStoredToken();
     if (!token) {
       throw new Error('Unauthorized: No JWT token found in storage.');
     }
@@ -46,13 +68,19 @@ export async function apiCall<T = any>(
 
   if (!response.ok) {
     let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+    let errorCode: string | undefined;
+    let errorData: Record<string, unknown> | undefined;
     try {
       const errorJson = await response.json();
-      if (errorJson.error) errorMessage = errorJson.error;
+      // §1: Auth uses {statusCode, error, message}, checkout/catalog uses {error, code}
+      errorMessage = errorJson.message || errorJson.error || errorMessage;
+      errorCode = errorJson.code || undefined;
+      errorData = errorJson;
     } catch {
       // Ignore JSON parse error
     }
-    throw new Error(errorMessage);
+    const err = new ApiError(errorMessage, response.status, errorCode, errorData);
+    throw err;
   }
 
   return response.json();
@@ -78,8 +106,9 @@ async function handleMockRequest<T>(
   }
 
   // --- CATALOG ENDPOINTS ---
+  // §4: GET /api/catalog/cuts → { cuts: [...] }
   if (method === 'GET' && path === '/catalog/cuts') {
-    return MOCK_CUTS as unknown as T;
+    return { cuts: MOCK_CUTS } as unknown as T;
   }
 
   // El catálogo simulado emite el MISMO modelo que la API real (BackendProduct),
@@ -121,7 +150,7 @@ async function handleMockRequest<T>(
     return (result.length > 0 ? result : MOCK_PRODUCTS).map(toBackendProduct) as unknown as T;
   }
 
-  // --- AUTH ENDPOINTS ---
+  // --- AUTH ENDPOINTS (§3) ---
   if (method === 'POST' && path === '/auth/login') {
     if (!body?.email || !body?.password) {
       throw new Error('Email and password are required');
@@ -129,9 +158,10 @@ async function handleMockRequest<T>(
     if (body.password === 'wrong') {
       throw new Error('Invalid email or password');
     }
+    const token = generateMockJWT({ email: body.email });
     return {
-      ...MOCK_AUTH_RESPONSE,
-      email: body.email,
+      token,
+      user: { id: 'user_trece_001', firstName: 'Juan', lastName: 'Pérez', email: body.email, role: 'customer' },
     } as unknown as T;
   }
 
@@ -139,31 +169,47 @@ async function handleMockRequest<T>(
     if (!body?.email || !body?.password || !body?.firstName) {
       throw new Error('Missing required registration fields');
     }
-    const token = generateMockJWT({
-      userId: `user_${Date.now()}`,
-      email: body.email,
-      firstName: body.firstName,
-      lastName: body.lastName || '',
-    });
+    const userId = `user_${Date.now()}`;
+    const token = generateMockJWT({ userId, email: body.email, firstName: body.firstName, lastName: body.lastName || '' });
     return {
-      userId: `user_${Date.now()}`,
-      email: body.email,
-      firstName: body.firstName,
-      lastName: body.lastName || '',
+      success: true,
+      message: 'Cuenta creada exitosamente',
       token,
-      expiresIn: 86400,
+      user: { id: userId, firstName: body.firstName, lastName: body.lastName || '', email: body.email, role: 'customer' },
+    } as unknown as T;
+  }
+
+  if (method === 'POST' && path === '/auth/google') {
+    const token = generateMockJWT({ email: 'google@example.com', firstName: 'Google', lastName: 'User' });
+    return {
+      token,
+      isNewUser: false,
+      user: { id: 'user_google_001', firstName: 'Google', lastName: 'User', email: 'google@example.com', role: 'customer' },
     } as unknown as T;
   }
 
   if (method === 'POST' && path === '/auth/forgot-password') {
-    return { message: 'Password reset email sent', resetTokenExpiry: 3600 } as unknown as T;
+    return { success: true, message: 'Si el correo existe, se envió un enlace de recuperación.' } as unknown as T;
   }
 
-  if (method === 'POST' && path.startsWith('/auth/reset-password')) {
-    return { message: 'Password reset successful' } as unknown as T;
+  if (method === 'POST' && path === '/auth/reset-password') {
+    return { success: true, message: 'Contraseña actualizada exitosamente.' } as unknown as T;
   }
 
-  // --- CHECKOUT ENDPOINTS ---
+  // --- CHECKOUT OTP FLOW (§6) ---
+  if (method === 'POST' && path === '/checkout/verify-email') {
+    return { success: true, message: 'Si el correo es válido, se envió un código OTP.' } as unknown as T;
+  }
+
+  if (method === 'POST' && path === '/checkout/confirm-otp') {
+    return {
+      checkoutSessionToken: `mock_cst_${Date.now()}`,
+      guestCartToken: `mock_gct_${Date.now()}`,
+      existingAccount: false,
+      message: 'OTP verificado exitosamente.',
+    } as unknown as T;
+  }
+
   if (method === 'POST' && path === '/checkout') {
     if (!body?.items || body.items.length === 0) {
       throw new Error('Cart cannot be empty');
@@ -173,12 +219,19 @@ async function handleMockRequest<T>(
   }
 
   if (method === 'GET' && path.startsWith('/checkout/')) {
-    const orderId = path.replace('/checkout/', '');
+    const orderId = path.replace('/checkout/', '').replace('/receipt', '');
     const order = MOCK_ORDERS.find((o) => o.orderId === orderId || o.orderNumber === orderId);
     if (!order) {
       throw new Error('Order not found');
     }
-    return order as unknown as T;
+    return {
+      id: order.orderId,
+      totalAmount: order.total,
+      status: order.status,
+      paymentReceiptUrl: null,
+      createdAt: order.createdAt,
+      items: order.items,
+    } as unknown as T;
   }
 
   // --- CUSTOMER & ORDERS ENDPOINTS ---
@@ -188,27 +241,24 @@ async function handleMockRequest<T>(
 
   if (method === 'PATCH' && path === '/me') {
     Object.assign(MOCK_USER, body || {});
-    return MOCK_USER as unknown as T;
+    return { success: true, message: 'Perfil actualizado', user: MOCK_USER } as unknown as T;
   }
 
-  if (method === 'POST' && path === '/me/password') {
-    return { message: 'Password changed successfully' } as unknown as T;
+  if (method === 'POST' && path === '/me/change-password') {
+    return { success: true, message: 'Contraseña actualizada exitosamente' } as unknown as T;
   }
 
+  // §3: GET /me/orders returns flat array (no pagination)
   if (method === 'GET' && (path === '/me/orders' || path.startsWith('/me/orders?'))) {
-    return {
-      items: MOCK_ORDERS.map((o) => ({
-        orderId: o.orderId,
-        orderNumber: o.orderNumber,
-        status: o.status,
-        total: o.total,
-        itemCount: o.items.length,
-        createdAt: o.createdAt,
-      })),
-      total: MOCK_ORDERS.length,
-      page: 1,
-      limit: 20,
-    } as unknown as T;
+    return MOCK_ORDERS.map((o) => ({
+      id: o.orderId,
+      orderNumber: o.orderNumber,
+      createdAt: o.createdAt,
+      total: o.total,
+      currency: o.currency,
+      status: o.status,
+      itemCount: o.itemCount,
+    })) as unknown as T;
   }
 
   if (method === 'GET' && path.startsWith('/me/orders/')) {

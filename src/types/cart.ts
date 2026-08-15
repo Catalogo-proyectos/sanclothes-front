@@ -25,4 +25,8 @@ export interface CartState {
   getSubtotal: () => number;
   getShippingCost: () => number;
   getTotal: () => number;
+  /** §5: Push local cart to backend (best-effort) */
+  syncToServer: (mode: 'user' | 'guest') => Promise<void>;
+  /** §5: Pull cart from backend and replace local if non-empty */
+  syncFromServer: (mode: 'user' | 'guest') => Promise<void>;
 }

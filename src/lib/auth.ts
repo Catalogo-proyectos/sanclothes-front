@@ -24,26 +24,76 @@ export function parseJWT(token: string): DecodedJWTPayload | null {
   }
 }
 
-/**
- * Returns stored JWT from localStorage if present and valid.
- */
+// ── Session token (login/register/google) ──
+
 export function getStoredToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem(config.jwt.storageKey);
 }
 
-/**
- * Stores JWT in localStorage.
- */
 export function setStoredToken(token: string): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(config.jwt.storageKey, token);
 }
 
-/**
- * Clears JWT from localStorage.
- */
 export function removeStoredToken(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(config.jwt.storageKey);
+}
+
+// ── Checkout session token (30 min, from confirm-otp) ──
+
+const CHECKOUT_TOKEN_KEY = 'sant_checkout_session_token';
+
+export function getCheckoutSessionToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(CHECKOUT_TOKEN_KEY);
+}
+
+export function setCheckoutSessionToken(token: string): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem(CHECKOUT_TOKEN_KEY, token);
+}
+
+export function removeCheckoutSessionToken(): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.removeItem(CHECKOUT_TOKEN_KEY);
+}
+
+// ── Guest cart token (7 days, from confirm-otp) ──
+
+const GUEST_CART_TOKEN_KEY = 'sant_guest_cart_token';
+
+export function getGuestCartToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(GUEST_CART_TOKEN_KEY);
+}
+
+export function setGuestCartToken(token: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(GUEST_CART_TOKEN_KEY, token);
+}
+
+export function removeGuestCartToken(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(GUEST_CART_TOKEN_KEY);
+}
+
+// ── Order access token (60 min, from POST /checkout response) ──
+
+const ORDER_TOKEN_KEY = 'sant_order_access_token';
+
+export function getOrderAccessToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(ORDER_TOKEN_KEY);
+}
+
+export function setOrderAccessToken(token: string): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem(ORDER_TOKEN_KEY, token);
+}
+
+export function removeOrderAccessToken(): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.removeItem(ORDER_TOKEN_KEY);
 }

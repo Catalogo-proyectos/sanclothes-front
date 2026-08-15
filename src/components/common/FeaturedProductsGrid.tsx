@@ -213,8 +213,8 @@ export default function FeaturedProductsGrid() {
                           type="button"
                           onClick={(e) => handleSizeSelect(product.id, sz, e)}
                           className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border cursor-pointer ${currentSize === sz
-                              ? 'bg-[#17191c] text-white border-[#17191c] shadow-2xs'
-                              : 'bg-transparent text-[#17191c] border-zinc-300 hover:border-black'
+                            ? 'bg-[#17191c] text-white border-[#17191c] shadow-2xs'
+                            : 'bg-transparent text-[#17191c] border-zinc-300 hover:border-black'
                             }`}
                         >
                           {sz}

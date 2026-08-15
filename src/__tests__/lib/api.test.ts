@@ -35,18 +35,18 @@ describe('API Adapter & Mock Data Layer', () => {
   });
 
   it('should fetch available cuts list', async () => {
-    const cuts = await apiCall<CutInfo[]>('GET', '/catalog/cuts');
-    expect(cuts).toHaveLength(3);
-    expect(cuts.map((c) => c.code)).toContain('FEMENINO');
+    const res = await apiCall<{ cuts: CutInfo[] }>('GET', '/catalog/cuts');
+    expect(res.cuts).toHaveLength(3);
+    expect(res.cuts.map((c) => c.code)).toContain('FEMENINO');
   });
 
   it('should handle login request in mock mode', async () => {
-    const response = await apiCall('POST', '/auth/login', {
+    const response = await apiCall<{ token: string; user: { email: string } }>('POST', '/auth/login', {
       email: 'test@example.com',
       password: 'password123',
     });
     expect(response).toHaveProperty('token');
-    expect(response.email).toBe('test@example.com');
+    expect(response.user.email).toBe('test@example.com');
   });
 
   it('should reject invalid password in mock mode', async () => {
