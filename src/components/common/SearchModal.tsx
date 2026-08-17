@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowUpRight } from 'lucide-react';
-import { MOCK_PRODUCTS } from '@/mocks/catalog';
+import { useCatalog } from '@/hooks/useCatalog';
 import { formatCurrency } from '@/utils/format';
 
 interface SearchModalProps {
@@ -27,6 +27,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const inputRef = useRef<HTMLInputElement>(null);
+  const { products } = useCatalog();
 
   // Auto-focus input when modal opens & handle Escape key
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   // Filter products based on search query
   const trimmedQuery = query.trim().toLowerCase();
   const filteredProducts = trimmedQuery
-    ? MOCK_PRODUCTS.filter(
+    ? products.filter(
         (p) =>
           p.title.toLowerCase().includes(trimmedQuery) ||
           p.category.toLowerCase().includes(trimmedQuery) ||
@@ -59,7 +60,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       )
     : [];
 
-  const featuredProducts = MOCK_PRODUCTS.slice(0, 4);
+  const featuredProducts = products.filter((product) => product.isFeatured).slice(0, 4);
 
   const handleChipClick = (chipQuery: string) => {
     setQuery(chipQuery);

@@ -3,26 +3,20 @@
  * Validates environment variables and provides structured app config.
  */
 
-const requiredEnvVars = [
-  'NEXT_PUBLIC_API_URL',
-  'NEXT_PUBLIC_HEALTH_URL',
-  'NEXT_PUBLIC_APP_URL',
-  'NEXT_PUBLIC_ENV',
-] as const;
-
 // Ensure process.env is defined (fallback for client-side evaluation)
 const env = process.env || {};
 
-// Validate required env vars only in non-test runtime environment
-if (typeof window !== 'undefined' || process.env.NODE_ENV === 'production') {
-  requiredEnvVars.forEach((envVar) => {
-    if (!env[envVar]) {
-      console.warn(`[Config Warning] Missing environment variable: ${envVar}. Falling back to default.`);
-    }
-  });
+// Only the backend origin is required when real connectivity is enabled.
+// App/health/environment values have intentional defaults and must not emit a
+// misleading "fallback" warning in the browser.
+if (env.NEXT_PUBLIC_USE_BACKEND === 'true' && !env.NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN && !env.NEXT_PUBLIC_API_URL) {
+  console.warn('[Config Warning] Backend mode is enabled but no API origin was configured.');
 }
 
-const rawApiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5014/api';
+const configuredOrigin = env.NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN;
+const rawApiUrl = configuredOrigin
+  ? `${configuredOrigin.replace(/\/$/, '')}/api`
+  : env.NEXT_PUBLIC_API_URL || 'http://localhost:5014/api';
 
 /**
  * Origen desnudo de la API, sin el `/api` final.
@@ -39,7 +33,8 @@ export const config = {
     /** Host sin `/api`. Los servicios de `lib/services/*` arman la ruta completa sobre esto. */
     origin: apiOrigin,
     healthUrl: env.NEXT_PUBLIC_HEALTH_URL || 'http://localhost:5014/health',
-    useMock: env.NEXT_PUBLIC_USE_MOCK === 'true' || env.NEXT_PUBLIC_USE_MOCK === undefined,
+    /** Backend connection is explicit; when disabled every service falls back to mocks. */
+    useMock: env.NEXT_PUBLIC_USE_BACKEND !== 'true',
     /**
      * Host vigente de media. Las URLs de imagen se congelan en la base al subirlas
      * y traen el host del entorno donde se subió la foto (cdn.trecepy.com,

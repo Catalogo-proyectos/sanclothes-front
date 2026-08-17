@@ -1,5 +1,19 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Backend / mocks
+
+Copy `.env.example` to `.env.local`. Data access uses a single connection flag:
+
+```env
+NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN=http://localhost:5014
+NEXT_PUBLIC_USE_BACKEND=false
+```
+
+- `NEXT_PUBLIC_USE_BACKEND=true` connects to the Santclothes API.
+- `NEXT_PUBLIC_USE_BACKEND=false` (the default) uses local mocks.
+
+UI code does not select an implementation; the selection belongs to the core composition root.
+
 ## Getting Started
 
 First, run the development server:

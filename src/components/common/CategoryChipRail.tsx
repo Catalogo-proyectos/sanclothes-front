@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CATALOG_CHIPS, ChipId } from '@/lib/catalogFilters';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
-import { MOCK_PRODUCTS } from '@/mocks/catalog';
+import { useCatalog } from '@/hooks/useCatalog';
 
 /**
  * The catalog's only category control. Pressing a chip repaints the grid in
@@ -19,15 +19,15 @@ interface CategoryChipRailProps {
   inverted: boolean;
 }
 
-const CHIP_COUNTS: Record<ChipId, number> = CATALOG_CHIPS.reduce((acc, chip) => {
-  acc[chip.id] = MOCK_PRODUCTS.filter(chip.matches).length;
-  return acc;
-}, {} as Record<ChipId, number>);
-
 export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
   const router = useRouter();
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
+  const { products } = useCatalog();
+  const chipCounts = CATALOG_CHIPS.reduce((acc, catalogChip) => {
+    acc[catalogChip.id] = products.filter(catalogChip.matches).length;
+    return acc;
+  }, {} as Record<ChipId, number>);
 
   const chip = useCatalogFilter((s) => s.chip);
   const setChip = useCatalogFilter((s) => s.setChip);
@@ -116,7 +116,7 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
                   {c.label}
                 </span>
                 <span className="font-mono text-[9px] leading-none tabular-nums opacity-60">
-                  {CHIP_COUNTS[c.id]}
+                  {chipCounts[c.id]}
                 </span>
               </button>
             );

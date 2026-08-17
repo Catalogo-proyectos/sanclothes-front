@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: process.cwd(),
   images: {
     // WebP primero. Antes iba AVIF delante: comprime algo mejor, pero codificar
     // AVIF cuesta ~10x más CPU que WebP y en dev la optimización ocurre bajo
@@ -13,7 +14,7 @@ const nextConfig: NextConfig = {
     // 95 ya no está en la lista: reencodear a casi sin pérdida sobre fuentes que
     // ya son WebP q80-82 sólo añade peso. 90 se conserva para el zoom del
     // lightbox y 60 para los fondos muy atenuados del panel de compra.
-    qualities: [60, 70, 75, 80, 85, 90],
+    qualities: [60, 70, 75, 80, 82, 85, 90],
 
     // Por defecto Next genera hasta 3840px. Ninguna fuente supera ya los 2560px,
     // así que pedir más sólo produce reescalados hacia arriba y ocupa caché.

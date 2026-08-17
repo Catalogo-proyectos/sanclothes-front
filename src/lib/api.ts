@@ -12,17 +12,8 @@ import { CheckoutRequest, TicketDetail, TicketMessage } from '@/types/api';
  * - Auth: { statusCode, error, message }
  * - Checkout/catalog/Google: { error, code }
  */
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly code?: string,
-    public readonly data?: Record<string, unknown>,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
+import { ApiError } from '@/core/errors/api-error';
+export { ApiError };
 
 /**
  * Universal API Client with automatic Mock Data Router fallback.
@@ -43,7 +34,9 @@ export async function apiCall<T = any>(
 
   // If mock mode is ON, execute mock handlers
   if (config.api.useMock) {
-    return handleMockRequest<T>(normalizedMethod, path, body, !!requireAuth);
+    // Literal tokens have already been selected by the calling service. Only the
+    // legacy `true` form asks the mock to verify the customer session itself.
+    return handleMockRequest<T>(normalizedMethod, path, body, requireAuth === true);
   }
 
   // Real backend call
@@ -79,17 +72,18 @@ export async function apiCall<T = any>(
     } catch {
       // Ignore JSON parse error
     }
-    const err = new ApiError(errorMessage, response.status, errorCode, errorData);
+    const err = new ApiError(errorMessage, response.status, errorCode || 'HTTP_ERROR', errorData);
     throw err;
   }
 
+  if (response.status === 204) return undefined as T;
   return response.json();
 }
 
 /**
  * Mock Request Handler simulating backend REST endpoints with 150ms latency.
  */
-async function handleMockRequest<T>(
+export async function handleMockRequest<T>(
   method: string,
   path: string,
   body?: any,
