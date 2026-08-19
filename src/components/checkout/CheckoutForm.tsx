@@ -557,16 +557,16 @@ export default function CheckoutForm() {
             {formData.requestsInvoice && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pl-7">
                 <div>
-                  <label className={labelClass}>RUC</label>
-                  <input type="text" name="invoiceRuc" value={formData.invoiceRuc} onChange={handleChange} className={inputClass} />
+                  <label className={labelClass}>RUC *</label>
+                  <input type="text" name="invoiceRuc" required minLength={1} value={formData.invoiceRuc} onChange={handleChange} className={inputClass} />
                 </div>
                 <div>
-                  <label className={labelClass}>Razón Social</label>
-                  <input type="text" name="invoiceRazonSocial" value={formData.invoiceRazonSocial} onChange={handleChange} className={inputClass} />
+                  <label className={labelClass}>Razón Social *</label>
+                  <input type="text" name="invoiceRazonSocial" required minLength={1} value={formData.invoiceRazonSocial} onChange={handleChange} className={inputClass} />
                 </div>
                 <div>
-                  <label className={labelClass}>Dirección Fiscal</label>
-                  <input type="text" name="invoiceDireccionFiscal" value={formData.invoiceDireccionFiscal} onChange={handleChange} className={inputClass} />
+                  <label className={labelClass}>Dirección Fiscal *</label>
+                  <input type="text" name="invoiceDireccionFiscal" required minLength={1} value={formData.invoiceDireccionFiscal} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
             )}

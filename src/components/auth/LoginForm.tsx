@@ -38,6 +38,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
   const [regEmail, setRegEmail] = useState(initialMode === 'register' ? initialEmail : '');
   const [regPassword, setRegPassword] = useState('');
 
@@ -93,6 +94,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         lastName,
         email: regEmail,
         password: regPassword,
+        phone: phone || undefined,
       });
 
       authLogin(response.token, {
@@ -382,6 +384,23 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
                     className={inputClass}
                   />
                 </div>
+              </div>
+            )}
+
+            {mode === 'register' && (
+              <div className="space-y-2">
+                <label htmlFor="phone" className={labelClass}>
+                  Teléfono (opcional)
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className={inputClass}
+                />
               </div>
             )}
 
