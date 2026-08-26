@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useCatalog } from '@/hooks/useCatalog';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
 import { filterByChip, filterByStyle, getChip, getStyle, isStyleId } from '@/lib/catalogFilters';
 import ProductCard from './ProductCard';
@@ -29,7 +28,7 @@ const BAND_PANELS: BandPanel[] = [
   {
     title: 'Hoodies & buzos de gramaje alto',
     copy: 'Algodón perchado de 400 y 450 gramos, puños acanalados y caída estructurada que no se deforma con el uso.',
-    image: '/img/secciones/rack-outfits-4.webp',
+    image: '/img/hero/IMG_3148.webp',
     alt: 'Rack de hoodies y buzos heavyweight',
   },
   {
@@ -64,21 +63,15 @@ function chunk<T>(items: T[], size: number): T[][] {
   return out;
 }
 
-export default function ProductGrid() {
+interface ProductGridProps {
+  initialProducts: import('@/types/api').CatalogProduct[];
+}
+
+export default function ProductGrid({ initialProducts }: ProductGridProps) {
   const searchParams = useSearchParams();
-  const cut = searchParams.get('cut');
   const category = searchParams.get('category');
 
-  const { products, loading } = useCatalog({
-    cut: cut ?? undefined,
-    category: category ?? undefined,
-  });
-
-
-
-
-
-  const displayedProducts = products;
+  const displayedProducts = initialProducts;
 
 
 
@@ -104,25 +97,6 @@ export default function ProductGrid() {
   );
 
   const bands = useMemo(() => chunk(visibleProducts, 4), [visibleProducts]);
-
-  if (loading) {
-    return (
-      <section id="catalog-grid" className="bg-[#f6f8f9] py-12 sm:py-16">
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 flex flex-col gap-16">
-          {Array.from({ length: 2 }, (_, b) => (
-            <div key={b} className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              <div className="bg-zinc-200 animate-pulse min-h-[500px] sm:min-h-[600px] lg:min-h-[820px] xl:min-h-[960px] 2xl:min-h-[1050px]" />
-              <div className="grid grid-cols-2 content-start gap-4 sm:gap-6">
-                {Array.from({ length: 4 }, (_, i) => (
-                  <div key={i} className="bg-zinc-200 aspect-[3/4] animate-pulse" />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section id="catalog-grid" className="bg-[#f6f8f9] py-12 sm:py-16">

@@ -1,10 +1,6 @@
 import { config } from './config';
 import { getStoredToken } from './auth';
-import { MOCK_CUTS, MOCK_PRODUCTS } from '@/mocks/catalog';
-import { toBackendProduct } from '@/mocks/toBackend';
-import { MOCK_AUTH_RESPONSE, MOCK_USER, generateMockJWT } from '@/mocks/auth';
-import { MOCK_ORDERS, MOCK_TICKETS, createMockOrder } from '@/mocks/checkout';
-import { CheckoutRequest, TicketDetail, TicketMessage } from '@/types/api';
+import type { CheckoutRequest, TicketDetail, TicketMessage } from '@/types/api';
 
 
 export class ApiError extends Error {
@@ -21,10 +17,10 @@ export class ApiError extends Error {
 
 
 
-export async function apiCall<T = any>(
+export async function apiCall<T = unknown>(
   method: string,
   path: string,
-  body?: any,
+  body?: unknown,
   requireAuth: boolean | string = false
 ): Promise<T> {
   const normalizedMethod = method.toUpperCase();
@@ -78,9 +74,20 @@ export async function apiCall<T = any>(
 async function handleMockRequest<T>(
   method: string,
   path: string,
-  body?: any,
+  body?: unknown,
   requireAuth: boolean = false
 ): Promise<T> {
+  const [catalogMocks, backendAdapter, authMocks, checkoutMocks] = await Promise.all([
+    import('@/mocks/catalog'),
+    import('@/mocks/toBackend'),
+    import('@/mocks/auth'),
+    import('@/mocks/checkout'),
+  ]);
+  const { MOCK_CUTS, MOCK_PRODUCTS } = catalogMocks;
+  const { toBackendProduct } = backendAdapter;
+  const { MOCK_USER, generateMockJWT } = authMocks;
+  const { MOCK_ORDERS, MOCK_TICKETS, createMockOrder } = checkoutMocks;
+  const payload = (body ?? {}) as Record<string, unknown>;
 
   await new Promise((res) => setTimeout(res, 150));
 
@@ -138,30 +145,36 @@ async function handleMockRequest<T>(
 
 
   if (method === 'POST' && path === '/auth/login') {
-    if (!body?.email || !body?.password) {
+    const email = String(payload.email ?? '');
+    const password = String(payload.password ?? '');
+    if (!email || !password) {
       throw new Error('Email and password are required');
     }
-    if (body.password === 'wrong') {
+    if (password === 'wrong') {
       throw new Error('Invalid email or password');
     }
-    const token = generateMockJWT({ email: body.email });
+    const token = generateMockJWT({ email });
     return {
       token,
-      user: { id: 'user_trece_001', firstName: 'Juan', lastName: 'Pérez', email: body.email, role: 'customer' },
+      user: { id: 'user_trece_001', firstName: 'Juan', lastName: 'Pérez', email, role: 'customer' },
     } as unknown as T;
   }
 
   if (method === 'POST' && path === '/auth/register') {
-    if (!body?.email || !body?.password || !body?.firstName) {
+    const email = String(payload.email ?? '');
+    const password = String(payload.password ?? '');
+    const firstName = String(payload.firstName ?? '');
+    const lastName = String(payload.lastName ?? '');
+    if (!email || !password || !firstName) {
       throw new Error('Missing required registration fields');
     }
     const userId = `user_${Date.now()}`;
-    const token = generateMockJWT({ userId, email: body.email, firstName: body.firstName, lastName: body.lastName || '' });
+    const token = generateMockJWT({ userId, email, firstName, lastName });
     return {
       success: true,
       message: 'Cuenta creada exitosamente',
       token,
-      user: { id: userId, firstName: body.firstName, lastName: body.lastName || '', email: body.email, role: 'customer' },
+      user: { id: userId, firstName, lastName, email, role: 'customer' },
     } as unknown as T;
   }
 
@@ -197,10 +210,10 @@ async function handleMockRequest<T>(
   }
 
   if (method === 'POST' && path === '/checkout') {
-    if (!body?.items || body.items.length === 0) {
+    if (!Array.isArray(payload.items) || payload.items.length === 0) {
       throw new Error('Cart cannot be empty');
     }
-    const newOrder = createMockOrder(body as CheckoutRequest);
+    const newOrder = createMockOrder(payload as unknown as CheckoutRequest);
     return newOrder as unknown as T;
   }
 
@@ -226,7 +239,7 @@ async function handleMockRequest<T>(
   }
 
   if (method === 'PATCH' && path === '/me') {
-    Object.assign(MOCK_USER, body || {});
+    Object.assign(MOCK_USER, payload);
     return { success: true, message: 'Perfil actualizado', user: MOCK_USER } as unknown as T;
   }
 
@@ -275,15 +288,15 @@ async function handleMockRequest<T>(
     const newTicket: TicketDetail = {
       ticketId: `ticket_${Date.now()}`,
       ticketNumber: `TKT-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      subject: body.subject || 'Soporte',
+      subject: String(payload.subject || 'Soporte'),
       status: 'Abierto',
-      orderId: body.orderId || null,
+      orderId: payload.orderId ? String(payload.orderId) : null,
       createdAt: new Date().toISOString(),
       messages: [
         {
           messageId: `msg_${Date.now()}`,
           sender: 'customer',
-          message: body.message || '',
+          message: String(payload.message || ''),
           createdAt: new Date().toISOString(),
         },
       ],
@@ -308,7 +321,7 @@ async function handleMockRequest<T>(
     const newMessage: TicketMessage = {
       messageId: `msg_${Date.now()}`,
       sender: 'customer',
-      message: body.message,
+      message: String(payload.message || ''),
       createdAt: new Date().toISOString(),
     };
     ticket.messages.push(newMessage);

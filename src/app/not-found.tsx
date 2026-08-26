@@ -1,6 +1,15 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Home, Compass, MessageCircle, ArrowUpRight, Camera, Film } from 'lucide-react';
+import { Home, Compass, MessageCircle, ArrowUpRight, Camera } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Página no encontrada',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function NotFound() {
   return (

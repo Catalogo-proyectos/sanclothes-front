@@ -1,17 +1,17 @@
 import type { Metadata, Viewport } from 'next';
-import { Bebas_Neue } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { Toaster } from 'sonner';
 import { config } from '@/lib/config';
 
-const bebas = Bebas_Neue({
+const bebas = localFont({
+  src: './fonts/bebas-neue-latin.woff2',
   weight: '400',
-  subsets: ['latin'],
+  style: 'normal',
   variable: '--font-bebas',
   display: 'swap',
-  adjustFontFallback: false,
 });
 
 export const viewport: Viewport = {
@@ -24,21 +24,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(config.app.url),
   title: 'Sant Clothes®',
   description:
-    'Moda urbana y streetwear en Paraguay.',
-  keywords: [
-    'SANT CLOTHES',
-    'Sant Clothes',
-    'Sant Clothes Paraguay',
-    'SANT CLOTHES CDE',
-    'Sant Clothes CDE',
-    'SANT CLOTHES PARAGUAY',
-    'Streetwear paraguay',
-    'Old Money paraguay',
-    'Moda urbana paraguay',
-  ],
+    'Streetwear, moda urbana y prendas de alto gramaje diseñadas por SANT CLOTHES en Ciudad del Este, Paraguay.',
+  applicationName: 'SANT CLOTHES',
   authors: [{ name: 'SANT CLOTHES®' }],
   creator: 'SANT CLOTHES®',
   publisher: 'SANT CLOTHES®',
+  manifest: '/manifest.webmanifest',
   robots: {
     index: true,
     follow: true,
@@ -58,23 +49,23 @@ export const metadata: Metadata = {
     locale: 'es_PY',
     url: config.app.url,
     siteName: 'SANT CLOTHES®',
-    title: 'SANT CLOTHES®',
+    title: 'SANT CLOTHES® | Streetwear y moda urbana en Paraguay',
     description:
-      'Moda urbana y streetwear en Paraguay.',
+      'Streetwear, moda urbana y prendas de alto gramaje diseñadas por SANT CLOTHES en Ciudad del Este, Paraguay.',
     images: [
       {
         url: '/img/hero/IMG_4390.webp',
         width: 1200,
         height: 630,
-        alt: 'SANT CLOTHES®',
+        alt: 'SANT CLOTHES® streetwear en Paraguay',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SANT CLOTHES®',
+    title: 'SANT CLOTHES® | Streetwear y moda urbana en Paraguay',
     description:
-      'Moda urbana y streetwear en Paraguay.',
+      'Streetwear, moda urbana y prendas de alto gramaje diseñadas por SANT CLOTHES en Ciudad del Este, Paraguay.',
     images: ['/img/hero/IMG_4390.webp'],
   },
   icons: {
@@ -110,12 +101,8 @@ const jsonLd = {
       '@id': `${config.app.url}/#website`,
       url: config.app.url,
       name: 'SANT CLOTHES®',
+      inLanguage: 'es-PY',
       publisher: { '@id': `${config.app.url}/#organization` },
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${config.app.url}/catalog?category={search_term_string}`,
-        'query-input': 'required name=search_term_string',
-      },
     },
     {
       '@type': 'ClothingStore',

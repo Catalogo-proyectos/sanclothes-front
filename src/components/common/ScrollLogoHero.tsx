@@ -74,11 +74,15 @@ export default function ScrollLogoHero() {
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-[#17191c] text-white">
+      <h1 className="sr-only">
+        SANT CLOTHES - Streetwear y moda urbana en Paraguay
+      </h1>
       <div className="absolute inset-0 w-full h-full overflow-hidden">
 
         <video
           ref={videoRef}
           src="/img/video/ofi-3-clean.mp4"
+          poster="/img/video/ofi3-frames/frame_0001.webp"
           autoPlay
           loop
           muted

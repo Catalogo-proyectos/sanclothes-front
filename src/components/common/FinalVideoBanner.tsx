@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Film } from 'lucide-react';
+import LazyAutoplayVideo from './LazyAutoplayVideo';
 
 export default function FinalVideoBanner() {
   return (
@@ -11,13 +12,10 @@ export default function FinalVideoBanner() {
         style={{ borderRadius: '0px' }}
       >
 
-        <video
+        <LazyAutoplayVideo
           src="/img/video/video2.mp4"
           poster="/img/hero/IMG_4390.webp"
-          autoPlay
-          loop
-          muted
-          playsInline
+          ariaLabel="SANT CLOTHES, movimiento y cultura"
           className="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
 

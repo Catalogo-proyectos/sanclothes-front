@@ -140,7 +140,7 @@ export default function NosotrosContent() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-6 space-y-6">
               <h2 className="text-3xl sm:text-5xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-none text-white">
-                "NO BUSCÁBAMOS SEGUIR TENDENCIAS, CREAMOS LO QUE NOSOTROS QUERÍAMOS USAR"
+                &quot;NO BUSCÁBAMOS SEGUIR TENDENCIAS, CREAMOS LO QUE NOSOTROS QUERÍAMOS USAR&quot;
               </h2>
 
               <p className="text-xs sm:text-sm font-mono text-zinc-300 uppercase leading-relaxed tracking-wide">
@@ -294,7 +294,7 @@ export default function NosotrosContent() {
           </div>
 
           <h2 className="text-4xl sm:text-6xl lg:text-7xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-[0.95] text-[#17191c]">
-            "CREAMOS PARA QUIENES TIENEN EL VALOR DE EMPEZAR DESDE CERO"
+            &quot;CREAMOS PARA QUIENES TIENEN EL VALOR DE EMPEZAR DESDE CERO&quot;
           </h2>
 
           <p className="text-xs sm:text-sm font-mono text-[#50524a] uppercase tracking-wide leading-relaxed max-w-3xl mx-auto">

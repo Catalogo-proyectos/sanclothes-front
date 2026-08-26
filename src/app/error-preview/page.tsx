@@ -1,16 +1,14 @@
-'use client';
+import type { Metadata } from 'next';
+import ErrorPreviewClient from './ErrorPreviewClient';
 
-import ErrorComponent from '@/app/error';
+export const metadata: Metadata = {
+  title: 'Vista previa de error',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function ErrorPreviewPage() {
-  return (
-    <ErrorComponent
-      error={new Error('Simulación de error')}
-      reset={() => {
-        if (typeof window !== 'undefined') {
-          window.location.reload();
-        }
-      }}
-    />
-  );
+  return <ErrorPreviewClient />;
 }

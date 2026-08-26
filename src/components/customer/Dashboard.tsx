@@ -111,10 +111,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    fetchOrders();
-    fetchTickets();
-    fetchProfile();
-    fetchTier();
+    const timeoutId = window.setTimeout(() => {
+      void Promise.all([fetchOrders(), fetchTickets(), fetchProfile(), fetchTier()]);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, [isLoggedIn, fetchOrders, fetchTickets, fetchProfile, fetchTier]);
 
 

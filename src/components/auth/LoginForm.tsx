@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -118,7 +118,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     }
   };
 
-  const handleGoogleAuth = async (idToken: string) => {
+  const handleGoogleAuth = useCallback(async (idToken: string) => {
     setLoading(true);
     setError('');
     setSuccessMessage('');
@@ -156,7 +156,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     } finally {
       setLoading(false);
     }
-  };
+  }, [authLogin, router, setAvatarUrl]);
 
 
   useEffect(() => {
@@ -189,7 +189,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     document.head.appendChild(script);
     return () => { script.remove(); };
 
-  }, [mode]);
+  }, [handleGoogleAuth, mode]);
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -494,16 +494,6 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
               </button>
             )}
           </form>
-
-          <p className="mt-12 border-t border-[#50524a] pt-6 text-[10px] font-mono uppercase tracking-[0.14em] text-[#b6b2a7]">
-            ¿Necesitás ayuda?{' '}
-            <a
-              href="mailto:soporte@santclothes.com"
-              className="text-[#f6f8f9] underline underline-offset-4 hover:opacity-70 transition-opacity"
-            >
-              soporte@santclothes.com
-            </a>
-          </p>
         </div>
       </div>
     </div>

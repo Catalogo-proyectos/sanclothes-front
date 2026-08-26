@@ -1,14 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Flame, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { toast } from 'sonner';
-import { useCatalog } from '@/hooks/useCatalog';
-import { selectFeatured } from '@/lib/catalog/featured';
 import { heroSlot } from '@/lib/images/slots';
 import { formatCurrency } from '@/utils/format';
 import type { CatalogProduct, ProductVariant } from '@/types/api';
@@ -52,21 +50,14 @@ function toGridProduct(product: CatalogProduct): GridProduct {
 }
 
 
-export default function FeaturedProductsGrid() {
+interface FeaturedProductsGridProps {
+  products: CatalogProduct[];
+}
+
+export default function FeaturedProductsGrid({ products }: FeaturedProductsGridProps) {
   const { addItem } = useCart();
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const { products, loading } = useCatalog();
-
-
-
-
-  const gridProducts = useMemo(() => {
-    const featured = selectFeatured(products);
-    const featuredIds = new Set(featured.map((p) => p.productId));
-    const rest = products.filter((p) => !featuredIds.has(p.productId));
-
-    return [...featured, ...rest].slice(0, GRID_CAPACITY).map(toGridProduct);
-  }, [products]);
+  const gridProducts = products.slice(0, GRID_CAPACITY).map(toGridProduct);
 
   const handleSizeSelect = (productId: string, size: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -103,7 +94,7 @@ export default function FeaturedProductsGrid() {
 
 
 
-  if (!loading && gridProducts.length === 0) return null;
+  if (gridProducts.length === 0) return null;
 
   return (
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-20 px-6 sm:px-12 border-b border-[#17191c]/10">
@@ -140,14 +131,6 @@ export default function FeaturedProductsGrid() {
 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {loading &&
-            Array.from({ length: GRID_CAPACITY }, (_, i) => (
-              <div key={`skeleton-${i}`} className="flex flex-col gap-2.5">
-                <div className="aspect-[3/4] w-full bg-zinc-200 animate-pulse" />
-                <div className="h-[105px] bg-zinc-100 animate-pulse" />
-              </div>
-            ))}
-
           {gridProducts.map((product, idx) => {
             const currentSize = selectedSizes[product.id] || product.sizes[0];
 

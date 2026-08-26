@@ -4,7 +4,7 @@ import { MessageCircle, Users, ArrowUpRight, Camera, Film } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Página en Mantenimiento',
-  description: 'Sant Clothes®',
+  description: 'Página temporal de mantenimiento de SANT CLOTHES.',
   robots: {
     index: false,
     follow: false,

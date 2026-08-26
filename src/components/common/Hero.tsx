@@ -71,7 +71,7 @@ export default function Hero() {
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-14 md:h-28 lg:h-36 bg-gradient-to-b from-[#17191c] via-[#17191c]/55 to-transparent" />
 
       <div className="hidden md:flex flex-row w-full h-[calc(100vh-72px)] min-h-[600px] max-h-[900px] bg-[#17191c]">
-        {CATEGORIES.map((cat, index) => (
+        {CATEGORIES.map((cat) => (
           <Link
             key={cat.id}
             href={cat.href}
@@ -83,7 +83,6 @@ export default function Hero() {
                 src={cat.imageSrc}
                 alt={cat.alt}
                 fill
-                priority={index === 0}
                 quality={85}
                 sizes="(min-width: 768px) 25vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 group-hover:brightness-110 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
@@ -122,7 +121,6 @@ export default function Hero() {
                 src={cat.imageSrc}
                 alt={cat.alt}
                 fill
-                priority={index === 0}
                 quality={82}
                 sizes="100vw"
                 className="scale-100 object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-active:scale-105"

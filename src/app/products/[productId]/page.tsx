@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import ProductDetail from '@/components/catalog/ProductDetail';
 import { fetchCatalog, fetchProduct } from '@/lib/services/catalog';
 import { config } from '@/lib/config';
@@ -10,9 +11,9 @@ interface PageParams {
 }
 
 
-async function getProduct(productId: string): Promise<CatalogProduct | null> {
-  return fetchProduct(productId);
-}
+const getProduct = cache(
+  async (productId: string): Promise<CatalogProduct | null> => fetchProduct(productId),
+);
 
 async function getRecommended(productId: string): Promise<CatalogProduct[]> {
   try {
@@ -32,7 +33,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   }
 
   const price = product.discountPrice ?? product.price;
-  const title = `${product.title} — SANT CLOTHES®`;
+  const title = product.title;
+  const socialTitle = `${product.title} — SANT CLOTHES®`;
 
 
   const description = (product.description || product.title).slice(0, 160);
@@ -44,7 +46,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     alternates: { canonical: `/products/${product.productId}` },
     openGraph: {
       type: 'website',
-      title,
+      title: socialTitle,
       description,
       url: `${config.app.url}/products/${product.productId}`,
       siteName: 'SANT CLOTHES®',
@@ -53,7 +55,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: socialTitle,
       description,
       images: image ? [image] : undefined,
     },

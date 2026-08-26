@@ -4,9 +4,22 @@ import CatalogHero from '@/components/catalog/CatalogHero';
 import ProductGrid from '@/components/catalog/ProductGrid';
 import { isStyleId, CATALOG_STYLES } from '@/lib/catalogFilters';
 import { config } from '@/lib/config';
+import { fetchCatalog, type CatalogQuery } from '@/lib/services/catalog';
+import type { CatalogProduct } from '@/types/api';
 
 interface CatalogPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; cut?: string }>;
+}
+
+async function CatalogProducts({ query }: { query: CatalogQuery }) {
+  let products: CatalogProduct[] = [];
+  try {
+    products = await fetchCatalog(query);
+  } catch {
+    // ProductGrid owns the empty state shown when the API is unavailable.
+  }
+
+  return <ProductGrid initialProducts={products} />;
 }
 
 export async function generateMetadata({ searchParams }: CatalogPageProps): Promise<Metadata> {
@@ -60,15 +73,19 @@ export async function generateMetadata({ searchParams }: CatalogPageProps): Prom
 }
 
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
-  const { category } = await searchParams;
+  const { category, cut } = await searchParams;
   const styleId = isStyleId(category) ? category : null;
+  const query = {
+    category: category ?? undefined,
+    cut: cut ?? undefined,
+  } satisfies CatalogQuery;
 
   return (
     <div className="bg-[#f6f8f9] pt-16 sm:pt-[72px]">
       <CatalogHero styleId={styleId} />
       <div id="productos" className="relative z-10 scroll-mt-24 bg-[#f6f8f9] shadow-[0_-25px_50px_-12px_rgba(0,0,0,0.25)]">
         <Suspense fallback={<div className="py-12 text-center text-xs font-semibold text-zinc-400 uppercase tracking-widest">Cargando catálogo...</div>}>
-          <ProductGrid />
+          <CatalogProducts query={query} />
         </Suspense>
       </div>
     </div>

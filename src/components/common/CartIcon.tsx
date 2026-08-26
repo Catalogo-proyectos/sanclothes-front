@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 
@@ -9,15 +9,19 @@ interface CartIconProps {
   isWhiteText?: boolean;
 }
 
+const subscribeToCartHydration = (onStoreChange: () => void) =>
+  useCart.persist?.onFinishHydration(onStoreChange) ?? (() => undefined);
+
+const getCartHydrationSnapshot = () => useCart.persist?.hasHydrated() ?? false;
+
 export default function CartIcon({ onClick, isWhiteText = false }: CartIconProps) {
   const itemCount = useCart((state) => state.getItemCount());
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const displayCount = mounted ? itemCount : 0;
+  const hydrated = useSyncExternalStore(
+    subscribeToCartHydration,
+    getCartHydrationSnapshot,
+    () => false,
+  );
+  const displayCount = hydrated ? itemCount : 0;
 
   return (
     <button

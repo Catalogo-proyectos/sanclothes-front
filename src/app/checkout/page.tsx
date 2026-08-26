@@ -1,5 +1,18 @@
+import type { Metadata } from 'next';
 import PageHero from '@/components/common/PageHero';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
+
+export const metadata: Metadata = {
+  title: 'Finalizar compra',
+  description: 'Checkout privado para completar pedidos de SANT CLOTHES.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+  alternates: {
+    canonical: '/checkout',
+  },
+};
 
 export default function CheckoutPage() {
   return (

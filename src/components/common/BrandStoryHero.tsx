@@ -4,12 +4,13 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { toast } from 'sonner';
 
 interface JacketProduct {
   id: string;
+  productId: string;
   tag: string;
   name: string;
   fabric: string;
@@ -22,6 +23,7 @@ interface JacketProduct {
 const JACKET_PRODUCTS: JacketProduct[] = [
   {
     id: 'suede-tracksuit-jacket',
+    productId: 'prod_trece_01',
     tag: 'CÁPSULA SPECIAL — LE SANT',
     name: 'LE SANT CLUB SUEDE JACKET',
     fabric: 'TEXTURA SUEDE & EMBROIDERED NOVA',
@@ -32,6 +34,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
   },
   {
     id: 'varsity-jacket-supra',
+    productId: 'prod_trece_09',
     tag: 'LIMITED DROP — VARSITY',
     name: 'SANT CLOTHES VARSITY JACKET',
     fabric: 'APLIQUÉ EMBROIDERED & COLD WOOL',
@@ -42,6 +45,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
   },
   {
     id: 'zip-santis-club',
+    productId: 'prod_trece_13',
     tag: 'SANT DROP',
     name: 'SANT CLUB HALF-ZIP SWEATER',
     fabric: '400G COTTON HEAVYWEIGHT · BROWN',
@@ -52,6 +56,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
   },
   {
     id: 'brown-hoodie-heavy',
+    productId: 'prod_trece_18',
     tag: 'CORE ESSENTIALS',
     name: 'SANT CLOTHES HEAVYWEIGHT HOODIE',
     fabric: '400G FRISO HEAVYWEIGHT · BACK PRINT',
@@ -64,17 +69,7 @@ const JACKET_PRODUCTS: JacketProduct[] = [
 
 export default function BrandStoryHero() {
   const { addItem } = useCart();
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-
-  const toggleWishlist = (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
-    toast.success(wishlist[id] ? 'QUITADO DE FAVORITOS' : 'AGREGADO A FAVORITOS', {
-      description: 'CÁPSULA SANT CLOTHES — CAMPERAS',
-    });
-  };
 
   const handleSizeSelect = (productId: string, size: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -165,14 +160,13 @@ export default function BrandStoryHero() {
           >
             <div className="grid grid-cols-2 gap-3 sm:gap-4 h-full">
               {JACKET_PRODUCTS.map((product) => {
-                const isFav = !!wishlist[product.id];
                 const currentSize = selectedSizes[product.id] || product.sizes[0];
 
                 return (
                   <div key={product.id} className="group flex flex-col justify-between transition-all duration-300">
 
                     <Link
-                      href={`/products/${product.id}`}
+                      href={`/products/${product.productId}`}
                       aria-label={`Ver precompra de ${product.name}`}
                       className="relative block aspect-[3/4] w-full bg-[#f6f6f6] border border-zinc-200 group-hover:border-black overflow-hidden mb-2.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
                       style={{ borderRadius: '0px' }}
@@ -191,7 +185,7 @@ export default function BrandStoryHero() {
                     <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
 
                       <Link
-                        href={`/products/${product.id}`}
+                        href={`/products/${product.productId}`}
                         aria-label={`Ver precompra de ${product.name}`}
                         className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
                       >

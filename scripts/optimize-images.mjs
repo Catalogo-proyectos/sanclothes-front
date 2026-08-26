@@ -13,6 +13,7 @@
  *   pnpm images:optimize            # convierte lo que falte
  *   pnpm images:optimize --force    # regenera todo
  *   pnpm images:optimize --dry-run  # sólo informa
+ *   pnpm images:optimize -- --only=hero/foto.jpg
  */
 
 import { createRequire } from 'node:module';
@@ -29,6 +30,11 @@ const archiveRoot = join(projectRoot, '.image-originals');
 
 const force = process.argv.includes('--force');
 const dryRun = process.argv.includes('--dry-run');
+const only = new Set(
+  process.argv
+    .filter((arg) => arg.startsWith('--only='))
+    .map((arg) => arg.slice('--only='.length).replaceAll('\\', '/')),
+);
 
 /**
  * Techo de resolución por carpeta, en px del lado mayor.
@@ -72,6 +78,7 @@ for (const file of walk(imagesRoot)) {
   if (!CONVERTIBLE.has(ext)) continue;
 
   const relPath = relative(imagesRoot, file);
+  if (only.size > 0 && !only.has(relPath.replaceAll('\\', '/'))) continue;
 
   // Los logos conservan su PNG: llevan transparencia y pesan pocos KB, así que
   // convertirlos sólo añadiría un formato más que mantener.

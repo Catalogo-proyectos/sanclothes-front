@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Film } from 'lucide-react';
+import LazyAutoplayVideo from './LazyAutoplayVideo';
 
 export default function BrandVideoBanner() {
   return (
@@ -11,13 +12,10 @@ export default function BrandVideoBanner() {
         style={{ borderRadius: '0px' }}
       >
 
-        <video
+        <LazyAutoplayVideo
           src="/img/video/video.mp4"
           poster="/img/hero/Hero-Catalogo2.jpeg"
-          autoPlay
-          loop
-          muted
-          playsInline
+          ariaLabel="Campaña SANT CLOTHES en movimiento"
           className="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
 

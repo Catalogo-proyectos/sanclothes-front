@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import Image, { getImageProps } from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -12,6 +12,14 @@ import {
   Camera,
   ShoppingBag,
 } from 'lucide-react';
+
+const communityMobileSrcSet = getImageProps({
+  src: '/img/hero/IMG_2022_mobile_1080x1920.webp',
+  alt: 'Le Sant Club — Nova Collection',
+  fill: true,
+  quality: 85,
+  sizes: '100vw',
+}).props.srcSet;
 
 export default function ComunidadContent() {
   const communityPosts = [
@@ -118,24 +126,18 @@ export default function ComunidadContent() {
     <div className="bg-[#f6f8f9] text-[#17191c] min-h-screen">
       <section id="sant-club" className="relative w-full bg-[#17191c] border-b border-[#b6b2a7]/40 overflow-hidden">
         <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] lg:aspect-[21/9] min-h-[380px] max-h-[75vh]">
-          <Image
-            src="/img/hero/IMG_2022.jpg"
-            alt="Le Sant Club — Nova Collection"
-            fill
-            priority
-            quality={90}
-            sizes="100vw"
-            className="object-cover object-center sm:hidden"
-          />
-          <Image
-            src="/img/hero/IMG_2022_horizontal_16x9.png"
-            alt="Le Sant Club — Nova Collection"
-            fill
-            priority
-            quality={95}
-            sizes="100vw"
-            className="object-cover object-center hidden sm:block"
-          />
+          <picture>
+            <source media="(max-width: 639px)" srcSet={communityMobileSrcSet} />
+            <Image
+              src="/img/hero/IMG_2022_horizontal_16x9.webp"
+              alt="Le Sant Club — Nova Collection"
+              fill
+              priority
+              quality={88}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </picture>
 
           <div className="absolute top-20 left-6 sm:top-24 sm:left-12 lg:top-20 lg:left-16 z-10">
             <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-white bg-black/75 backdrop-blur-md px-4 py-2 border border-white/25 shadow-lg">
@@ -369,7 +371,7 @@ export default function ComunidadContent() {
           </div>
 
           <blockquote className="text-3xl sm:text-5xl lg:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-[0.95]">
-            "NO DISEÑAMOS ROPA PARA SEGUIR TENDENCIAS PASAJERAS. CREAMOS PIEZAS PESADAS Y DURADERAS PARA QUIENES TIENEN LA AGALLA DE CONSTRUIR SU PROPIO CAMINO DESDE CERO."
+            &quot;NO DISEÑAMOS ROPA PARA SEGUIR TENDENCIAS PASAJERAS. CREAMOS PIEZAS PESADAS Y DURADERAS PARA QUIENES TIENEN LA AGALLA DE CONSTRUIR SU PROPIO CAMINO DESDE CERO.&quot;
           </blockquote>
 
           <div className="pt-2">

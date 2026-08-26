@@ -9,7 +9,6 @@ import { useCart } from '@/hooks/useCart';
 import { formatCurrency } from '@/utils/format';
 
 
-const FREE_SHIPPING_THRESHOLD = 300000;
 const FALLBACK_IMAGE = '/img/hero/IMG_4390.webp';
 
 interface CartDrawerProps {
@@ -18,7 +17,7 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const { items, removeItem, updateQuantity, getSubtotal, getShippingCost, getTotal } = useCart();
+  const { items, removeItem, updateQuantity, getSubtotal, getTotal } = useCart();
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
 
@@ -37,13 +36,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   }, [isOpen, onClose]);
 
   const subtotal = getSubtotal();
-  const shipping = getShippingCost();
   const total = getTotal();
   const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
 
-
-  const freeShippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
-  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
   const handleImageError = (variantId: string) => {
     setImageErrors((prev) => ({ ...prev, [variantId]: true }));

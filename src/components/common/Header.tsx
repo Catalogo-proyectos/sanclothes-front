@@ -1,17 +1,19 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { User, LogOut, Search, X, Menu } from 'lucide-react';
-import SearchModal from './SearchModal';
 import CartIcon from './CartIcon';
-import CartDrawer from '../checkout/CartDrawer';
 import { useAuth } from '@/hooks/useAuth';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
 import { NAV_CATEGORIES } from './navData';
+
+const SearchModal = dynamic(() => import('./SearchModal'));
+const CartDrawer = dynamic(() => import('../checkout/CartDrawer'));
 
 const MOBILE_MENU_IMAGES: Record<string, string> = {
   casual: '/img/hero/Hero Movil Casual.jpeg',
@@ -19,78 +21,16 @@ const MOBILE_MENU_IMAGES: Record<string, string> = {
   'old-money': '/img/hero/Hero Movil Old Money.jpeg',
   sports: '/img/hero/Hero Movil Sport.jpeg',
 };
-
-
-
-function useScrollDirection() {
-  const [hidden, setHidden] = useState(false);
-  const lastY = useRef(0);
-  const tickingRef = useRef(false);
-
-  useEffect(() => {
-    const threshold = 10;
-    const onScroll = () => {
-      if (!tickingRef.current) {
-        window.requestAnimationFrame(() => {
-          const y = window.scrollY;
-          if (Math.abs(y - lastY.current) >= threshold) {
-            const newHidden = y > lastY.current && y > 80;
-            setHidden((prev) => (prev !== newHidden ? newHidden : prev));
-            lastY.current = y;
-          }
-          tickingRef.current = false;
-        });
-        tickingRef.current = true;
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  return { hidden };
-}
-
-
-function useIsPastHero(pathname: string) {
-  const [isPastHero, setIsPastHero] = useState(false);
-
-  useEffect(() => {
-    const el = document.getElementById('hero-cover-zone');
-    if (!el) {
-      setIsPastHero(true);
-      return;
-    }
-    setIsPastHero(false);
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsPastHero(entry.boundingClientRect.bottom <= 0),
-      { threshold: 0 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [pathname]);
-
-  return isPastHero;
-}
-
-
-
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const leaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isLoggedIn = useAuth((s) => s.isLoggedIn);
   const user = useAuth((s) => s.user);
   const logout = useAuth((s) => s.logout);
-  const { hidden } = useScrollDirection();
   const pathname = usePathname();
-  const isPastHero = useIsPastHero(pathname);
   const shouldReduceMotion = useReducedMotion();
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
 
 
@@ -107,24 +47,7 @@ export default function Header() {
     return false;
   };
 
-  if (!isKnownRoute(pathname)) {
-    return null;
-  }
-
-
-
   const isFullCatalogActive = pathname === '/catalog' && activeStyle === null;
-
-
-  const handleMouseEnterHeader = useCallback(() => {
-    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
-    setIsHeaderHovered(true);
-  }, []);
-
-  const handleMouseLeaveHeader = useCallback(() => {
-    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
-    leaveTimerRef.current = setTimeout(() => setIsHeaderHovered(false), 120);
-  }, []);
 
   const openCart = useCallback(() => {
     setIsMobileMenuOpen(false);
@@ -132,23 +55,6 @@ export default function Header() {
     setIsCartOpen(true);
   }, []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
-
-  useEffect(() => () => {
-    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
-  }, []);
-
-
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
-
-
-  useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [isSearchOpen]);
-
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
@@ -163,10 +69,6 @@ export default function Header() {
 
 
 
-  const hasDarkHeroBehindHeader = !pathname.startsWith('/products/') && !pathname.startsWith('/catalog');
-  const isHeaderActive = !hasDarkHeroBehindHeader || isPastHero || isSearchOpen;
-
-
   const headerBg = 'bg-black/30 backdrop-blur-md border-b border-white/10 text-white';
 
 
@@ -174,21 +76,14 @@ export default function Header() {
   const logoFilter = 'brightness-0 invert';
 
 
-  const shouldHideHeader = false;
+  if (!isKnownRoute(pathname)) {
+    return null;
+  }
 
   return (
     <>
-
-      <div
-        className="fixed top-0 left-0 right-0 h-4 z-[51] pointer-events-auto"
-        onMouseEnter={handleMouseEnterHeader}
-      />
-
       <header
-        onMouseEnter={handleMouseEnterHeader}
-        onMouseLeave={handleMouseLeaveHeader}
-        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out will-change-transform transform-gpu ${headerBg} ${shouldHideHeader ? '-translate-y-full' : 'translate-y-0'
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 translate-y-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out transform-gpu ${headerBg}`}
       >
 
         <div className="w-full px-5 sm:px-8 lg:px-12 h-16 sm:h-[72px] flex items-center justify-between relative">
@@ -196,7 +91,7 @@ export default function Header() {
 
           <div className="flex items-center gap-3 z-10">
             <Link href="/" className="group flex items-center gap-2.5" aria-label="Ir al inicio">
-              <img
+              <Image
                 src="/img/logo/Sant_ISO_Negro.png"
                 alt="SANT CLOTHES"
                 width={144}
@@ -344,7 +239,9 @@ export default function Header() {
       </header>
 
 
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {isSearchOpen && (
+        <SearchModal isOpen onClose={() => setIsSearchOpen(false)} />
+      )}
 
 
       <AnimatePresence>
@@ -651,7 +548,7 @@ export default function Header() {
         )}
       </AnimatePresence>
 
-      <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
+      {isCartOpen && <CartDrawer isOpen onClose={closeCart} />}
     </>
   );
 }

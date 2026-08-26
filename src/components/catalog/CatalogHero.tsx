@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import Image, { getImageProps } from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { StyleId, getCatalogHero, getStyle } from '@/lib/catalogFilters';
 
@@ -16,6 +16,15 @@ export default function CatalogHero({ styleId }: CatalogHeroProps) {
   const heroRef = useRef<HTMLElement>(null);
   const art = getCatalogHero(styleId);
   const caption = getStyle(styleId)?.label ?? 'Catálogo completo';
+  const mobileImage = art.mobileSrc
+    ? getImageProps({
+        src: art.mobileSrc,
+        alt: art.alt,
+        fill: true,
+        quality: 90,
+        sizes: '100vw',
+      }).props
+    : null;
 
 
   const [coverHeight, setCoverHeight] = useState<number | null>(null);
@@ -60,16 +69,8 @@ export default function CatalogHero({ styleId }: CatalogHeroProps) {
               transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
               {art.mobileSrc ? (
-                <>
-                  <Image
-                    src={art.mobileSrc}
-                    alt={art.alt}
-                    fill
-                    priority
-                    quality={90}
-                    sizes="100vw"
-                    className="object-cover object-center sm:hidden"
-                  />
+                <picture>
+                  <source media="(max-width: 639px)" srcSet={mobileImage?.srcSet} />
                   <Image
                     src={art.src}
                     alt={art.alt}
@@ -77,9 +78,9 @@ export default function CatalogHero({ styleId }: CatalogHeroProps) {
                     priority
                     quality={88}
                     sizes="100vw"
-                    className="object-cover object-center hidden sm:block"
+                    className="object-cover object-center"
                   />
-                </>
+                </picture>
               ) : (
                 <Image
                   src={art.src}

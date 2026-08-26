@@ -68,11 +68,6 @@ export default function Footer() {
     return false;
   };
 
-  if (!isKnownRoute(pathname)) {
-    return null;
-  }
-
-
   useEffect(() => {
     const footer = footerRef.current;
     if (!footer) return;
@@ -84,6 +79,10 @@ export default function Footer() {
     observer.observe(footer);
     return () => observer.disconnect();
   }, []);
+
+  if (!isKnownRoute(pathname)) {
+    return null;
+  }
 
   const handleSubscribe = (e: FormEvent) => {
     e.preventDefault();
