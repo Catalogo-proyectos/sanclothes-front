@@ -1,17 +1,17 @@
 import type { Metadata, Viewport } from 'next';
-import localFont from 'next/font/local';
+import { Bebas_Neue } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { Toaster } from 'sonner';
 import { config } from '@/lib/config';
 
-const bebas = localFont({
-  src: './fonts/bebas-neue-latin.woff2',
+const bebas = Bebas_Neue({
   weight: '400',
-  style: 'normal',
+  subsets: ['latin'],
   variable: '--font-bebas',
   display: 'swap',
+  adjustFontFallback: false,
 });
 
 export const viewport: Viewport = {
