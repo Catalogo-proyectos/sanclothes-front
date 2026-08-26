@@ -10,15 +10,7 @@ export interface NavCategory {
   featuredTag: string;
 }
 
-/**
- * Each `id` is also the slug carried in `?category=` and must stay identical to a
- * StyleId in lib/catalogFilters.ts — that pairing is what makes a nav click land
- * on the right filtered catalog view.
- *
- * featuredImage points at pre-sized 800x672 WebP derivatives in /img/nav, not the
- * originals in /img/hero. The originals are 4160x6240 / ~10MB each and were being
- * decoded into a 380x320 box.
- */
+
 export const NAV_CATEGORIES: NavCategory[] = [
   {
     id: 'casual',

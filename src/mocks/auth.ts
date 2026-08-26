@@ -9,7 +9,7 @@ export const MOCK_USER: CustomerProfile = {
   addresses: [],
 };
 
-// Simple base64 token generator for mock JWT testing
+
 export function generateMockJWT(payload: { userId?: string; email?: string; firstName?: string; lastName?: string }): string {
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body = btoa(

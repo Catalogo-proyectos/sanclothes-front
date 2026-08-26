@@ -13,7 +13,7 @@ export default function Hero3DCanvas() {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // 1. Scene, Camera, Renderer
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
     camera.position.z = 25;
@@ -23,7 +23,7 @@ export default function Hero3DCanvas() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // 2. Floating Ambient 3D Particle Cloud
+
     const particlesCount = 200;
     const positions = new Float32Array(particlesCount * 3);
 
@@ -47,7 +47,7 @@ export default function Hero3DCanvas() {
     const particlesPoints = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particlesPoints);
 
-    // 3. Mouse Tracking Variables
+
     let mouseX = 0;
     let mouseY = 0;
     let targetX = 0;
@@ -62,7 +62,7 @@ export default function Hero3DCanvas() {
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // 4. Resize Handler
+
     const handleResize = () => {
       if (!container) return;
       const w = container.clientWidth;
@@ -74,13 +74,13 @@ export default function Hero3DCanvas() {
 
     window.addEventListener('resize', handleResize);
 
-    // 5. Animation Loop
+
     let animationFrameId: number;
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      // Smooth inertia rotation
+
       targetX += (mouseX - targetX) * 0.05;
       targetY += (mouseY - targetY) * 0.05;
 
@@ -96,7 +96,7 @@ export default function Hero3DCanvas() {
 
     animate();
 
-    // Cleanup
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);

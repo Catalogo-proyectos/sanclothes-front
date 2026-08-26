@@ -18,7 +18,7 @@ export function DarkGradientBg({ children, className }: DarkGradientBgProps) {
             WebkitMask: 'radial-gradient(125% 100% at 0% 0%, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0.224) 88.2883%, rgba(0, 0, 0, 0) 100%)',
           }}
         >
-          {/* Skewed fading brand slate (#50524a / RGB 80 82 74) streaks */}
+
           <div
             className="absolute inset-0 opacity-30"
             style={{
@@ -74,7 +74,7 @@ export function DarkGradientBg({ children, className }: DarkGradientBgProps) {
           backgroundSize: '149.76px',
         }}
       />
-      {/* Subtle dot pattern overlay */}
+
       <div
         className="absolute inset-0 opacity-20"
         style={{
@@ -83,10 +83,10 @@ export function DarkGradientBg({ children, className }: DarkGradientBgProps) {
         }}
       />
 
-      {/* Subtle radial highlight */}
+
       <div className="absolute inset-0 bg-gradient-radial from-slate-800/20 via-transparent to-transparent" />
 
-      {/* Content */}
+
       <div className="relative z-10">{children}</div>
     </div>
   );

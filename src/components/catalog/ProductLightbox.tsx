@@ -13,12 +13,7 @@ interface ProductLightboxProps {
   onClose: () => void;
 }
 
-/**
- * Fullscreen gallery viewer.
- * Behaves like a real modal dialog: Escape closes it, arrows navigate, focus is
- * trapped inside and returned to the trigger on close, and the page behind stops
- * scrolling (previously the body kept scrolling under the overlay).
- */
+
 export default function ProductLightbox({
   images,
   index,
@@ -38,8 +33,8 @@ export default function ProductLightbox({
   );
   const goNext = useCallback(() => onIndexChange((index + 1) % total), [index, total, onIndexChange]);
 
-  // Lock the underlying page while the overlay is open, compensating for the
-  // scrollbar width so the layout behind does not jump (avoids a CLS hit).
+
+
   useEffect(() => {
     const { body } = document;
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -54,7 +49,7 @@ export default function ProductLightbox({
     };
   }, []);
 
-  // Move focus in on open, restore it on close.
+
   useEffect(() => {
     previouslyFocused.current = document.activeElement;
     closeButtonRef.current?.focus();

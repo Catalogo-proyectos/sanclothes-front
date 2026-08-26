@@ -1,9 +1,6 @@
-/**
- * API Data Transfer Objects & Domain Models for Santclothes Storefront.
- * Matches STOREFRONT-INTEGRATION.md (2026-08-14) against real backend handlers.
- */
 
-// --- Catalog Types ---
+
+
 
 export type CutCode = string;
 export type StockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
@@ -57,7 +54,7 @@ export interface CutInfo {
   productsCount: number;
 }
 
-// --- Search (§4) ---
+
 
 export interface SearchSuggestion {
   id: string;
@@ -67,7 +64,7 @@ export interface SearchSuggestion {
   price: number;
 }
 
-// --- Reviews (§4) ---
+
 
 export interface ProductReview {
   id: string;
@@ -80,9 +77,9 @@ export interface ProductReview {
   createdAt: string;
 }
 
-// --- Auth Types (§3) ---
 
-/** POST /auth/login response */
+
+
 export interface LoginResponse {
   token: string;
   user: {
@@ -94,7 +91,7 @@ export interface LoginResponse {
   };
 }
 
-/** POST /auth/register response */
+
 export interface RegisterResponse {
   success: true;
   message: string;
@@ -108,7 +105,7 @@ export interface RegisterResponse {
   };
 }
 
-/** POST /auth/google response */
+
 export interface GoogleAuthResponse {
   token: string;
   isNewUser: boolean;
@@ -122,7 +119,7 @@ export interface GoogleAuthResponse {
   };
 }
 
-/** Register 409 conflict error data */
+
 export interface RegisterConflictError {
   statusCode: number;
   error: string;
@@ -130,10 +127,7 @@ export interface RegisterConflictError {
   isGuestAccount?: boolean;
 }
 
-/**
- * @deprecated Use LoginResponse/RegisterResponse/GoogleAuthResponse instead.
- * Kept for backward compat with mock layer.
- */
+
 export interface AuthResponse {
   userId: string;
   email: string;
@@ -143,9 +137,9 @@ export interface AuthResponse {
   expiresIn: number;
 }
 
-// --- Customer Profile (§3) ---
 
-/** GET /me response */
+
+
 export interface CustomerProfile {
   id: string;
   firstName: string;
@@ -155,7 +149,7 @@ export interface CustomerProfile {
   addresses: unknown[];
 }
 
-/** PATCH /me response */
+
 export interface UpdateProfileResponse {
   success: true;
   message: string;
@@ -168,9 +162,9 @@ export interface UpdateProfileResponse {
   };
 }
 
-// --- Orders (§3) ---
 
-/** GET /me/orders — flat array item */
+
+
 export interface OrderSummaryItem {
   id: string;
   orderNumber: string;
@@ -181,7 +175,7 @@ export interface OrderSummaryItem {
   itemCount: number;
 }
 
-/** GET /me/orders/:id */
+
 export interface OrderDetail {
   id: string;
   orderNumber: string;
@@ -209,15 +203,15 @@ export interface OrderDetail {
   returnReason?: string;
 }
 
-// --- Checkout (§6) ---
 
-/** POST /checkout/verify-email */
+
+
 export interface VerifyEmailRequest {
   email: string;
   turnstileToken?: string;
 }
 
-/** POST /checkout/confirm-otp */
+
 export interface ConfirmOtpRequest {
   email: string;
   otp: string;
@@ -230,7 +224,7 @@ export interface ConfirmOtpResponse {
   message: string;
 }
 
-/** POST /checkout request body */
+
 export interface CheckoutRequest {
   items: Array<{
     sku: string;
@@ -260,7 +254,7 @@ export interface CheckoutRequest {
   };
 }
 
-/** POST /checkout response */
+
 export interface CheckoutResponse {
   orderId: string;
   status: string;
@@ -269,7 +263,7 @@ export interface CheckoutResponse {
   orderAccessToken: string;
 }
 
-/** GET /checkout/:id (with orderAccessToken) */
+
 export interface CheckoutOrderDetail {
   id: string;
   totalAmount: number;
@@ -286,21 +280,21 @@ export interface CheckoutOrderDetail {
   }>;
 }
 
-/** POST /checkout/:id/receipt response */
+
 export interface ReceiptUploadResponse {
   success: true;
   url: string;
   message: string;
 }
 
-// --- Cart (§5) ---
+
 
 export interface CartSyncResponse {
   items: unknown[];
   updatedAt?: string;
 }
 
-// --- Tiers (§7) ---
+
 
 export interface CustomerTier {
   currentTier: {
@@ -320,7 +314,7 @@ export interface CustomerTier {
   } | null;
 }
 
-// --- Support Tickets (§3) ---
+
 
 export interface TicketMessage {
   messageId: string;
@@ -343,16 +337,16 @@ export interface TicketDetail extends TicketSummary {
   messages: TicketMessage[];
 }
 
-// --- Error Responses (§1) ---
 
-/** Auth module errors */
+
+
 export interface AuthErrorResponse {
   statusCode: number;
   error: string;
   message: string;
 }
 
-/** Checkout/catalog/cart errors */
+
 export interface ApiErrorResponse {
   error: string;
   code: string;
@@ -364,7 +358,7 @@ export interface ApiErrorResponse {
   requestedQuantity?: number;
 }
 
-// --- Legacy aliases for backward compat ---
+
 
 export type PaginatedList<T> = {
   items: T[];

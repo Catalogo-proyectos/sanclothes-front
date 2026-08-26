@@ -7,17 +7,17 @@ import Link from 'next/link';
 export default function BrandManifestoModal() {
   return (
     <Dialog.Root>
-      {/* Discreet Trigger Button */}
+
       <Dialog.Trigger className="group inline-flex items-center gap-2 px-6 py-3 border border-[#000000] bg-white text-black text-[12px] font-bold tracking-[0.05em] uppercase hover:bg-black hover:text-white transition-colors cursor-pointer" style={{ borderRadius: '0px' }}>
         <span>CONOCE NUESTRO MANIFIESTO (+)</span>
         <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        {/* Backdrop */}
+
         <Dialog.Backdrop className="fixed inset-0 bg-black/60 z-50 backdrop-blur-xs transition-opacity" />
 
-        {/* Modal Content */}
+
         <Dialog.Popup
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl bg-white border border-[#000000] p-6 sm:p-8 z-50 focus:outline-none shadow-none"
           style={{ borderRadius: '0px' }}
@@ -45,7 +45,7 @@ export default function BrandManifestoModal() {
             </span>
           </Dialog.Description>
 
-          {/* Pillars Grid */}
+
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="p-3 bg-[#f6f6f6] border border-[#e5e5e5] text-center" style={{ borderRadius: '0px' }}>
               <span className="text-[11px] font-mono font-bold uppercase text-black block">240G - 400G</span>

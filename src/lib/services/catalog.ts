@@ -9,15 +9,9 @@ import type {
   ProductReview,
 } from '@/types/api';
 
-/**
- * Frontera de datos del catálogo.
- *
- * Es el único lugar del front que ve el modelo crudo de la API: acá entra
- * `BackendProduct` y sale `CatalogProduct` con las imágenes ya resueltas y
- * normalizadas. Las vistas no importan `@/types/backend` ni arman URLs.
- */
 
-// §4: all query params supported by GET /api/catalog
+
+
 export interface CatalogQuery {
   cut?: string;
   category?: string;
@@ -60,13 +54,13 @@ export async function fetchProduct(productId: string): Promise<CatalogProduct | 
   }
 }
 
-// §4: GET /api/catalog/cuts → { cuts: [{ code, name, productsCount }] }
+
 export async function fetchCuts(): Promise<CutInfo[]> {
   const res = await apiCall<{ cuts: CutInfo[] }>('GET', '/catalog/cuts');
   return res.cuts ?? [];
 }
 
-// §4: GET /api/v1/catalog/search?q= (ILIKE search, LIMIT 8, hits Postgres not Redis)
+
 export async function searchCatalog(query: string): Promise<SearchSuggestion[]> {
   if (!query.trim()) return [];
   const url = `${config.api.origin}/api/v1/catalog/search?q=${encodeURIComponent(query)}`;
@@ -76,7 +70,7 @@ export async function searchCatalog(query: string): Promise<SearchSuggestion[]> 
   return data.suggestions ?? [];
 }
 
-// §4: GET /api/v1/catalog/size-guide/:category (never 404, falls back to generic)
+
 export async function fetchSizeGuide(category: string): Promise<{
   id?: string;
   category: string;
@@ -90,7 +84,7 @@ export async function fetchSizeGuide(category: string): Promise<{
   return res.json();
 }
 
-// §4: GET /api/catalog/:productId/reviews (only approved)
+
 export async function fetchProductReviews(productId: string): Promise<ProductReview[]> {
   try {
     return await apiCall<ProductReview[]>('GET', `/catalog/${productId}/reviews`);
@@ -99,7 +93,7 @@ export async function fetchProductReviews(productId: string): Promise<ProductRev
   }
 }
 
-// §4: POST /api/catalog/:productId/reviews (no auth, pending until admin approves)
+
 export async function submitProductReview(
   productId: string,
   review: { rating: number; comment?: string; guestName?: string; photoUrl?: string },
@@ -107,7 +101,7 @@ export async function submitProductReview(
   return apiCall<ProductReview>('POST', `/catalog/${productId}/reviews`, review);
 }
 
-// §4: POST /api/catalog/:sku/waitlist (no auth, sku normalized to uppercase)
+
 export async function joinWaitlist(
   sku: string,
   email: string,

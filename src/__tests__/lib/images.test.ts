@@ -2,10 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { BackendProduct } from '@/types/backend';
 import { PLACEHOLDER_PRODUCT } from '@/lib/images/constants';
 
-/**
- * `config` lee process.env al importarse, así que el origen de media se controla
- * por mock: es el único parámetro que cambia el comportamiento de normalizeImageUrl.
- */
+
 const mediaOrigin = { value: 'https://cdn.santclothes.test' };
 
 vi.mock('@/lib/config', () => ({

@@ -20,7 +20,7 @@ const MOBILE_MENU_IMAGES: Record<string, string> = {
   sports: '/img/hero/Hero Movil Sport.jpeg',
 };
 
-/* ── Throttled & Optimized Hide-on-scroll-down Hook ── */
+
 
 function useScrollDirection() {
   const [hidden, setHidden] = useState(false);
@@ -50,12 +50,7 @@ function useScrollDirection() {
   return { hidden };
 }
 
-/* ── Tracks whether the home hero has been fully scrolled past ──
-   Home renders a "#hero-cover-zone" element exactly as tall as the hero (see Hero.tsx);
-   other routes don't have one. Once its bottom edge scrolls above the viewport, the hero
-   is completely gone and the header should never hide again — only while the hero is still
-   partly on screen does the normal hide-on-scroll-down behavior apply. Routes without the
-   marker (no hero) are treated as "past" immediately, matching their existing solid header. */
+
 function useIsPastHero(pathname: string) {
   const [isPastHero, setIsPastHero] = useState(false);
 
@@ -78,7 +73,7 @@ function useIsPastHero(pathname: string) {
   return isPastHero;
 }
 
-/* ── Header Component ── */
+
 
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -97,18 +92,30 @@ export default function Header() {
   const shouldReduceMotion = useReducedMotion();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Read from the store rather than useSearchParams: this header sits in the root
-  // layout, and useSearchParams there would force every route to render dynamically.
-  // ProductGrid writes the style whenever /catalog reads `?category=`, and the
-  // pathname guard keeps a stale value from marking a link on other routes.
+
+
+
+
   const activeStyle = useCatalogFilter((s) => s.style);
   const activeCategoryId = pathname === '/catalog' ? activeStyle : null;
 
-  // The catch-all sits next to the four style lines: same route, no `?category=`,
-  // so it's the active one exactly when no style is.
+  const isKnownRoute = (path: string) => {
+    if (path === '/mantenimiento' || path === '/error-preview' || path === '/404') return false;
+    const knownExact = ['/', '/catalog', '/comunidad', '/nosotros', '/about', '/login', '/checkout', '/dashboard', '/reset-password'];
+    if (knownExact.includes(path)) return true;
+    if (path.startsWith('/products/')) return true;
+    return false;
+  };
+
+  if (!isKnownRoute(pathname)) {
+    return null;
+  }
+
+
+
   const isFullCatalogActive = pathname === '/catalog' && activeStyle === null;
 
-  // Smooth hover handlers with grace period debounce
+
   const handleMouseEnterHeader = useCallback(() => {
     if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
     setIsHeaderHovered(true);
@@ -119,55 +126,59 @@ export default function Header() {
     leaveTimerRef.current = setTimeout(() => setIsHeaderHovered(false), 120);
   }, []);
 
-  const openCart = useCallback(() => setIsCartOpen(true), []);
+  const openCart = useCallback(() => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+    setIsCartOpen(true);
+  }, []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
 
   useEffect(() => () => {
     if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
   }, []);
 
-  // Close mobile menu on route change
+
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Focus search input when opened
+
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [isSearchOpen]);
 
-  // Lock body scroll when mobile menu is open
+
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isMobileMenuOpen]);
 
-  // The transparent header with white text only works over a dark hero. Every route
-  // renders one behind the header (Hero on "/", PageHero elsewhere) except the product
-  // detail page, which opens straight onto the light surface — there, white-on-#f6f8f9
-  // measures ~1.05:1 contrast and the nav is effectively invisible. On those routes the
-  // header stays in its solid state from the very top. On "/" it flips to solid black
-  // text only once the hero has been fully scrolled past (isPastHero), not on the first
-  // pixel of scroll — while any part of the hero is still on screen the header stays
-  // transparent with white text.
+
+
+
+
+
+
+
+
   const hasDarkHeroBehindHeader = !pathname.startsWith('/products/') && !pathname.startsWith('/catalog');
   const isHeaderActive = !hasDarkHeroBehindHeader || isPastHero || isSearchOpen;
 
-  // Header is transparent with backdrop blur
+
   const headerBg = 'bg-black/30 backdrop-blur-md border-b border-white/10 text-white';
 
-  // Text, icons, and logo are white when header is transparent
+
   const textColor = 'text-white';
   const logoFilter = 'brightness-0 invert';
 
-  // Never hide header on scroll - stays fixed and transparent at all times
+
   const shouldHideHeader = false;
 
   return (
     <>
-      {/* Invisible Mouse Sensor Bar at the very top of screen */}
+
       <div
         className="fixed top-0 left-0 right-0 h-4 z-[51] pointer-events-auto"
         onMouseEnter={handleMouseEnterHeader}
@@ -179,10 +190,10 @@ export default function Header() {
         className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out will-change-transform transform-gpu ${headerBg} ${shouldHideHeader ? '-translate-y-full' : 'translate-y-0'
           }`}
       >
-        {/* ── Main Bar ── */}
+
         <div className="w-full px-5 sm:px-8 lg:px-12 h-16 sm:h-[72px] flex items-center justify-between relative">
 
-          {/* LEFT: Logo */}
+
           <div className="flex items-center gap-3 z-10">
             <Link href="/" className="group flex items-center gap-2.5" aria-label="Ir al inicio">
               <img
@@ -195,7 +206,7 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* CENTER: Desktop Navigation */}
+
           <nav className="hidden lg:flex lg:[@media(pointer:coarse)]:!hidden items-center gap-3 sm:gap-4 lg:gap-6 xl:gap-8 absolute left-[45%] -translate-x-1/2">
             {NAV_CATEGORIES.map((cat) => {
               const isActive = cat.id === activeCategoryId;
@@ -222,8 +233,7 @@ export default function Header() {
               );
             })}
 
-            {/* The style links are plain text; this one carries a border so it reads
-                as the way out of a filtered view rather than a fifth style. */}
+
             <Link
               href="/catalog"
               aria-current={isFullCatalogActive ? 'page' : undefined}
@@ -274,9 +284,9 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* RIGHT: Actions */}
+
           <div className="flex items-center gap-1 sm:gap-2 z-10">
-            {/* Search */}
+
             <button
               onClick={() => setIsSearchOpen(true)}
               aria-label="Buscar"
@@ -285,7 +295,7 @@ export default function Header() {
               <Search className="w-[18px] h-[18px] stroke-[2]" />
             </button>
 
-            {/* Account */}
+
             {isLoggedIn ? (
               <div className="hidden sm:flex items-center gap-1">
                 <Link
@@ -313,10 +323,10 @@ export default function Header() {
               </Link>
             )}
 
-            {/* Cart */}
+
             <CartIcon onClick={openCart} isWhiteText={true} />
 
-            {/* Mobile Menu Toggle */}
+
             <button
               onClick={() => setIsMobileMenuOpen((v) => !v)}
               aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
@@ -333,10 +343,10 @@ export default function Header() {
 
       </header>
 
-      {/* ── Search Modal ── */}
+
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
-      {/* ── Mobile Full-Screen Menu ── */}
+
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -494,7 +504,7 @@ export default function Header() {
                 )}
               </motion.div>
 
-              {/* Mobile Menu Copyright & Credits */}
+
               <motion.div
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -536,8 +546,8 @@ export default function Header() {
                     <span
                       className={`font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl tracking-[0.08em] leading-none ${cat.id === activeCategoryId
                         ? 'text-[#17191c] underline decoration-2 underline-offset-8'
-                        : // Only dim the others once something is actually selected —
-                        // with no filter on, the four read as equals.
+                        :
+
                         activeCategoryId
                           ? 'text-[#17191c]/45'
                           : 'text-[#17191c]'
@@ -562,7 +572,7 @@ export default function Header() {
                 </motion.div>
               ))}
 
-              {/* Extra links */}
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

@@ -32,28 +32,28 @@ export default function Dashboard() {
 
   const [activeTab, setActiveTab] = useState<'orders' | 'tickets' | 'profile'>('orders');
 
-  // §3: GET /me/orders returns flat array (not paginated)
+
   const [orders, setOrders] = useState<OrderSummaryItem[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
-  // Tickets
+
   const [tickets, setTickets] = useState<TicketDetail[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
 
-  // §7: Customer tier
+
   const [tier, setTier] = useState<CustomerTier | null>(null);
 
-  // Profile editing
+
   const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState('');
 
-  // Change password
+
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '' });
   const [savingPw, setSavingPw] = useState(false);
   const [pwMsg, setPwMsg] = useState('');
 
-  // New ticket
+
   const [newSubject, setNewSubject] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [submittingTicket, setSubmittingTicket] = useState(false);
@@ -61,7 +61,7 @@ export default function Dashboard() {
   const fetchOrders = useCallback(async () => {
     setLoadingOrders(true);
     try {
-      // §3: flat array response
+
       const data = await apiCall<OrderSummaryItem[]>('GET', '/me/orders', undefined, true);
       setOrders(Array.isArray(data) ? data : []);
     } catch {
@@ -85,20 +85,20 @@ export default function Dashboard() {
 
   const fetchProfile = useCallback(async () => {
     try {
-      // §3: GET /me → { id, firstName, lastName, email, phone, addresses:[] }
+
       const me = await apiCall<{ id: string; firstName: string; lastName: string; email: string; phone?: string }>('GET', '/me', undefined, true);
       setProfileForm({
         firstName: me.firstName || '',
         lastName: me.lastName || '',
         phone: me.phone || '',
       });
-    } catch { /* ignore */ }
+    } catch {  }
   }, []);
 
   const fetchTier = useCallback(async () => {
     if (!config.features.loyalty) return;
     try {
-      // §7: GET /api/v1/me/tier
+
       const url = `${config.api.origin}/api/v1/me/tier`;
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${localStorage.getItem(config.jwt.storageKey) || ''}` },
@@ -106,7 +106,7 @@ export default function Dashboard() {
       if (res.ok) {
         setTier(await res.json());
       }
-    } catch { /* ignore */ }
+    } catch {  }
   }, []);
 
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function Dashboard() {
     fetchTier();
   }, [isLoggedIn, fetchOrders, fetchTickets, fetchProfile, fetchTier]);
 
-  // §3: PATCH /me
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingProfile(true);
@@ -132,7 +132,7 @@ export default function Dashboard() {
     }
   };
 
-  // §3: POST /me/change-password (not /me/password)
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingPw(true);
@@ -174,7 +174,7 @@ export default function Dashboard() {
         <p className="text-xs text-slate-500 mt-1">Gestión de historial de compras, perfil y soporte.</p>
       </div>
 
-      {/* §7: Tier progress */}
+
       {tier && tier.currentTier && (
         <div className="p-4 bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-2xl flex items-center justify-between">
           <div>
@@ -195,7 +195,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Tabs */}
+
       <div className="flex border-b border-slate-200 gap-4">
         {(['orders', 'tickets', 'profile'] as const).map((tab) => (
           <button
@@ -210,7 +210,7 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* ORDERS TAB */}
+
       {activeTab === 'orders' && (
         <div className="space-y-4">
           {loadingOrders ? (
@@ -245,7 +245,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* TICKETS TAB */}
+
       {activeTab === 'tickets' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
@@ -306,10 +306,10 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* PROFILE TAB */}
+
       {activeTab === 'profile' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Edit profile */}
+
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
             <h3 className="text-sm font-extrabold uppercase text-slate-800">Editar Perfil</h3>
             {profileMsg && (
@@ -355,7 +355,7 @@ export default function Dashboard() {
             </form>
           </div>
 
-          {/* Change password — §3: POST /me/change-password */}
+
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
             <h3 className="text-sm font-extrabold uppercase text-slate-800">Cambiar Contraseña</h3>
             {pwMsg && (

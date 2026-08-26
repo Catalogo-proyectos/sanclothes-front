@@ -7,8 +7,8 @@ export default function BrandManifestoBar() {
   return (
     <section className="w-full bg-[#0d0e10] text-white py-16 sm:py-24 px-6 sm:px-12 border-y border-[#b6b2a7]/30 relative overflow-hidden select-none">
       <div className="max-w-[1440px] mx-auto text-center space-y-6 relative z-10">
-        
-        {/* Top Tag Badge */}
+
+
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -20,12 +20,12 @@ export default function BrandManifestoBar() {
           <span>SANT CLOTHES · MANIFIESTO</span>
         </motion.div>
 
-        {/* Giant Quote Quote Icon Accent */}
+
         <div className="flex justify-center pt-2">
           <Quote className="w-8 h-8 sm:w-10 sm:h-10 text-white/30 rotate-180" />
         </div>
 
-        {/* Main Manifesto Headline */}
+
         <motion.h2
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -36,7 +36,7 @@ export default function BrandManifestoBar() {
           “NO SEGUIMOS TENDENCIAS. REDEFINIMOS LA CULTURA URBANA EN PARAGUAY A TRAVÉS DEL DISEÑO ARQUITECTÓNICO Y MATERIALES DE ALTO GRAMAJE.”
         </motion.h2>
 
-        {/* Sub-manifesto Mono Copy */}
+
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export default function BrandManifestoBar() {
         </motion.p>
       </div>
 
-      {/* Subtle Background Glow Accent */}
+
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-white/[0.02] blur-[120px] pointer-events-none rounded-full" />
     </section>
   );

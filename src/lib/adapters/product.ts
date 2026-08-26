@@ -2,14 +2,7 @@ import type { BackendProduct } from '@/types/backend';
 import type { CatalogProduct, ProductImage, ProductVariant, StockStatus } from '@/types/api';
 import { imagesForCut } from '@/lib/images/resolve';
 
-/**
- * Traduce el producto tal como lo emite la API al modelo que consumen los
- * componentes del front.
- *
- * Existe para que el cambio de backend no obligue a tocar las ~20 vistas que ya
- * renderizan `CatalogProduct`. Toda diferencia de nombre, forma o unidad entre
- * los dos modelos se resuelve acá y en ningún otro lado.
- */
+
 
 const LOW_STOCK_THRESHOLD = 5;
 
@@ -18,14 +11,7 @@ interface EffectivePrice {
   discountPrice: number | null;
 }
 
-/**
- * Precio efectivo del producto.
- *
- * Espeja la precedencia de backend/src/modules/checkout/checkout.service.ts:107-170:
- * flash sale vigente gana sobre `discountPercent`. Es solo para mostrar — el
- * backend recalcula el precio real al crear la orden e ignora lo que mande el
- * front, así que una diferencia acá no puede cobrar de menos.
- */
+
 export function resolvePrice(product: BackendProduct, now: number = Date.now()): EffectivePrice {
   const base = product.price;
   const sale = product.flashSale;
@@ -57,13 +43,7 @@ export function resolvePrice(product: BackendProduct, now: number = Date.now()):
   return { price: base, discountPrice: null };
 }
 
-/**
- * Aplana el mapa anidado corte → talle → { sku, stock } al array plano que
- * esperan la card, el panel de compra y el carrito.
- *
- * El SKU hace de identificador de variante: el backend no emite un `variantId`
- * separado y el checkout se referencia por SKU.
- */
+
 export function flattenVariants(product: BackendProduct): ProductVariant[] {
   const map = product.variantsByCut ?? product.variants ?? {};
   const { price, discountPrice } = resolvePrice(product);
@@ -81,12 +61,7 @@ export function flattenVariants(product: BackendProduct): ProductVariant[] {
   );
 }
 
-/**
- * Etiqueta de urgencia por stock.
- *
- * La documentación del backend promete un campo `urgencyLabel` en cada variante,
- * pero el payload real no lo trae, así que aplicamos la misma regla acá.
- */
+
 export function urgencyLabel(stock: number): string | null {
   if (stock <= 0) return 'Agotado';
   if (stock <= LOW_STOCK_THRESHOLD) {
@@ -126,8 +101,8 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
     productId: product.productId,
     slug: product.slug,
     title: product.name,
-    // El catálogo de Redis puede no traer `description` todavía; el resto del
-    // front asume string, así que normalizamos a '' en vez de dejar undefined.
+
+
     description: product.description ?? '',
     price,
     discountPrice,

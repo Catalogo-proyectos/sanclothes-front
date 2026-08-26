@@ -8,7 +8,7 @@ import { X, Plus, Minus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { formatCurrency } from '@/utils/format';
 
-/** Free Shipping threshold in PYG (₲ 300.000) */
+
 const FREE_SHIPPING_THRESHOLD = 300000;
 const FALLBACK_IMAGE = '/img/hero/IMG_4390.webp';
 
@@ -21,7 +21,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, getSubtotal, getShippingCost, getTotal } = useCart();
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
-  // Close drawer on Escape key press
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -41,7 +41,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const total = getTotal();
   const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
 
-  // Free shipping progress
+
   const freeShippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
   const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
@@ -53,27 +53,25 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] overflow-hidden">
-          {/* Backdrop Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] cursor-pointer"
+            className="fixed inset-0 bg-black/60 cursor-pointer touch-none"
           />
 
-          {/* Drawer Panel */}
-          <div className="fixed inset-y-0 right-0 max-w-full flex pointer-events-none">
+          <div className="fixed inset-y-0 right-0 max-w-full flex pointer-events-none z-10">
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 32, stiffness: 350 }}
-              className="w-screen max-w-md bg-[#ffffff] text-[#17191c] shadow-2xl flex flex-col pointer-events-auto border-l border-[#17191c]/10"
+              transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 0.8 }}
+              style={{ willChange: 'transform' }}
+              className="w-screen max-w-full sm:w-[420px] sm:max-w-md h-[100dvh] bg-[#ffffff] text-[#17191c] shadow-2xl flex flex-col pointer-events-auto border-l border-[#17191c]/10 transform-gpu"
             >
-              {/* ── 1. Clean Header ── */}
-              <div className="px-6 py-5 border-b border-[#17191c]/10 flex items-center justify-between bg-white">
+              <div className="px-6 py-5 border-b border-[#17191c]/10 flex items-center justify-between bg-white shrink-0">
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-[family-name:var(--font-bebas)] tracking-wider uppercase leading-none text-[#17191c]">
                     CARRITO
@@ -91,10 +89,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 </button>
               </div>
 
-              {/* ── 3. Cart Items (Clean List) ── */}
-              <div className="flex-1 overflow-y-auto px-6 divide-y divide-[#17191c]/08">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-6 divide-y divide-[#17191c]/08 [touch-action:pan-y]">
                 {items.length === 0 ? (
-                  /* Empty State */
+
                   <div className="py-24 text-center space-y-4 flex flex-col items-center justify-center h-full">
                     <ShoppingBag className="w-10 h-10 text-[#b6b2a7] stroke-[1]" />
                     <div className="space-y-1">
@@ -116,14 +113,14 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     </Link>
                   </div>
                 ) : (
-                  /* Items List */
+
                   items.map((item) => {
                     const hasError = imageErrors[item.variantId];
                     const imageSrc = hasError || !item.image ? FALLBACK_IMAGE : item.image;
 
                     return (
                       <div key={item.variantId} className="py-5 flex gap-4 items-start">
-                        {/* Thumbnail */}
+
                         <Link
                           href={`/products/${item.productId}`}
                           onClick={onClose}
@@ -140,7 +137,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           />
                         </Link>
 
-                        {/* Details */}
+
                         <div className="flex-1 min-w-0 space-y-1">
                           <div className="flex items-start justify-between gap-2">
                             <Link
@@ -171,7 +168,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                               {formatCurrency(item.unitPrice * item.quantity)}
                             </span>
 
-                            {/* Clean Quantity Selector */}
+
                             <div className="flex items-center gap-2 border border-[#17191c]/20 px-2 py-0.5 text-xs font-mono">
                               <button
                                 type="button"
@@ -201,7 +198,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 )}
               </div>
 
-              {/* ── 4. Clean Footer Summary ── */}
+
               {items.length > 0 && (
                 <div className="p-6 border-t border-[#17191c]/10 bg-white space-y-4">
                   <div className="space-y-2 text-xs font-mono text-[#50524a]">

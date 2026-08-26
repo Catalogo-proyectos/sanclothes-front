@@ -51,7 +51,7 @@ const CATEGORIES: HeroCategory[] = [
 export default function HeroCategoryGrid() {
   return (
     <section className="w-full bg-[#17191c] text-[#f6f8f9] border-b border-[#b6b2a7]/30 select-none overflow-hidden">
-      {/* ── DESKTOP LAYOUT (4 side-by-side expanding columns matching user paint diagram) ── */}
+
       <div className="hidden md:flex flex-row w-full h-[520px] lg:h-[600px] bg-[#17191c]">
         {CATEGORIES.map((cat, index) => (
           <Link
@@ -60,7 +60,7 @@ export default function HeroCategoryGrid() {
             aria-label={`Explorar ${cat.title}`}
             className="group relative h-full flex-1 hover:flex-[2.2] transition-[flex] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] block overflow-hidden border-r border-white/20 last:border-r-0"
           >
-            {/* Background Photo */}
+
             <div className="absolute inset-0 w-full h-full overflow-hidden">
               <Image
                 src={cat.imageSrc}
@@ -71,11 +71,11 @@ export default function HeroCategoryGrid() {
                 sizes="(min-width: 768px) 25vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 group-hover:brightness-110 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
               />
-              {/* Contrast Gradient Overlay */}
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/15 group-hover:from-black/70 transition-colors duration-500" />
             </div>
 
-            {/* Text & Action Arrow */}
+
             <div className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-20 flex flex-col items-start gap-1">
               <h2 className="text-4xl lg:text-5xl xl:text-6xl font-[family-name:var(--font-bebas)] tracking-[0.06em] uppercase text-white leading-none drop-shadow-md whitespace-nowrap group-hover:translate-x-1 transition-transform duration-300">
                 {cat.title}
@@ -91,7 +91,7 @@ export default function HeroCategoryGrid() {
         ))}
       </div>
 
-      {/* ── MOBILE RESPONSIVE LAYOUT ── */}
+
       <div className="flex md:hidden flex-col w-full bg-[#17191c]">
         {CATEGORIES.map((cat) => (
           <Link
@@ -100,7 +100,7 @@ export default function HeroCategoryGrid() {
             aria-label={`Explorar ${cat.title}`}
             className="group relative w-full h-[22vh] min-h-[150px] overflow-hidden block border-b border-white/20 last:border-b-0"
           >
-            {/* Background Photo */}
+
             <Image
               src={cat.imageSrc}
               alt={cat.alt}
@@ -109,10 +109,10 @@ export default function HeroCategoryGrid() {
               sizes="100vw"
               className="object-cover object-center scale-100 group-active:scale-105 transition-transform duration-500"
             />
-            {/* Overlay */}
+
             <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent z-10" />
 
-            {/* Content */}
+
             <div className="absolute inset-0 p-6 z-20 flex items-center justify-between">
               <div>
                 <h2 className="text-3xl font-[family-name:var(--font-bebas)] tracking-[0.08em] uppercase text-white leading-none mb-1">

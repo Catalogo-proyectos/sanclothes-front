@@ -1,9 +1,6 @@
 import { CheckoutRequest, CheckoutResponse, TicketDetail } from '@/types/api';
 
-/**
- * Mock order type used internally — the real CheckoutResponse is leaner,
- * but the mock layer needs richer data for the dashboard preview.
- */
+
 interface MockOrder {
   orderId: string;
   orderNumber: string;

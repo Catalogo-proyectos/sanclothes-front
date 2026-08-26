@@ -24,7 +24,7 @@ interface ProductPurchasePanelProps {
   product: CatalogProduct;
   images: GalleryImage[];
   onPreviewImage: (index: number) => void;
-  /** Corte activo. Lo posee ProductDetail porque también manda sobre la galería. */
+
   selectedCut: string;
   onSelectCut: (cut: string) => void;
 }
@@ -44,8 +44,8 @@ export default function ProductPurchasePanel({
 
   const activeCut = selectedCut;
 
-  // Los talles dependen del corte: el backend guarda las variantes anidadas
-  // corte → talle, y un corte puede ofrecer menos talles que otro.
+
+
   const availableSizes = useMemo(() => {
     const sizesForCut = (product.variants ?? [])
       .filter((v) => v.cut === activeCut)
@@ -59,10 +59,10 @@ export default function ProductPurchasePanel({
 
   const [pickedSize, setSelectedSize] = useState<string>(availableSizes[0]);
 
-  // Talle efectivo. Al cambiar de corte el talle elegido puede no existir en el
-  // nuevo, así que se deriva en render en vez de sincronizarse con un efecto:
-  // evita el render en cascada y que quede seleccionado un talle fantasma que
-  // después falla al agregar al carrito.
+
+
+
+
   const selectedSize = availableSizes.includes(pickedSize) ? pickedSize : availableSizes[0];
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -173,7 +173,7 @@ export default function ProductPurchasePanel({
       await navigator.clipboard.writeText(url);
       toast.success('ENLACE COPIADO', { description: 'Ya podés compartir esta prenda.' });
     } catch {
-      // User dismissed share
+
     }
   }, [product.title, product.description]);
 
@@ -181,12 +181,10 @@ export default function ProductPurchasePanel({
 
   return (
     <div className="space-y-6 select-none text-[#17191c]">
-      {/* ── BRAND EYEBROW & HIGH-CONTRAST HEADLINE ── */}
+
       <div>
         <div className="flex items-center flex-wrap gap-2 mb-3">
-          {/* Con más de un corte esto deja de ser decorativo: cada corte tiene su
-              propio set de fotos (imagesByCut) y sus propios talles, así que
-              seleccionarlo repinta la galería entera. */}
+
           {product.cuts.map((cut) =>
             product.cuts.length > 1 ? (
               <button
@@ -242,7 +240,7 @@ export default function ProductPurchasePanel({
         </p>
       </div>
 
-      {/* ── PRICING BAR WITH EDITORIAL MONO BADGES ── */}
+
       <div className="py-4 border-y border-[#17191c]/10 flex items-center justify-between gap-4 flex-wrap bg-[#17191c]/[0.015] px-1">
         <div className="flex items-baseline gap-3">
           <span className="text-3xl sm:text-4xl font-[family-name:var(--font-bebas)] tracking-[0.04em] text-[#17191c] leading-none">
@@ -262,7 +260,7 @@ export default function ProductPurchasePanel({
         )}
       </div>
 
-      {/* ── STYLE / VARIANT THUMBNAILS ── */}
+
       {images.length > 1 && (
         <div>
           <div className="flex items-center gap-3">
@@ -289,7 +287,7 @@ export default function ProductPurchasePanel({
         </div>
       )}
 
-      {/* ── SIZE SELECTOR WITH BEBAS NEUE BUTTONS ── */}
+
       <div>
         <div className="flex items-center justify-between gap-3 mb-3">
           <span id="size-label" className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-zinc-700">
@@ -338,7 +336,7 @@ export default function ProductPurchasePanel({
         </div>
       </div>
 
-      {/* ── QUANTITY SELECTOR & LIVE TOTAL ── */}
+
       <div>
         <div className="flex items-center justify-between mb-2.5">
           <span id="qty-label" className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-zinc-700">
@@ -386,7 +384,7 @@ export default function ProductPurchasePanel({
         )}
       </div>
 
-      {/* ── HIGH-IMPACT PRIMARY CTA BUTTONS ── */}
+
       <div className="space-y-3 pt-2">
         <div className="flex items-center gap-2 sm:gap-2.5">
           <button
@@ -416,7 +414,7 @@ export default function ProductPurchasePanel({
             )}
           </button>
 
-          {/* Wishlist Button */}
+
           <button
             type="button"
             onClick={handleToggleWishlist}
@@ -431,7 +429,7 @@ export default function ProductPurchasePanel({
             <Heart className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[1.8] ${isWishlisted ? 'fill-white' : ''}`} aria-hidden="true" />
           </button>
 
-          {/* Share Button */}
+
           <button
             type="button"
             onClick={handleShare}

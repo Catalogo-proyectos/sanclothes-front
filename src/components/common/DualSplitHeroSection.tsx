@@ -32,7 +32,7 @@ export default function DualSplitHeroSection() {
   return (
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-4 px-4 sm:px-8 border-b border-[#b6b2a7]/40">
       <div className="max-w-[1440px] mx-auto">
-        {/* 50/50 Split Grid Container */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {dualBanners.map((banner, index) => (
             <motion.div
@@ -47,7 +47,7 @@ export default function DualSplitHeroSection() {
                 className="group relative block w-full h-[650px] sm:h-[720px] bg-[#f6f8f9] overflow-hidden border border-[#b6b2a7]"
                 style={{ borderRadius: '0px' }}
               >
-                {/* Crisp Studio Photography (Unobstructed per GEMINI.md rule) */}
+
                 <Image
                   src={banner.image}
                   alt={banner.alt}
@@ -57,17 +57,17 @@ export default function DualSplitHeroSection() {
                   className="object-cover object-center scale-100 group-hover:scale-[1.03] transition-transform duration-1000 ease-out"
                 />
 
-                {/* Subtle Gradient for Text Contrast */}
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
 
-                {/* Top Minimal Tag */}
+
                 <div className="absolute top-6 left-6 z-10">
                   <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-white bg-black/80 backdrop-blur-sm px-3 py-1.5 uppercase">
                     {banner.tag}
                   </span>
                 </div>
 
-                {/* Bottom Overlay Content */}
+
                 <div className="absolute bottom-0 left-0 right-0 p-8 z-10 flex flex-col justify-end text-white">
                   <h3 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] tracking-wider uppercase mb-2 leading-none drop-shadow-md">
                     {banner.title}

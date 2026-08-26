@@ -81,7 +81,7 @@ describe('useCart Zustand Store', () => {
 
   it('should calculate shipping correctly (free over 300,000 Gs.)', () => {
     const { addItem, getShippingCost } = useCart.getState();
-    
+
     addItem({
       variantId: 'var_001',
       productId: 'prod_01',
@@ -93,7 +93,7 @@ describe('useCart Zustand Store', () => {
       quantity: 1,
     });
 
-    // 150.000 < 300.000 -> Shipping = 20.000 Gs.
+
     expect(getShippingCost()).toBe(20000);
 
     addItem({
@@ -107,7 +107,7 @@ describe('useCart Zustand Store', () => {
       quantity: 1,
     });
 
-    // 310.000 >= 300.000 -> Free shipping = 0 Gs.
+
     expect(getShippingCost()).toBe(0);
   });
 });

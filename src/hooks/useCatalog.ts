@@ -14,14 +14,7 @@ interface UseCatalogResult {
   refetch: () => Promise<void>;
 }
 
-/**
- * Catálogo para componentes cliente, ya adaptado al modelo de vista.
- *
- * `useFetch` devuelve el payload crudo de la API; adaptar en cada componente
- * significaría repetir el mapeo (y olvidarse de normalizar las URLs de imagen en
- * alguno). El path se arma como string para que la dependencia de `useFetch` sea
- * estable entre renders aunque el objeto de query se recree.
- */
+
 export function useCatalog(query: CatalogQuery = {}): UseCatalogResult {
   const path = buildCatalogPath(query);
   const { data, loading, error, refetch } = useFetch<BackendProduct[]>('GET', path);

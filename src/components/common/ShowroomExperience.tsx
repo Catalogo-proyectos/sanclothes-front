@@ -50,8 +50,8 @@ export default function ShowroomExperience() {
   return (
     <section id="showroom" className="w-full scroll-mt-24 bg-[#17191c] text-[#f6f8f9] relative overflow-hidden border-b border-[#b6b2a7]/30">
       <div className="relative w-full min-h-[640px] lg:min-h-[720px] overflow-hidden group flex flex-col justify-between p-6 sm:p-12 lg:p-16">
-        
-        {/* Background Image - Showroom Atelier Design Table */}
+
+
         <Image
           src="/img/secciones/showroom-atelier.jpg"
           alt="SANT CLOTHES — Showroom & Tiendas"
@@ -61,23 +61,23 @@ export default function ShowroomExperience() {
           className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
 
-        {/* Dark Vignette Overlay for Contrast */}
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20 pointer-events-none" />
 
-        {/* ── TOP CONTENT ── */}
+
         <div className="relative z-10 max-w-5xl space-y-6 my-auto pt-6">
-          
-          {/* Main Headline */}
+
+
           <h2 className="text-4xl sm:text-6xl lg:text-7xl font-[family-name:var(--font-bebas)] tracking-wider uppercase leading-none text-white drop-shadow-lg max-w-4xl">
             SANT CLOTHES — SHOWROOM & TIENDAS
           </h2>
 
-          {/* Subtitle Description */}
+
           <p className="text-xs sm:text-sm font-mono tracking-wide text-zinc-300 uppercase leading-relaxed max-w-3xl">
             CIUDAD DEL ESTE, PARAGUAY · ESPACIO EXCLUSIVO DE PRUEBA Y ASESORAMIENTO DIRECTO. VIVÍ LA EXPERIENCIA DE NUESTRAS COLECCIONES HEAVYWEIGHT EN PERSONA.
           </p>
 
-          {/* Store Switcher Tabs */}
+
           <div className="pt-2 flex flex-wrap items-center gap-3">
             {STORES.map((store, idx) => {
               const isActive = idx === activeStoreIdx;
@@ -100,7 +100,7 @@ export default function ShowroomExperience() {
             })}
           </div>
 
-          {/* 3 Info Cards Row */}
+
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStore.id}
@@ -110,7 +110,7 @@ export default function ShowroomExperience() {
               transition={{ duration: 0.35 }}
               className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4"
             >
-              {/* Card 1: Ubicación */}
+
               <div className="p-4 bg-black/35 backdrop-blur-md border border-white/20 hover:border-white/40 transition-colors space-y-1">
                 <div className="flex items-center gap-2 text-white">
                   <MapPin className="w-4 h-4 text-zinc-300" />
@@ -126,7 +126,7 @@ export default function ShowroomExperience() {
                 </p>
               </div>
 
-              {/* Card 2: Horarios */}
+
               <div className="p-4 bg-black/35 backdrop-blur-md border border-white/20 hover:border-white/40 transition-colors space-y-1">
                 <div className="flex items-center gap-2 text-white">
                   <Clock className="w-4 h-4 text-zinc-300" />
@@ -142,7 +142,7 @@ export default function ShowroomExperience() {
                 </p>
               </div>
 
-              {/* Card 3: Experiencia SANT */}
+
               <div className="p-4 bg-black/35 backdrop-blur-md border border-white/20 hover:border-white/40 transition-colors space-y-1">
                 <div className="flex items-center gap-2 text-white">
                   <ShieldCheck className="w-4 h-4 text-zinc-300" />
@@ -160,7 +160,7 @@ export default function ShowroomExperience() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Action CTA Buttons */}
+
           <div className="pt-4 flex items-center">
             <button
               type="button"

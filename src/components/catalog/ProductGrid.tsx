@@ -10,12 +10,7 @@ import { useCatalogFilter } from '@/hooks/useCatalogFilter';
 import { filterByChip, filterByStyle, getChip, getStyle, isStyleId } from '@/lib/catalogFilters';
 import ProductCard from './ProductCard';
 
-/**
- * SANCLOTHES Catalog — Editorial Bands.
- * The catalog reads as a sequence of bands: one campaign image panel beside a 2×2
- * block of product cards. Each band flips the side the image sits on, so the eye
- * zig-zags down the page instead of scanning a flat 4-column grid.
- */
+
 
 interface BandPanel {
   title: string;
@@ -79,26 +74,26 @@ export default function ProductGrid() {
     category: category ?? undefined,
   });
 
-  // Antes, si el backend devolvía menos de 24 productos se reemplazaba la
-  // respuesta por la lista de mocks completa. Eso disfrazaba un catálogo vacío o
-  // un backend caído de catálogo lleno, y encima anulaba el filtrado del server.
-  // Ahora se muestra lo que hay, y si no hay nada se muestra el estado vacío.
+
+
+
+
   const displayedProducts = products;
 
-  // The header chip rail is the live filter: it never navigates, so the grid
-  // recomputes from the same fetched list instead of refetching per selection.
+
+
   const chip = useCatalogFilter((s) => s.chip);
   const setStyle = useCatalogFilter((s) => s.setStyle);
   const reduceMotion = useReducedMotion();
   const activeChip = getChip(chip);
 
-  // `?category=` is the header nav's selection. The grid still filters locally
-  // because the backend's `category` filter is an exact match against the code
-  // the admin assigned to the product, while the style lines here group several
-  // of those codes — the server-side filter alone would drop valid pieces.
+
+
+
+
   const activeStyle = isStyleId(category) ? getStyle(category) : null;
 
-  // Mirror it into the store so the header can underline the active nav link.
+
   useEffect(() => {
     setStyle(category);
   }, [category, setStyle]);
@@ -133,7 +128,7 @@ export default function ProductGrid() {
     <section id="catalog-grid" className="bg-[#f6f8f9] py-12 sm:py-16">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
 
-        {/* ── What the rail is currently showing ── */}
+
         <header className="mb-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-[#17191c]/10 pb-4 sm:mb-14">
           <h2
             aria-live="polite"
@@ -182,7 +177,7 @@ export default function ProductGrid() {
               key={`band-${index}`}
               className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-6 items-stretch"
             >
-              {/* ── CAMPAIGN PANEL ── */}
+
               <article
                 className={`group relative overflow-hidden bg-[#17191c] min-h-[500px] sm:min-h-[600px] lg:min-h-[820px] xl:min-h-[960px] 2xl:min-h-[1050px] ${
                   imageOnRight ? 'lg:order-2' : 'lg:order-1'
@@ -200,7 +195,7 @@ export default function ProductGrid() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45" />
 
-                {/* Panel content, bottom-left */}
+
                 <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-start gap-4 p-6 sm:p-8 lg:p-10">
                   <h2 className="max-w-[16ch] font-[family-name:var(--font-bebas)] text-3xl uppercase leading-[0.95] tracking-[0.04em] text-white sm:text-4xl lg:text-5xl">
                     {panel.title}
@@ -211,7 +206,7 @@ export default function ProductGrid() {
                 </div>
               </article>
 
-              {/* ── 2×2 PRODUCT BLOCK ── */}
+
               <div
                 className={`grid grid-cols-2 content-start gap-4 sm:gap-6 ${
                   imageOnRight ? 'lg:order-1' : 'lg:order-2'

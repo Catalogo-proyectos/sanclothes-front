@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Compass, Shield, Flame } from 'lucide-react';
 
-/* ── 3D Interactive WebGL Canvas Divider Component ── */
+
 interface Canvas3DDividerProps {
   label: string;
   tag: string;
@@ -33,7 +33,7 @@ function Canvas3DDivider({ label, tag, accentColor = '#ffffff' }: Canvas3DDivide
     };
     window.addEventListener('resize', handleResize);
 
-    // 3D Floating Particle System with Wave Motion
+
     const particleCount = Math.min(60, Math.floor(width / 20));
     const particles = Array.from({ length: particleCount }).map(() => ({
       x: Math.random() * width,
@@ -51,7 +51,7 @@ function Canvas3DDivider({ label, tag, accentColor = '#ffffff' }: Canvas3DDivide
       time += 0.02;
       ctx.clearRect(0, 0, width, height);
 
-      // Deep dark 3D background gradient
+
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, '#0a0b0c');
       bgGrad.addColorStop(0.5, '#17191c');
@@ -59,7 +59,7 @@ function Canvas3DDivider({ label, tag, accentColor = '#ffffff' }: Canvas3DDivide
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 3D Sinusoidal Energy Lines
+
       ctx.lineWidth = 1;
       for (let j = 0; j < 3; j++) {
         ctx.beginPath();
@@ -75,7 +75,7 @@ function Canvas3DDivider({ label, tag, accentColor = '#ffffff' }: Canvas3DDivide
         ctx.stroke();
       }
 
-      // Render 3D Particles with Perspective Projection
+
       particles.forEach((p) => {
         p.x += p.speedX;
         p.y += Math.sin(time + p.angle) * 0.5;
@@ -113,7 +113,7 @@ function Canvas3DDivider({ label, tag, accentColor = '#ffffff' }: Canvas3DDivide
     <div className="relative w-full h-[160px] overflow-hidden border-y border-white/15 select-none my-0">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
-      {/* Kinetic Animated Marquee Text Overlay */}
+
       <div className="absolute inset-0 z-10 flex items-center justify-between px-6 sm:px-12 pointer-events-none">
         <div className="flex items-center gap-3">
           <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping" />
@@ -136,11 +136,11 @@ function Canvas3DDivider({ label, tag, accentColor = '#ffffff' }: Canvas3DDivide
   );
 }
 
-/* ── Main Category Showcase Component ── */
+
 export default function CategoryShowcaseGrid() {
   return (
     <div className="w-full bg-[#17191c] text-white">
-      {/* ── 1. CASUAL SHOWCASE ── */}
+
       <section className="relative w-full h-[580px] sm:h-[680px] lg:h-[750px] overflow-hidden group flex flex-col justify-between border-b border-white/10">
         <Image
           src="/img/hero/Sants Casual.jpeg"
@@ -194,14 +194,14 @@ export default function CategoryShowcaseGrid() {
         </motion.div>
       </section>
 
-      {/* ── 3D INTERACTIVE DIVIDER 1 (CASUAL → STREETWEAR) ── */}
+
       <Canvas3DDivider
         label="STREETWEAR SS26 · OVERSIZED FIT"
         tag="01 // CASUAL → STREETWEAR"
         accentColor="#ffffff"
       />
 
-      {/* ── 2. STREETWEAR SHOWCASE ── */}
+
       <section className="relative w-full h-[580px] sm:h-[680px] lg:h-[750px] overflow-hidden group flex flex-col justify-between border-b border-white/10">
         <Image
           src="/img/hero/Hero-Catalogo2.jpeg"
@@ -255,14 +255,14 @@ export default function CategoryShowcaseGrid() {
         </motion.div>
       </section>
 
-      {/* ── 3D INTERACTIVE DIVIDER 2 (STREETWEAR → OLD MONEY) ── */}
+
       <Canvas3DDivider
         label="SILENT LUXURY · TEJIDOS NOBLES"
         tag="02 // STREETWEAR → OLD MONEY"
         accentColor="#d4af37"
       />
 
-      {/* ── 3. OLD MONEY SHOWCASE ── */}
+
       <section className="relative w-full h-[580px] sm:h-[680px] lg:h-[750px] overflow-hidden group flex flex-col justify-between border-b border-white/10">
         <Image
           src="/img/hero/Sants Hero Old Money.jpeg"
@@ -316,14 +316,14 @@ export default function CategoryShowcaseGrid() {
         </motion.div>
       </section>
 
-      {/* ── 3D INTERACTIVE DIVIDER 3 (OLD MONEY → SPORTS) ── */}
+
       <Canvas3DDivider
         label="PERFORMANCE DIVISION · TRACKSUITS"
         tag="03 // OLD MONEY → DEPORTIVO"
         accentColor="#38bdf8"
       />
 
-      {/* ── 4. DEPORTIVO / SPORTS SHOWCASE ── */}
+
       <section className="relative w-full h-[580px] sm:h-[680px] lg:h-[750px] overflow-hidden group flex flex-col justify-between border-b border-white/10">
         <Image
           src="/img/hero/Sants Hero Sport.jpeg"

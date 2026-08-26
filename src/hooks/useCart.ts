@@ -65,7 +65,7 @@ export const useCart = create<CartState>()(
       getShippingCost: () => {
         const subtotal = get().getSubtotal();
         if (subtotal === 0) return 0;
-        // Free shipping for orders over Gs. 300.000
+
         return subtotal >= 300000 ? 0 : 20000;
       },
 
@@ -73,7 +73,7 @@ export const useCart = create<CartState>()(
         return get().getSubtotal() + get().getShippingCost();
       },
 
-      // §5: Sync cart with backend (best-effort, local is source of truth for UX)
+
       syncToServer: async (mode: 'user' | 'guest') => {
         const { items } = get();
         try {
@@ -83,7 +83,7 @@ export const useCart = create<CartState>()(
             await saveGuestCart(items);
           }
         } catch {
-          // §2.5: Redis failures are silent — nothing we can do
+
         }
       },
 
@@ -96,7 +96,7 @@ export const useCart = create<CartState>()(
             set({ items: res.items as CartItem[] });
           }
         } catch {
-          // §2.5: Redis failures return empty cart, can't distinguish
+
         }
       },
     }),

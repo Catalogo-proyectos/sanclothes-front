@@ -11,8 +11,8 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     productId: 'prod_trece_01',
     slug: 'le-sants-club-suede-tracksuit',
     title: 'LE SANT CLUB SUEDE TRACKSUIT',
-    // Destacados del Bento 2×2: espeja lo que el admin marca en
-    // Catálogo → Bento Grid / Destacados 2×2 (products.is_featured).
+
+
     isFeatured: true,
     badge: 'NUEVO',
     description: 'Conjunto tracksuit completo confeccionado en gamuza sintética táctil pesada. Bordado frontal Nova Collection y cierre metálico bidireccional.',

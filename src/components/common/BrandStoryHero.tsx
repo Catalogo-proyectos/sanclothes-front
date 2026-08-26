@@ -108,8 +108,8 @@ export default function BrandStoryHero() {
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-12 sm:py-16 px-4 sm:px-8 border-b border-[#b6b2a7]/40">
       <div className="max-w-[1440px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
-          
-          {/* ── LEFT SIDE: Hero Campaign Banner (IMG_2996.jpg - Camperas & Chaquetas) ── */}
+
+
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -121,22 +121,22 @@ export default function BrandStoryHero() {
               className="relative w-full h-full min-h-[580px] lg:min-h-full bg-[#17191c] overflow-hidden border border-[#b6b2a7] group flex flex-col justify-end"
               style={{ borderRadius: '0px' }}
             >
-              {/* Background Campaign Image */}
+
               <Image
                 src="/img/hero/IMG_2996.webp"
                 alt="SANT CLOTHES — Colección Camperas & Chaquetas"
                 fill
                 quality={80}
-                // Mitad izquierda de una rejilla de 12 columnas dentro de un
-                // contenedor de 1440px; a pantalla completa nunca pasa de 720px.
+
+
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
               />
 
-              {/* Gradient Vignette for Text Contrast */}
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20 pointer-events-none" />
 
-              {/* Bottom Content Overlay */}
+
               <div className="relative z-10 p-6 sm:p-10 space-y-4 text-white">
                 <motion.h2
                   initial={{ opacity: 0, y: 25 }}
@@ -155,7 +155,7 @@ export default function BrandStoryHero() {
             </div>
           </motion.div>
 
-          {/* ── RIGHT SIDE: 4 Product Cards in 2x2 Grid (Exact Signature "Nuevas Prendas Destacadas" Style) ── */}
+
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -170,7 +170,7 @@ export default function BrandStoryHero() {
 
                 return (
                   <div key={product.id} className="group flex flex-col justify-between transition-all duration-300">
-                    {/* Presentation Card Container */}
+
                     <Link
                       href={`/products/${product.id}`}
                       aria-label={`Ver precompra de ${product.name}`}
@@ -187,9 +187,9 @@ export default function BrandStoryHero() {
                       />
                     </Link>
 
-                    {/* ── LOWER CONTENT AREA: TITLE & PRICE / REPLACED BY SIZES & CART ON HOVER ── */}
+
                     <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
-                      {/* 1. DEFAULT CONTENT (Title, Subtitle & Price) — Fades out on hover */}
+
                       <Link
                         href={`/products/${product.id}`}
                         aria-label={`Ver precompra de ${product.name}`}
@@ -208,9 +208,9 @@ export default function BrandStoryHero() {
                         </span>
                       </Link>
 
-                      {/* 2. HOVER QUICK ADD PANEL — Fades & slides in where the title was! */}
+
                       <div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
-                        {/* Sizes Selector */}
+
                         <div className="flex items-center justify-center gap-1.5">
                           {product.sizes.map((sz) => (
                             <button
@@ -228,7 +228,7 @@ export default function BrandStoryHero() {
                           ))}
                         </div>
 
-                        {/* Add to Cart Button */}
+
                         <button
                           type="button"
                           onClick={(e) => handleAddToCart(product, e)}

@@ -1,16 +1,7 @@
 import { config } from '@/lib/config';
 import { getStoredToken, getGuestCartToken } from '@/lib/auth';
 
-/**
- * Cart sync service (§5).
- *
- * Two variants with same shape but different tokens:
- * - Logged-in:  GET/POST /api/v1/me/cart   → uses session token
- * - Guest:      GET/POST /api/v1/cart       → uses guestCartToken (from confirm-otp)
- *
- * The backend stores the cart in Redis. If Redis is down, GET returns {items:[]}
- * and POST returns {success:true} silently (§2.5 — no way to detect from client).
- */
+
 
 interface CartPayload {
   items: unknown[];
@@ -50,7 +41,7 @@ async function cartFetch<T>(
   return res.json();
 }
 
-// ── Logged-in user cart ──
+
 
 export async function fetchUserCart(): Promise<CartPayload> {
   const token = getStoredToken();
@@ -64,7 +55,7 @@ export async function saveUserCart(items: unknown[]): Promise<CartSaveResponse> 
   return cartFetch<CartSaveResponse>('POST', '/api/v1/me/cart', token, { items });
 }
 
-// ── Guest cart (requires guestCartToken from OTP verification) ──
+
 
 export async function fetchGuestCart(): Promise<CartPayload> {
   const token = getGuestCartToken();

@@ -12,21 +12,21 @@ export default function StudioRackHero() {
         className="relative w-full h-[600px] sm:h-[700px] lg:h-[750px] overflow-hidden group flex flex-col justify-end"
         style={{ borderRadius: '0px' }}
       >
-        {/* Background Studio Photoshoot Image (IMG_4390.jpg - Full Width Edge to Edge) */}
+
         <Image
           src="/img/hero/IMG_4390.webp"
           alt="SANT CLOTHES — Studio Experience & Design Atelier"
           fill
           quality={80}
-          // Banner a sangre completa.
+
           sizes="100vw"
           className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
 
-        {/* Vignette Overlay for Text Legibility */}
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 pointer-events-none" />
 
-        {/* Bottom Content Overlay */}
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

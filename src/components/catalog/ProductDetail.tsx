@@ -14,22 +14,15 @@ interface ProductDetailProps {
   recommended: CatalogProduct[];
 }
 
-/**
- * Orchestrates the Product Details page. Data comes down from the server
- * component (src/app/products/[productId]/page.tsx) as props — no client-side
- * fetch, no loading skeleton, no layout shift once JS hydrates.
- *
- * The heavy pieces (gallery, purchase panel, lightbox) are split into their own
- * components so state changes in one (e.g. quantity) don't re-render the others.
- */
+
 export default function ProductDetail({ product, recommended }: ProductDetailProps) {
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
   const [selectedCut, setSelectedCut] = useState<string>(product.cuts?.[0] ?? '');
 
-  // Cada corte trae su propio set de fotos (imagesByCut en el backend), así que
-  // cambiarlo reemplaza la galería completa sin volver a pedir el producto.
-  // El array plano `images` queda como respaldo para productos legacy que se
-  // cargaron antes de que existiera el agrupado por corte.
+
+
+
+
   const galleryImages = useMemo<GalleryImage[]>(() => {
     const source = product.imagesByCut?.[selectedCut] ?? product.images ?? [];
 
@@ -42,7 +35,7 @@ export default function ProductDetail({ product, recommended }: ProductDetailPro
   const openZoom = useCallback((index: number) => setZoomIndex(index), []);
   const closeZoom = useCallback(() => setZoomIndex(null), []);
 
-  // Al cambiar de corte el índice viejo puede apuntar fuera del set nuevo.
+
   const handleSelectCut = useCallback((cut: string) => {
     setSelectedCut(cut);
     setZoomIndex(null);
@@ -57,11 +50,7 @@ export default function ProductDetail({ product, recommended }: ProductDetailPro
           <ProductGallery images={galleryImages} onOpenZoom={openZoom} />
         </div>
 
-        {/* The panel is taller than the viewport on a 900px-high screen (~1190px with an
-            accordion open). Pinned with only `top`, its lower half — accordions included —
-            stayed off-screen and unreachable for the whole length of the gallery scroll.
-            Capping it to the visible area and letting it scroll internally keeps every
-            control reachable; scroll chaining still hands off to the page at the end. */}
+
         <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
           <ProductPurchasePanel
             product={product}
@@ -93,8 +82,7 @@ export default function ProductDetail({ product, recommended }: ProductDetailPro
             </Link>
           </div>
 
-          {/* 2 → 3 → 4 columns: at 768px a 2-column grid stretched each card to
-              ~340px, far wider than the 3:4 card was designed for. */}
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {recommended.map((recProduct) => (
               <ProductCard key={recProduct.productId} product={recProduct} />

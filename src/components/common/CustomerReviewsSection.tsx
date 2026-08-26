@@ -37,7 +37,7 @@ export default function CustomerReviewsSection() {
   return (
     <section className="py-24 bg-white border-b border-zinc-200">
       <div className="w-full px-4 sm:px-6 md:px-8">
-        {/* Header */}
+
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6 border-b border-zinc-200 pb-6">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-400 block mb-1">
@@ -64,7 +64,7 @@ export default function CustomerReviewsSection() {
           </div>
         </div>
 
-        {/* Reviews Grid */}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {reviews.map((rev, idx) => (
             <motion.div

@@ -14,11 +14,7 @@ interface ProductCardProps {
   product: CatalogProduct;
 }
 
-/**
- * SANCLOTHES Atelier Product Card Design:
- * Title swap on hover — when cursor is over the card, the title/subtitle area below the image
- * disappears and is replaced by the size selector buttons and "AÑADIR AL CARRITO" button.
- */
+
 function ProductCard({ product }: ProductCardProps) {
   const addItem = useCart((state) => state.addItem);
 
@@ -28,8 +24,8 @@ function ProductCard({ product }: ProductCardProps) {
 
   const [selectedSize, setSelectedSize] = useState<string>(availableSizes[0] || 'S');
 
-  // Slots 0 y 1 del corte por defecto. Con una sola foto no se monta la segunda
-  // capa: cruzar una imagen contra sí misma solo produce un parpadeo.
+
+
   const { main, hover, count } = useMemo(
     () => cardSlots(product.images ?? []),
     [product.images]
@@ -74,11 +70,9 @@ function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="group flex flex-col justify-between transition-all duration-300 select-none">
-      {/* Product Card Image Container */}
+
       <div className="relative aspect-[3/4] w-full bg-[#f6f6f6] border border-zinc-200 group-hover:border-black overflow-hidden mb-2.5 transition-all duration-300">
-        {/* La foto de hover va PRIMERO en el DOM para quedar debajo: las dos son
-            `fill` y sin z-index gana la última pintada. Con el orden inverso la
-            card mostraba siempre el slot 1 y la principal quedaba tapada. */}
+
         <Link href={`/products/${product.productId}`} className="relative block w-full h-full">
           {hasHoverImage && (
             <Image
@@ -107,9 +101,9 @@ function ProductCard({ product }: ProductCardProps) {
         </Link>
       </div>
 
-      {/* ── LOWER CONTENT AREA: TITLE & PRICE / REPLACED BY SIZES & CART ON HOVER ── */}
+
       <div className="relative min-h-[110px] px-1 flex flex-col justify-between overflow-hidden">
-        {/* 1. DEFAULT CONTENT (Title, Subtitle & Price) — Fades out on hover */}
+
         <div className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2">
           <span className="text-[9px] font-mono font-bold tracking-[0.18em] text-zinc-500 uppercase truncate">
             {fabricSubtitle}
@@ -138,9 +132,9 @@ function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
 
-        {/* 2. HOVER QUICK ADD PANEL — Fades & slides in where the title was! */}
+
         <div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
-          {/* Sizes Selector */}
+
           <div className="flex items-center justify-center gap-1.5">
             {availableSizes.map((sz) => {
               const isSelected = selectedSize === sz;
@@ -165,7 +159,7 @@ function ProductCard({ product }: ProductCardProps) {
             })}
           </div>
 
-          {/* Add to Cart Button */}
+
           <button
             type="button"
             onClick={handleAddToCart}

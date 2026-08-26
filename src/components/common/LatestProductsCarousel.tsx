@@ -12,7 +12,7 @@ import { heroSlot } from '@/lib/images/slots';
 import { formatCurrency } from '@/utils/format';
 import type { CatalogProduct, ProductVariant } from '@/types/api';
 
-/** Cuántas prendas muestra el carrusel. */
+
 const CAROUSEL_CAPACITY = 4;
 
 export interface PresentationProduct {
@@ -29,10 +29,7 @@ export interface PresentationProduct {
 }
 
 
-/**
- * Mapea un producto del catálogo a la forma que consume el carrusel.
- * Slot de imagen 0 del corte por defecto: la card no tiene hover cruzado.
- */
+
 function toPresentationProduct(product: CatalogProduct): PresentationProduct {
   const effectivePrice = product.discountPrice ?? product.price;
   const image = heroSlot(product.images ?? []);
@@ -58,7 +55,7 @@ export default function LatestProductsCarousel() {
   const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
 
-  // `sort=newest` lo resuelve el backend por fecha de alta del producto.
+
   const { products, loading } = useCatalog({ sort: 'newest' });
 
   const carouselProducts = useMemo(
@@ -86,8 +83,8 @@ export default function LatestProductsCarousel() {
     e.stopPropagation();
     const chosenSize = selectedSizes[product.id] || product.sizes[0];
 
-    // El SKU real de la variante: el checkout reserva stock por SKU, así que uno
-    // inventado hace fallar la orden entera.
+
+
     const variant = product.variants.find((v) => v.size === chosenSize);
 
     addItem({
@@ -112,7 +109,7 @@ export default function LatestProductsCarousel() {
   return (
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-20 px-6 sm:px-12 border-b border-[#b6b2a7]/40">
       <div className="max-w-7xl mx-auto">
-        {/* Header Bar */}
+
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-6 border-b border-[#b6b2a7]/40">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -135,7 +132,7 @@ export default function LatestProductsCarousel() {
           </Link>
         </div>
 
-        {/* Presentation Product Cards Carousel Grid */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {loading &&
             Array.from({ length: CAROUSEL_CAPACITY }, (_, i) => (
@@ -158,19 +155,19 @@ export default function LatestProductsCarousel() {
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                 className="group flex flex-col justify-between"
               >
-                {/* 1. Presentation Studio Card (Clean Off-White #f8f8f8 Canvas) */}
+
                 <div
                   className="relative aspect-[3/4] w-full bg-[#f8f8f8] border border-zinc-200 overflow-hidden mb-4 transition-colors group-hover:border-black"
                   style={{ borderRadius: '0px' }}
                 >
-                  {/* Top-Left Tag */}
+
                   <div className="absolute top-3 left-3 z-10">
                     <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-black bg-white px-2.5 py-1 border border-zinc-200 shadow-sm">
                       {product.tag}
                     </span>
                   </div>
 
-                  {/* Top-Right Wishlist Button */}
+
                   <button
                     onClick={(e) => toggleWishlist(product.id, e)}
                     aria-label="Agregar a favoritos"
@@ -180,7 +177,7 @@ export default function LatestProductsCarousel() {
                     <Heart className={`w-4 h-4 ${isFav ? 'fill-black text-black' : ''}`} />
                   </button>
 
-                  {/* Isolated Product Presentation Image */}
+
                   <div className="relative w-full h-full p-6 flex items-center justify-center">
                     <Image
                       src={product.image}
@@ -191,9 +188,9 @@ export default function LatestProductsCarousel() {
                     />
                   </div>
 
-                  {/* Hover Quick Add Overlay Bar */}
+
                   <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/90 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-2">
-                    {/* Sizes selector */}
+
                     <div className="flex items-center justify-center gap-1">
                       {product.sizes.map((sz) => (
                         <button
@@ -211,7 +208,7 @@ export default function LatestProductsCarousel() {
                       ))}
                     </div>
 
-                    {/* Add Button */}
+
                     <button
                       onClick={(e) => handleAddToCart(product, e)}
                       className="w-full bg-white text-black hover:bg-zinc-200 text-[10px] font-mono font-bold tracking-[0.2em] uppercase py-2 flex items-center justify-center gap-2 border border-white transition-colors"
@@ -223,7 +220,7 @@ export default function LatestProductsCarousel() {
                   </div>
                 </div>
 
-                {/* 2. Minimalist Metadata (Under Card) */}
+
                 <div className="flex flex-col gap-1">
                   <span className="text-[9px] font-mono font-bold tracking-[0.2em] text-zinc-500 uppercase">
                     {product.fabric}

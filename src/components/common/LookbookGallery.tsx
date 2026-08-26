@@ -54,7 +54,7 @@ export default function LookbookGallery() {
   return (
     <section className="py-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-12">
-        {/* Header */}
+
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-[#50524a] pb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -68,7 +68,7 @@ export default function LookbookGallery() {
             </h2>
           </div>
 
-          {/* Look Selector Tabs */}
+
           <div className="flex items-center gap-2 flex-wrap">
             {looks.map((look) => (
               <button
@@ -87,9 +87,9 @@ export default function LookbookGallery() {
           </div>
         </div>
 
-        {/* Gallery Stage */}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Main Display Image */}
+
           <div className="lg:col-span-8 relative min-h-[520px] md:min-h-[620px] bg-[#17191c] border border-[#50524a] overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
@@ -109,7 +109,7 @@ export default function LookbookGallery() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#17191c] via-[#17191c]/30 to-transparent pointer-events-none" />
 
-                {/* Overlay Text */}
+
                 <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 text-[#f6f8f9]">
                   <span className="text-[10px] font-mono font-bold tracking-[0.3em] text-[#b6b2a7] uppercase block mb-2">
                     {currentLook.tag}
@@ -133,7 +133,7 @@ export default function LookbookGallery() {
             </AnimatePresence>
           </div>
 
-          {/* Look Details Sidebar */}
+
           <div className="lg:col-span-4 flex flex-col justify-between bg-[#50524a]/20 border border-[#50524a] p-8">
             <div>
               <span className="text-[10px] font-mono font-bold tracking-[0.3em] uppercase text-[#b6b2a7] block mb-3">

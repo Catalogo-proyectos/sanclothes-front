@@ -33,7 +33,7 @@ export default function FeaturedCollection() {
   return (
     <section className="py-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-12">
-        {/* Header */}
+
         <div className="text-center max-w-2xl mx-auto mb-16">
           <div className="inline-flex items-center justify-center gap-2 mb-2">
             <Flame className="w-4 h-4 text-[#17191c]" />
@@ -49,7 +49,7 @@ export default function FeaturedCollection() {
           </p>
         </div>
 
-        {/* Collection Showcase Grid */}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {collectionItems.map((item, idx) => (
             <motion.div

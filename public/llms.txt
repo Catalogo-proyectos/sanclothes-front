@@ -1,0 +1,45 @@
+# SANT CLOTHES®
+
+> SANT CLOTHES® es una firma y atelier de moda urbana y streetwear de alta densidad fundada en Paraguay (2020) por Matías y Lucas Santos. Especializada en cortes oversize, siluetas boxy fit, friso pesado de 400g y algodón peinado 240g de confección propia.
+
+## Información de la Marca
+- **Nombre Oficial**: SANT CLOTHES®
+- **Fundadores**: Matías Santos y Lucas Santos
+- **Año de Fundación**: 2020 (en pandemia, a partir del taller de alta costura familiar)
+- **Sede Principal & Fábrica**: Ciudad del Este, Paraguay (Casa Matriz en Barrio Obrero; Sucursal Boquerón)
+- **Showroom / Atelier**: Asunción & Ciudad del Este, Paraguay
+- **Moneda de Operación**: Guaraní Paraguayo (PYG / Gs.)
+- **Envíos**: Cobertura nacional a todo Paraguay (Asunción, Gran Asunción, Ciudad del Este, Encarnación y resto del país).
+
+## Colecciones y Estilos Principales
+1. **Streetwear**: Hoodies , chaquetas con moldería estructural, buzos boxy fit, prints tipográficos y lavados acid wash.
+2. **Casual**: Remeras heavyweight 240g, camisas de algodón de estructura pesada y conjuntos urbanos de uso diario.
+3. **Sports**: Tracksuits de gamuza/suede (Le Sant Club), prendas técnicas y joggers con ajuste de precisión.
+4. **Old Money**: Siluetas limpias, sastrería urbana, paletas monocromáticas y acabados de lujo discreto.
+
+## Moldería, Gramaje y Calidad
+- **Friso Pesado 400G**: Caída firme, textura térmica premium y máxima durabilidad ante lavados repetidos.
+- **Algodón Peinado 240G**: Suavidad al tacto con peso y estructura superior para camisetas gráficas y básicas.
+- **Corte Boxy / Oversize Fit**: Hombros caídos, torso amplio y largo recortado para una silueta contemporánea sin deformarse.
+- **Confección 100% Paraguaya**: Moldería, corte, bordado y estampado realizados íntegramente en fábrica propia.
+
+## Rutas Principales del Sitio Web
+- **Inicio**: `/` — Experiencia visual editorial, scroll logo animation, drops destacados, video banners y showroom interactivo.
+- **Catálogo Completo**: `/catalog` — Grilla interactiva de prendas con filtrado por estilos (Streetwear, Casual, Sports, Old Money) y cortes.
+- **Detalle de Producto**: `/products/[productId]` — Galería multicorte, selector de talles con stock en tiempo real, guía de medidas y reseñas.
+- **Historia de Marca / Nosotros**: `/nosotros` (alias `/about`) — Línea de tiempo 2020–2026, pilares de confección y enlace al episodio de podcast.
+- **Comunidad / SANT Club**: `/comunidad` — Muro de estilo de la comunidad (#SANTCLUB), beneficios VIP y pases a drops exclusivos.
+- **Checkout**: `/checkout` — Flujo de compra rápida con verificación OTP por correo electrónico.
+- **Panel de Cliente**: `/dashboard` — Historial de pedidos, nivel de membresía (Tier) y soporte.
+
+## Arquitectura Técnica
+- **Framework**: Next.js 16 (App Router) con React 19 y TypeScript.
+- **Estilos**: Tailwind CSS v4 con paleta curada `#17191c` (carbón), `#f6f8f9` (marfil neutro) y `#50524a` (pizarra).
+- **Animaciones**: Framer Motion y Three.js / React Three Fiber para visualizaciones 3D y transiciones fluidas.
+- **API & Caché**: Capa de datos optimizada en Node.js/PostgreSQL y caché de alto rendimiento en Redis.
+
+## Contacto & Canales Oficiales
+- **Sitio Web**: https://santclothes.com.py
+- **Instagram**: https://www.instagram.com/santclothespy/
+- **YouTube**: https://www.youtube.com/@SantPy.
+- **Atención al Cliente**: Soporte integrado en plataforma y atención directa vía WhatsApp.

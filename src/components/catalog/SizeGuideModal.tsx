@@ -24,7 +24,7 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
   const previouslyFocused = useRef<Element | null>(null);
   const titleId = useId();
 
-  // §4: fetch from /api/v1/catalog/size-guide/:category (never 404)
+
   const [apiChart, setApiChart] = useState<Record<string, Record<string, string>> | null>(null);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
       if (data.chart && Object.keys(data.chart).length > 0) {
         setApiChart(data.chart);
       }
-    }).catch(() => { /* fallback to hardcoded */ });
+    }).catch(() => {  });
   }, [category]);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
-  // Derive columns and rows from API chart or fallback
+
   const apiSizes = apiChart ? Object.keys(apiChart) : [];
   const apiColumns = apiChart && apiSizes.length > 0
     ? Object.keys(apiChart[apiSizes[0]])

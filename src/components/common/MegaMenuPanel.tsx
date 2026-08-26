@@ -12,10 +12,7 @@ interface MegaMenuPanelProps {
   onNavigate: () => void;
 }
 
-/**
- * All four panels stay mounted so switching categories is a class toggle rather
- * than a remount — no element churn, no image refetch, no blank frame.
- */
+
 function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
   return (
     <motion.div
@@ -25,7 +22,7 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
       className={`${isActive ? 'flex' : 'hidden'
         } items-stretch justify-between gap-8 lg:gap-12`}
     >
-      {/* 1. LEFT: Big Display Title */}
+
       <div className="w-48 sm:w-56 shrink-0 pt-1">
         <h2 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl tracking-[0.05em] text-[#17191c] uppercase leading-none">
           {cat.displayTitle}
@@ -35,9 +32,9 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
         </p>
       </div>
 
-      {/* 2. MIDDLE: 2 Columns of Category Links */}
+
       <div className="flex-1 grid grid-cols-2 gap-8 lg:gap-12 max-w-xl">
-        {/* Column 1 */}
+
         <div>
           <p className="text-[11px] font-black tracking-[0.2em] uppercase text-[#17191c] mb-4">
             {cat.col1Title}
@@ -60,7 +57,7 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
           </ul>
         </div>
 
-        {/* Column 2 */}
+
         <div className="pt-[26px]">
           <ul className="space-y-2.5">
             {cat.col2Links.map((link) => (
@@ -78,16 +75,14 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
         </div>
       </div>
 
-      {/* 3. RIGHT: Featured Campaign Image */}
+
       <div className="w-[320px] xl:w-[380px] shrink-0 self-stretch -my-8 ml-auto relative overflow-hidden bg-zinc-100 group/card">
         <Link
           href={cat.href}
           onClick={onNavigate}
           className="block w-full h-full relative"
         >
-          {/* El panel mide 320-380px, no 800: dejamos que next/image sirva la
-              variante justa. Sigue siendo eager con prioridad baja para que el
-              menú se sienta instantáneo sin competir con el LCP de la página. */}
+
           <Image
             src={cat.featuredImage}
             alt={cat.displayTitle}

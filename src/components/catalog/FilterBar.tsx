@@ -38,7 +38,7 @@ export default function FilterBar() {
   return (
     <div className="w-full bg-[#f6f8f9] border-b border-[#17191c]/10 py-3 mb-6 overflow-hidden">
       <div className="flex items-center justify-between gap-6 overflow-x-auto no-scrollbar scroll-smooth">
-        {/* Category horizontal scroll tabs */}
+
         <div className="flex items-center gap-6 shrink-0">
           {categories.map((cat) => (
             <button
@@ -55,7 +55,7 @@ export default function FilterBar() {
           ))}
         </div>
 
-        {/* Gender / Cut tabs */}
+
         <div className="flex items-center gap-2 shrink-0 border-l border-zinc-200 pl-6">
           <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mr-1">Filtro:</span>
           {cuts.map((c) => (

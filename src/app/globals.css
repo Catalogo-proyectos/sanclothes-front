@@ -1,25 +1,11 @@
 @import "tailwindcss";
 
-/* Aquí había un `@import url(fonts.googleapis.com/...League+Gothic)`. Un @import
-   dentro del CSS encadena dos viajes de red en la ruta crítica: el navegador
-   tiene que descargar y parsear globals.css antes de descubrir siquiera la
-   petición a Google Fonts. Se ha eliminado porque la familia no se aplicaba en
-   ningún selector ni utilidad: la tipografía real son Bebas Neue (vía next/font
-   en app/layout.tsx) y la pila de sistema definida en --font-sans. */
-
 :root {
-  /* ── Official Brand Palette ──
-   * Primary Dark:     #17191c | RGB 23 25 28    | CMYK 75 67.5 62.5 77.5
-   * Deep Olive Slate: #50524a | RGB 80 82 74    | CMYK 62.5 52.5 62.5 37.5
-   * Stone Taupe:      #b6b2a7 | RGB 182 178 167 | CMYK 30 25 32.5 0
-   * Ice Surface Light:#f6f8f9 | RGB 246 248 249 | CMYK 2.5 1 1 0
-   */
   --brand-dark: #17191c;
   --brand-slate: #50524a;
   --brand-taupe: #b6b2a7;
   --brand-light: #f6f8f9;
 
-  /* ── System Mappings ── */
   --background: #f6f8f9;
   --foreground: #17191c;
   --border: #b6b2a7;
@@ -50,7 +36,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Marquee Animations ── */
 @keyframes marquee {
   0% {
     transform: translateX(0);
@@ -69,7 +54,6 @@ body {
   }
 }
 
-/* ── Minimalist Button Utilities ── */
 .btn-mono-solid {
   display: inline-flex;
   align-items: center;
@@ -137,7 +121,6 @@ body {
   border-color: var(--white);
 }
 
-/* ── Custom Scrollbar ── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

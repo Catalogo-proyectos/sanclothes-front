@@ -6,12 +6,7 @@ import { MOCK_AUTH_RESPONSE, MOCK_USER, generateMockJWT } from '@/mocks/auth';
 import { MOCK_ORDERS, MOCK_TICKETS, createMockOrder } from '@/mocks/checkout';
 import { CheckoutRequest, TicketDetail, TicketMessage } from '@/types/api';
 
-/**
- * Structured API error that preserves HTTP status, backend error code,
- * and the full response body. Both error formats coexist (§1):
- * - Auth: { statusCode, error, message }
- * - Checkout/catalog/Google: { error, code }
- */
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -24,15 +19,8 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Universal API Client with automatic Mock Data Router fallback.
- * When config.api.useMock === true, requests are handled by Mock Repositories.
- * When config.api.useMock === false, requests execute fetch() against Fastify backend.
- */
-/**
- * @param requireAuth  `true` = use session token from storage.
- *                     A string = use that literal token as Bearer value.
- */
+
+
 export async function apiCall<T = any>(
   method: string,
   path: string,
@@ -41,12 +29,12 @@ export async function apiCall<T = any>(
 ): Promise<T> {
   const normalizedMethod = method.toUpperCase();
 
-  // If mock mode is ON, execute mock handlers
+
   if (config.api.useMock) {
     return handleMockRequest<T>(normalizedMethod, path, body, !!requireAuth);
   }
 
-  // Real backend call
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -72,12 +60,12 @@ export async function apiCall<T = any>(
     let errorData: Record<string, unknown> | undefined;
     try {
       const errorJson = await response.json();
-      // §1: Auth uses {statusCode, error, message}, checkout/catalog uses {error, code}
+
       errorMessage = errorJson.message || errorJson.error || errorMessage;
       errorCode = errorJson.code || undefined;
       errorData = errorJson;
     } catch {
-      // Ignore JSON parse error
+
     }
     const err = new ApiError(errorMessage, response.status, errorCode, errorData);
     throw err;
@@ -86,16 +74,14 @@ export async function apiCall<T = any>(
   return response.json();
 }
 
-/**
- * Mock Request Handler simulating backend REST endpoints with 150ms latency.
- */
+
 async function handleMockRequest<T>(
   method: string,
   path: string,
   body?: any,
   requireAuth: boolean = false
 ): Promise<T> {
-  // Simulate network latency
+
   await new Promise((res) => setTimeout(res, 150));
 
   if (requireAuth) {
@@ -105,16 +91,16 @@ async function handleMockRequest<T>(
     }
   }
 
-  // --- CATALOG ENDPOINTS ---
-  // §4: GET /api/catalog/cuts → { cuts: [...] }
+
+
   if (method === 'GET' && path === '/catalog/cuts') {
     return { cuts: MOCK_CUTS } as unknown as T;
   }
 
-  // El catálogo simulado emite el MISMO modelo que la API real (BackendProduct),
-  // no el modelo de vista. Así el modo mock ejercita el adaptador y la capa de
-  // slots de imagen en vez de saltárselos, que es justo donde se rompen las cosas
-  // al conectar el backend de verdad.
+
+
+
+
   if (method === 'GET' && path.startsWith('/catalog/')) {
     const productId = path.replace('/catalog/', '');
     const product = MOCK_PRODUCTS.find((p) => p.productId === productId || p.slug === productId);
@@ -150,7 +136,7 @@ async function handleMockRequest<T>(
     return (result.length > 0 ? result : MOCK_PRODUCTS).map(toBackendProduct) as unknown as T;
   }
 
-  // --- AUTH ENDPOINTS (§3) ---
+
   if (method === 'POST' && path === '/auth/login') {
     if (!body?.email || !body?.password) {
       throw new Error('Email and password are required');
@@ -196,7 +182,7 @@ async function handleMockRequest<T>(
     return { success: true, message: 'Contraseña actualizada exitosamente.' } as unknown as T;
   }
 
-  // --- CHECKOUT OTP FLOW (§6) ---
+
   if (method === 'POST' && path === '/checkout/verify-email') {
     return { success: true, message: 'Si el correo es válido, se envió un código OTP.' } as unknown as T;
   }
@@ -234,7 +220,7 @@ async function handleMockRequest<T>(
     } as unknown as T;
   }
 
-  // --- CUSTOMER & ORDERS ENDPOINTS ---
+
   if (method === 'GET' && path === '/me') {
     return MOCK_USER as unknown as T;
   }
@@ -248,7 +234,7 @@ async function handleMockRequest<T>(
     return { success: true, message: 'Contraseña actualizada exitosamente' } as unknown as T;
   }
 
-  // §3: GET /me/orders returns flat array (no pagination)
+
   if (method === 'GET' && (path === '/me/orders' || path.startsWith('/me/orders?'))) {
     return MOCK_ORDERS.map((o) => ({
       id: o.orderId,
@@ -268,7 +254,7 @@ async function handleMockRequest<T>(
     return order as unknown as T;
   }
 
-  // --- SUPPORT TICKETS ENDPOINTS ---
+
   if (method === 'GET' && (path === '/me/tickets' || path.startsWith('/me/tickets?'))) {
     return {
       items: MOCK_TICKETS.map((t) => ({

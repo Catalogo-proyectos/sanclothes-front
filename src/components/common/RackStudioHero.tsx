@@ -10,7 +10,7 @@ export default function RackStudioHero() {
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-16 sm:py-24 px-6 sm:px-12 border-b border-[#b6b2a7]/40 relative overflow-hidden">
       <div className="max-w-6xl mx-auto flex flex-col items-center text-center relative z-10">
 
-        {/* Top Header Row */}
+
         <div className="w-full flex items-center justify-between text-[11px] font-mono font-extrabold uppercase tracking-[0.25em] text-[#50524a] mb-8 border-b border-[#b6b2a7]/40 pb-4">
           <span>LIMITED RELEASE</span>
           <div className="flex items-center gap-1 text-[#17191c]">
@@ -19,7 +19,7 @@ export default function RackStudioHero() {
           <span>JULY 2026</span>
         </div>
 
-        {/* Main Hero Headline */}
+
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -35,7 +35,7 @@ export default function RackStudioHero() {
           </p>
         </motion.div>
 
-        {/* Center Studio Rack Presentation Image */}
+
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -54,7 +54,7 @@ export default function RackStudioHero() {
           />
         </motion.div>
 
-        {/* 4 Outfits Pillars Badges Bar */}
+
         <div className="w-full max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10 text-center">
           <div className="p-3 bg-[#f6f8f9] border border-[#b6b2a7]">
             <span className="text-[10px] font-mono font-bold uppercase text-[#17191c] block tracking-widest">
@@ -82,7 +82,7 @@ export default function RackStudioHero() {
           </div>
         </div>
 
-        {/* Bottom Poster Row */}
+
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center text-left pt-6 border-t border-[#b6b2a7]/40">
           <div>
             <span className="text-lg font-[family-name:var(--font-bebas)] tracking-wider uppercase text-[#17191c] block leading-none">

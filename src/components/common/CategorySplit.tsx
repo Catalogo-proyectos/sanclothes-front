@@ -29,10 +29,7 @@ const categories: CategoryColumn[] = [
   },
 ];
 
-/**
- * Category Editorial Split — 2 full-width columns, 0px gap.
- * Each column has a full-bleed photo with pill CTA overlay.
- */
+
 export default function CategorySplit() {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -66,7 +63,7 @@ export default function CategorySplit() {
           className="group relative block overflow-hidden"
           style={{ minHeight: '50vh' }}
         >
-          {/* Background Image */}
+
           <Image
             src={cat.image}
             alt={cat.alt}
@@ -76,7 +73,7 @@ export default function CategorySplit() {
             style={{ objectPosition: 'center top' }}
           />
 
-          {/* Gradient overlay */}
+
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -85,7 +82,7 @@ export default function CategorySplit() {
             }}
           />
 
-          {/* Text content */}
+
           <div
             className="absolute bottom-0 left-0 w-full"
             style={{

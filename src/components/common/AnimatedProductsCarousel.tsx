@@ -74,7 +74,7 @@ export default function AnimatedProductsCarousel() {
   const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
 
-  // Auto-slide effect every 4.5 seconds
+
   useEffect(() => {
     if (!isAutoplay) return;
     const interval = setInterval(() => {
@@ -134,7 +134,7 @@ export default function AnimatedProductsCarousel() {
       onMouseLeave={() => setIsAutoplay(true)}
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header Bar with Navigation Controls */}
+
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-white/10">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -148,7 +148,7 @@ export default function AnimatedProductsCarousel() {
             </h2>
           </div>
 
-          {/* Carousel Arrows & Controls */}
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 mr-2">
               {CAROUSEL_PRODUCTS.map((_, i) => (
@@ -184,7 +184,7 @@ export default function AnimatedProductsCarousel() {
           </div>
         </div>
 
-        {/* ── DESKTOP GRID (4 Cards Layout with Animated Highlight) ── */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {CAROUSEL_PRODUCTS.map((product, idx) => {
             const isSelected = currentIndex === idx;
@@ -202,14 +202,14 @@ export default function AnimatedProductsCarousel() {
                   isSelected ? 'scale-[1.02]' : 'opacity-90 hover:opacity-100'
                 }`}
               >
-                {/* Presentation Card Container */}
+
                 <div
                   className={`relative aspect-[3/4] w-full bg-[#0d0e10] border overflow-hidden mb-2.5 transition-all duration-300 ${
                     isSelected ? 'border-white shadow-2xl' : 'border-white/10 group-hover:border-white/30'
                   }`}
                   style={{ borderRadius: '0px' }}
                 >
-                  {/* Studio Presentation Garment Image */}
+
                   <div className="relative w-full h-full p-4 flex items-center justify-center">
                     <Image
                       src={product.image}
@@ -222,9 +222,9 @@ export default function AnimatedProductsCarousel() {
                   </div>
                 </div>
 
-                {/* ── LOWER CONTENT AREA: TITLE & PRICE / REPLACED BY SIZES & CART ON HOVER ── */}
+
                 <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
-                  {/* 1. DEFAULT CONTENT (Title, Subtitle & Price) — Fades out on hover */}
+
                   <div className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2">
                     <span className="text-[9px] font-mono font-bold tracking-[0.18em] text-zinc-400 uppercase truncate">
                       {product.fabric}
@@ -244,9 +244,9 @@ export default function AnimatedProductsCarousel() {
                     </div>
                   </div>
 
-                  {/* 2. HOVER QUICK ADD PANEL — Fades & slides in where the title was! */}
+
                   <div className="absolute inset-0 z-20 bg-black/95 text-white p-2.5 border border-white/20 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-xl">
-                    {/* Sizes Selector */}
+
                     <div className="flex items-center justify-center gap-1.5">
                       {product.sizes.map((sz) => (
                         <button
@@ -264,7 +264,7 @@ export default function AnimatedProductsCarousel() {
                       ))}
                     </div>
 
-                    {/* Add to Cart Button */}
+
                     <button
                       type="button"
                       onClick={(e) => handleAddToCart(product, e)}

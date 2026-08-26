@@ -4,7 +4,7 @@ import CheckoutForm from '@/components/checkout/CheckoutForm';
 export default function CheckoutPage() {
   return (
     <div className="bg-white min-h-screen">
-      {/* Page Hero */}
+
       <PageHero
         category="PROCESO DE PAGO SEGURO / SANCLOTHES"
         title="FINALIZAR COMPRA"
@@ -12,7 +12,7 @@ export default function CheckoutPage() {
         compact
       />
 
-      {/* Form Content */}
+
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-12">
         <CheckoutForm />
       </div>

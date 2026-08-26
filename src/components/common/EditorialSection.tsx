@@ -9,10 +9,10 @@ export default function EditorialSection() {
   return (
     <section className="py-20 sm:py-24 bg-[#f6f8f9] text-[#17191c] overflow-hidden border-b border-[#b6b2a7]/40">
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-12">
-        {/* 50/50 Dual Editorial Split Grid (Clean Unboxed Layout) */}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
-          {/* ── LEFT COLUMN (50%): PRENDAS PENSADAS PARA DURAR ── */}
+
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -20,7 +20,7 @@ export default function EditorialSection() {
             transition={{ duration: 0.7 }}
             className="flex flex-col space-y-6"
           >
-            {/* Editorial Garments Rack Image */}
+
             <div
               className="relative aspect-[16/9] w-full bg-zinc-100 overflow-hidden border border-[#b6b2a7] group mb-2"
               style={{ borderRadius: '0px' }}
@@ -41,7 +41,7 @@ export default function EditorialSection() {
               </div>
             </div>
 
-            {/* Eyebrow Tag */}
+
             <div className="flex items-center gap-2.5">
               <span className="w-2.5 h-2.5 bg-[#17191c] rounded-full" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
@@ -49,12 +49,12 @@ export default function EditorialSection() {
               </span>
             </div>
 
-            {/* Main Headline */}
+
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-[family-name:var(--font-bebas)] tracking-wider text-[#17191c] leading-[0.95] uppercase">
               PRENDAS PENSADAS PARA DURAR, NO PARA PASAR DE MODA
             </h2>
 
-            {/* Body Paragraphs */}
+
             <p className="text-xs sm:text-sm text-[#17191c] font-mono font-medium tracking-wide uppercase leading-relaxed">
               EN SANT CLOTHES CREEMOS EN LA FUERZA DE LO SIMPLE. ELIMINAMOS ADORNOS INNECESARIOS PARA ENFOCAR TODA LA ATENCIÓN EN SILUETAS, VOLUMEN Y TEXTURA DE MATERIAS PRIMAS HEAVYWEIGHT.
             </p>
@@ -63,7 +63,7 @@ export default function EditorialSection() {
               NUESTROS DISEÑOS HABITAN EN EL EQUILIBRIO ENTRE LA COMODIDAD COTIDIANA Y LA SOFISTICACIÓN CONTEMPORÁNEA. ROPA VERSÁTIL CON IDENTIDAD PROPIA FABRICADA EN PARAGUAY.
             </p>
 
-            {/* Feature Pills */}
+
             <div className="grid grid-cols-3 gap-3 pt-2">
               <div className="p-3 bg-[#f6f8f9] border border-[#b6b2a7] text-center">
                 <span className="text-[10px] font-mono font-bold uppercase text-[#17191c] block">400G</span>
@@ -79,7 +79,7 @@ export default function EditorialSection() {
               </div>
             </div>
 
-            {/* CTA Button */}
+
             <div className="pt-4">
               <Link
                 href="/catalog"
@@ -92,7 +92,7 @@ export default function EditorialSection() {
             </div>
           </motion.div>
 
-          {/* ── RIGHT COLUMN (50%): SANT CLOTHES — EL ARTE DEL STREETWEAR ELEVADO ── */}
+
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -100,7 +100,7 @@ export default function EditorialSection() {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="flex flex-col space-y-6"
           >
-            {/* Atelier Photo */}
+
             <div
               className="relative aspect-[16/9] w-full bg-zinc-900 overflow-hidden border border-[#b6b2a7] group mb-2"
               style={{ borderRadius: '0px' }}
@@ -121,7 +121,7 @@ export default function EditorialSection() {
               </div>
             </div>
 
-            {/* Eyebrow Tag */}
+
             <div className="flex items-center gap-2">
               <Compass className="w-4 h-4 text-[#50524a]" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
@@ -129,12 +129,12 @@ export default function EditorialSection() {
               </span>
             </div>
 
-            {/* Main Headline */}
+
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-[family-name:var(--font-bebas)] tracking-wider text-[#17191c] leading-[0.95] uppercase">
               SANT CLOTHES — EL ARTE DEL STREETWEAR ELEVADO
             </h2>
 
-            {/* Body Paragraphs */}
+
             <p className="text-xs sm:text-sm text-[#17191c] font-mono font-medium tracking-wide uppercase leading-relaxed">
               SANT CLOTHES NACE EN PLENA PANDEMIA DESDE EL TALLER DE ALTA COSTURA DE NUESTRA MADRE. LOS HERMANOS MATÍAS Y LUCAS SANTOS TRANSFORMARON ESA HERENCIA ARTESANAL EN UNA MARCA URBANA PIONERA EN PARAGUAY.
             </p>
@@ -143,7 +143,7 @@ export default function EditorialSection() {
               CADA DISEÑO LLEVA UN VALOR PERSONAL: FRASES QUE INSPIRAN Y MENSAJES QUE MOTIVAN. HOY CON FÁBRICA PROPIA Y TIENDAS EN CIUDAD DEL ESTE, CREAMOS PARA LOS SOÑADORES QUE EMPIEZAN DESDE CERO.
             </p>
 
-            {/* Feature Pills */}
+
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="p-3 bg-[#f6f8f9] border border-[#b6b2a7]">
                 <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase block">
@@ -163,7 +163,7 @@ export default function EditorialSection() {
               </div>
             </div>
 
-            {/* CTA Button */}
+
             <div className="pt-4">
               <Link
                 href="/nosotros"

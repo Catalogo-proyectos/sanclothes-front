@@ -6,7 +6,7 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <div className="bg-white min-h-screen">
-        {/* Page Hero */}
+
         <PageHero
           category="PANEL DE CLIENTE / SANCLOTHES"
           title="MI CUENTA & PEDIDOS"
@@ -14,7 +14,7 @@ export default function DashboardPage() {
           compact
         />
 
-        {/* Dashboard Content */}
+
         <Dashboard />
       </div>
     </ProtectedRoute>

@@ -13,7 +13,7 @@ import { heroSlot } from '@/lib/images/slots';
 import { formatCurrency } from '@/utils/format';
 import type { CatalogProduct, ProductVariant } from '@/types/api';
 
-/** Cuántas prendas entran en la grilla 4×2 de esta sección. */
+
 const GRID_CAPACITY = 8;
 
 export interface GridProduct {
@@ -30,12 +30,7 @@ export interface GridProduct {
 }
 
 
-/**
- * Mapea un producto del catálogo a la forma que consume esta grilla.
- *
- * El slot de imagen es el 0 del corte por defecto: es la card compacta de home,
- * no hay hover cruzado ni galería.
- */
+
 function toGridProduct(product: CatalogProduct): GridProduct {
   const effectivePrice = product.discountPrice ?? product.price;
   const image = heroSlot(product.images ?? []);
@@ -62,9 +57,9 @@ export default function FeaturedProductsGrid() {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const { products, loading } = useCatalog();
 
-  // Los destacados que marcó el admin encabezan la grilla; el resto del catálogo
-  // completa los huecos para no dejar media grilla vacía, que se lee como error
-  // de carga y no como decisión de diseño.
+
+
+
   const gridProducts = useMemo(() => {
     const featured = selectFeatured(products);
     const featuredIds = new Set(featured.map((p) => p.productId));
@@ -84,8 +79,8 @@ export default function FeaturedProductsGrid() {
     e.stopPropagation();
     const chosenSize = selectedSizes[product.id] || product.sizes[0];
 
-    // El SKU real de la variante: es lo que el checkout usa para reservar stock,
-    // así que un SKU inventado hace fallar la orden entera.
+
+
     const variant = product.variants.find((v) => v.size === chosenSize);
 
     addItem({
@@ -106,15 +101,15 @@ export default function FeaturedProductsGrid() {
     });
   };
 
-  // Sin catálogo no hay sección: mejor que una grilla de esqueletos permanentes
-  // o, peor, de prendas inventadas.
+
+
   if (!loading && gridProducts.length === 0) return null;
 
   return (
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-20 px-6 sm:px-12 border-b border-[#17191c]/10">
       <div className="max-w-[1440px] mx-auto">
 
-        {/* Section Header */}
+
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-[#17191c]/10">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -143,7 +138,7 @@ export default function FeaturedProductsGrid() {
           </Link>
         </div>
 
-        {/* 8 Products Grid (4 columns × 2 rows) */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {loading &&
             Array.from({ length: GRID_CAPACITY }, (_, i) => (
@@ -165,7 +160,7 @@ export default function FeaturedProductsGrid() {
                 transition={{ duration: 0.4, delay: (idx % 4) * 0.08 }}
                 className="group flex flex-col justify-between transition-all duration-300"
               >
-                {/* Product Card Image Container */}
+
                 <Link
                   href={`/products/${product.id}`}
                   aria-label={`Ver precompra de ${product.name}`}
@@ -182,9 +177,9 @@ export default function FeaturedProductsGrid() {
                   />
                 </Link>
 
-                {/* ── LOWER CONTENT AREA: TITLE & PRICE / REPLACED BY SIZES & CART ON HOVER ── */}
+
                 <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
-                  {/* 1. DEFAULT CONTENT (Title, Subtitle & Price) — Fades out on hover */}
+
                   <Link
                     href={`/products/${product.id}`}
                     aria-label={`Ver precompra de ${product.name}`}
@@ -203,9 +198,9 @@ export default function FeaturedProductsGrid() {
                     </span>
                   </Link>
 
-                  {/* 2. HOVER QUICK ADD PANEL — Fades & slides in where the title was! */}
+
                   <div className="absolute inset-0 z-20 bg-white text-[#17191c] p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-xl border border-zinc-200">
-                    {/* Sizes Selector */}
+
                     <div className="flex items-center justify-center gap-1.5">
                       {product.sizes.map((sz) => (
                         <button
@@ -222,7 +217,7 @@ export default function FeaturedProductsGrid() {
                       ))}
                     </div>
 
-                    {/* Add to Cart Button */}
+
                     <button
                       type="button"
                       onClick={(e) => handleAddToCart(product, e)}

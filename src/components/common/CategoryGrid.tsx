@@ -63,7 +63,7 @@ export default function CategoryGrid() {
   return (
     <section id="category-grid-section" className="py-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-12">
-        {/* Section Header */}
+
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#b6b2a7]/40 pb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -85,7 +85,7 @@ export default function CategoryGrid() {
           </Link>
         </div>
 
-        {/* Category Cards Grid */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((cat, index) => (
             <motion.div
@@ -100,7 +100,7 @@ export default function CategoryGrid() {
                 className="group relative block bg-[#50524a]/20 overflow-hidden border border-[#50524a] hover:border-[#b6b2a7] transition-all duration-300 shadow-none"
                 style={{ borderRadius: '0px' }}
               >
-                {/* Image Container 3:4 aspect */}
+
                 <div className="relative aspect-[3/4] w-full overflow-hidden">
                   <Image
                     src={cat.image}
@@ -110,14 +110,14 @@ export default function CategoryGrid() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#17191c] via-[#17191c]/40 to-transparent pointer-events-none" />
 
-                  {/* Top Badge */}
+
                   <div className="absolute top-4 left-4 z-10">
                     <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-[#f6f8f9] bg-[#50524a] px-2.5 py-1">
                       {cat.tag}
                     </span>
                   </div>
 
-                  {/* Content Overlay */}
+
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-[#f6f8f9] flex flex-col justify-end">
                     <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-[#b6b2a7] uppercase mb-1">
                       0{index + 1} — {cat.material}

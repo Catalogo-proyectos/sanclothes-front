@@ -36,7 +36,7 @@ export default function ExploreCollectionsSection() {
   return (
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-20 px-6 sm:px-12 border-b border-[#b6b2a7]/40">
       <div className="max-w-7xl mx-auto">
-        {/* Top Header Bar */}
+
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
             <span className="text-[11px] font-mono font-bold uppercase tracking-[0.25em] text-[#50524a] block mb-2">
@@ -56,9 +56,9 @@ export default function ExploreCollectionsSection() {
           </Link>
         </div>
 
-        {/* 3 Columns Grid */}
+
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-          {/* Column 1: Wide Feature (Outerwear) - 5 Cols */}
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -79,7 +79,7 @@ export default function ExploreCollectionsSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#17191c]/85 via-[#17191c]/30 to-transparent pointer-events-none" />
 
-              {/* Bottom Content & Action */}
+
               <div className="absolute bottom-0 left-0 right-0 p-8 flex items-end justify-between z-10">
                 <div>
                   <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-[#b6b2a7] uppercase block mb-1">
@@ -90,7 +90,7 @@ export default function ExploreCollectionsSection() {
                   </h3>
                 </div>
 
-                {/* Dark Slate Button */}
+
                 <div
                   className="w-12 h-12 bg-[#50524a] text-[#f6f8f9] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shrink-0 ml-4 border border-[#50524a]"
                   style={{ borderRadius: '0px' }}
@@ -101,7 +101,7 @@ export default function ExploreCollectionsSection() {
             </Link>
           </motion.div>
 
-          {/* Column 2: Tall Vertical (Sneakers) - 3 Cols */}
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -122,7 +122,7 @@ export default function ExploreCollectionsSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#17191c]/85 via-[#17191c]/30 to-transparent pointer-events-none" />
 
-              {/* Bottom Content & Action */}
+
               <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between z-10">
                 <div>
                   <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-[#b6b2a7] uppercase block mb-1">
@@ -133,7 +133,7 @@ export default function ExploreCollectionsSection() {
                   </h3>
                 </div>
 
-                {/* Dark Circle Button */}
+
                 <div
                   className="w-10 h-10 bg-[#17191c]/80 border border-[#b6b2a7]/40 text-[#f6f8f9] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shrink-0 ml-2"
                   style={{ borderRadius: '0px' }}
@@ -144,9 +144,9 @@ export default function ExploreCollectionsSection() {
             </Link>
           </motion.div>
 
-          {/* Column 3: Two Stacked Cards (Essentials & Accessories) - 4 Cols */}
+
           <div className="md:col-span-4 flex flex-col gap-6">
-            {/* Top Card: Essentials */}
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -187,7 +187,7 @@ export default function ExploreCollectionsSection() {
               </Link>
             </motion.div>
 
-            {/* Bottom Card: Accessories */}
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

@@ -10,21 +10,7 @@ interface ProductGalleryProps {
   onOpenZoom: (index: number) => void;
 }
 
-/**
- * Editorial stacked gallery with a deliberate vertical rhythm:
- *
- *   ┌──────────────────────┐
- *   │   1. HERO (wide)     │   ← aspect-[4/3] landscape
- *   └──────────────────────┘
- *   ┌──────────┐ ┌──────────┐
- *   │ 2. SMALL │ │ 3. SMALL │   ← aspect-[3/4] portrait, side-by-side
- *   └──────────┘ └──────────┘
- *   ┌──────────────────────┐
- *   │   4. LARGE (wide)    │   ← aspect-[4/3] landscape
- *   └──────────────────────┘
- *
- * Any extra images beyond the 4th are paired in a 2-col grid at the bottom.
- */
+
 function getSlotImage(images: GalleryImage[], index: number): GalleryImage {
   if (!images || images.length === 0) {
     return { url: '/img/Placeholer.jpeg', alt: 'Imagen no disponible' };
@@ -83,7 +69,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      {/* ── 1. TOP HERO: 1 grande arriba ── */}
+
       <button
         type="button"
         onClick={() => onOpenZoom(0)}
@@ -108,7 +94,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         </span>
       </button>
 
-      {/* ── 2. MIDDLE: 2 en el medio ── */}
+
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         {smallPair.map((image, i) => {
           const index = i + 1;
@@ -137,7 +123,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         })}
       </div>
 
-      {/* ── 3. BOTTOM HERO: 1 grande abajo ── */}
+
       <button
         type="button"
         onClick={() => onOpenZoom(3 % images.length)}
@@ -158,7 +144,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         </span>
       </button>
 
-      {/* ── 4. EXTRAS: any images beyond the first 4, paired in 2-col grid ── */}
+
       {extras.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {extras.map((image, i) => {

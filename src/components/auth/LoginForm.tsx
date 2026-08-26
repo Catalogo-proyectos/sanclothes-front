@@ -107,7 +107,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         router.push('/dashboard');
       }, 800);
     } catch (err) {
-      // §3: 409 with isGuestAccount → suggest login instead
+
       if (err instanceof ApiError && err.status === 409 && err.data?.isGuestAccount) {
         setError('Ya existe una cuenta con ese email (creada durante un checkout anterior). Iniciá sesión en vez de registrarte.');
       } else {
@@ -134,7 +134,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         role: response.user.role,
       });
 
-      // §3: avatarUrl only comes from /auth/google, not from GET /me
+
       if (response.user.avatarUrl) {
         setAvatarUrl(response.user.avatarUrl);
       }
@@ -158,7 +158,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     }
   };
 
-  // Initialize Google Identity Services
+
   useEffect(() => {
     if (!config.google.enabled || mode === 'forgot') return;
 
@@ -188,7 +188,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     };
     document.head.appendChild(script);
     return () => { script.remove(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [mode]);
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
@@ -199,7 +199,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
 
     try {
       await apiCall('POST', '/auth/forgot-password', { email });
-      // §3: always 200 (anti-enumeration)
+
       setSuccessMessage('Si el correo existe, te enviamos un enlace de recuperación.');
     } catch (err) {
       setError((err as Error).message || 'No se pudo enviar el correo de recuperación.');
@@ -238,7 +238,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         </div>
       </div>
 
-      {/* ── IZQUIERDA: panel de marca (solo desktop) ── */}
+
       <div className="relative hidden lg:flex lg:w-[54%] lg:h-screen lg:self-start lg:sticky lg:top-0 flex-col items-center justify-center bg-[#f6f8f9] p-12 xl:p-16 overflow-hidden border-r border-[#b6b2a7]/20 text-[#101114]">
         <div className="relative flex w-full max-w-2xl flex-col items-center text-center">
           <Image
@@ -258,7 +258,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         </div>
       </div>
 
-      {/* ── DERECHA: formulario ── */}
+
       <div className="w-full lg:w-[46%] flex items-center justify-center px-6 py-14 sm:px-12 xl:px-20">
         <div className="w-full max-w-md">
           <div className="flex items-center justify-between gap-4 border-b border-[#b6b2a7]/20 pb-6">
@@ -286,7 +286,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
             </p>
           )}
 
-          {/* Alternar entre ingreso y registro */}
+
           {mode !== 'forgot' && (
             <div className="mt-8 grid grid-cols-2 border border-[#b6b2a7]/25 bg-[#0b0c0e] p-1" role="tablist">
               {(['login', 'register'] as const).map((tab) => (
@@ -308,7 +308,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
             </div>
           )}
 
-          {/* Estado del envío. aria-live para que lo anuncie el lector de pantalla. */}
+
           <div aria-live="polite" className="empty:hidden">
             <AnimatePresence mode="wait">
               {error && (
@@ -472,7 +472,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
               />
             </button>
 
-            {/* Google Sign-In (§3) */}
+
             {mode !== 'forgot' && config.google.enabled && (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
@@ -510,7 +510,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
   );
 }
 
-// Google Identity Services type declaration
+
 declare global {
   const google: {
     accounts: {

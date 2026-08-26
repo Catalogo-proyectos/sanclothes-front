@@ -7,15 +7,10 @@ import { CATALOG_CHIPS, ChipId } from '@/lib/catalogFilters';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
 import { MOCK_PRODUCTS } from '@/mocks/catalog';
 
-/**
- * The catalog's only category control. Pressing a chip repaints the grid in
- * place; the URL is rewritten with history.replaceState so the view stays
- * shareable, but no navigation happens. From any other route the chip does
- * have to travel — it soft-pushes to /catalog carrying the selection.
- */
+
 
 interface CategoryChipRailProps {
-  /** True while the header floats transparent over a dark hero. */
+
   inverted: boolean;
 }
 
@@ -33,7 +28,7 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
   const setChip = useCatalogFilter((s) => s.setChip);
   const syncFromUrl = useCatalogFilter((s) => s.syncFromUrl);
 
-  // Deep links and back/forward are the only writers the store doesn't own.
+
   useEffect(() => {
     const adopt = () => syncFromUrl(new URLSearchParams(window.location.search).get('c'));
     adopt();
@@ -50,9 +45,9 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
         const query = id === 'todo' ? '' : `?c=${id}`;
         window.history.replaceState(null, '', `/catalog${query}`);
 
-        // A narrower filter shortens the grid. Someone who was deep in the old
-        // list would land past the end of the new one, so bring them back up to
-        // where the results start — never push them down.
+
+
+
         const grid = document.getElementById('catalog-grid');
         if (grid) {
           const top = window.scrollY + grid.getBoundingClientRect().top - 132;
@@ -68,8 +63,8 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
   );
 
   const railBorder = inverted ? 'border-white/15' : 'border-[#17191c]/10';
-  // Over a hero the idle labels sit on unpredictable imagery, so they carry more
-  // weight and a shadow than they need on the solid white bar.
+
+
   const idleLabel = inverted
     ? 'text-white/80 hover:text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]'
     : 'text-[#17191c]/45 hover:text-[#17191c]';
@@ -80,7 +75,7 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
   return (
     <div className={`border-t ${railBorder} transition-colors duration-300`}>
       <div className="w-full px-5 sm:px-8 lg:px-12">
-        {/* ── Chips ── */}
+
         <div
           role="group"
           aria-label="Filtrar catálogo"
@@ -98,8 +93,7 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
                   isActive ? activeLabel : idleLabel
                 }`}
               >
-                {/* The one loud gesture in the header: a solid slab that slides
-                    between chips and knocks the label out to the inverse color. */}
+
                 {isActive && (
                   <motion.span
                     layoutId="chip-slab"

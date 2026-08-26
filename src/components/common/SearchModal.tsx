@@ -28,7 +28,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus input when modal opens & handle Escape key
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -48,7 +48,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   if (!isOpen) return null;
 
-  // Filter products based on search query
+
   const trimmedQuery = query.trim().toLowerCase();
   const filteredProducts = trimmedQuery
     ? MOCK_PRODUCTS.filter(
@@ -73,7 +73,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] overflow-y-auto">
-        {/* Backdrop Overlay */}
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -83,7 +83,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           className="fixed inset-0 bg-[#17191c]/70 backdrop-blur-md cursor-pointer"
         />
 
-        {/* Search Modal Panel - Unified Single Background Color (bg-white) */}
+
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -92,7 +92,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           className="relative min-h-screen sm:min-h-[auto] w-full max-w-4xl mx-auto bg-white text-[#17191c] shadow-2xl border-b sm:border border-[#17191c]/10 sm:mt-12 sm:mb-12"
           style={{ borderRadius: '0px' }}
         >
-          {/* Close Button (No header bar) */}
+
           <button
             type="button"
             onClick={onClose}
@@ -102,7 +102,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             <X className="w-5 h-5 stroke-[1.5]" />
           </button>
 
-          {/* ── Search Input Section ── */}
+
           <div className="p-6 sm:p-8 pr-16 bg-white border-b border-[#17191c]/10">
             <div className="relative flex items-center border-b-2 border-[#17191c] pb-3 focus-within:border-black transition-colors">
               <Search className="w-6 h-6 text-[#17191c] shrink-0 mr-3" />
@@ -116,7 +116,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               />
             </div>
 
-            {/* Trending Quick Search Chips */}
+
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-mono text-[#50524a] uppercase tracking-wider mr-1">
                 TENDENCIAS:
@@ -138,10 +138,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             </div>
           </div>
 
-          {/* ── Search Results or Default Recommendations Section ── */}
+
           <div className="p-6 sm:p-8 bg-white min-h-[300px]">
             {trimmedQuery ? (
-              /* Live Results */
+
               <div>
                 <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#17191c]/10">
                   <span className="text-xs font-mono font-bold tracking-wider text-[#17191c] uppercase">
@@ -154,7 +154,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 </div>
 
                 {filteredProducts.length === 0 ? (
-                  /* Empty Results */
+
                   <div className="py-16 text-center space-y-4">
                     <p className="text-xs font-mono uppercase text-[#50524a] tracking-wide">
                       No encontramos coincidencias exactas para &quot;{query}&quot;.
@@ -169,7 +169,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     </Link>
                   </div>
                 ) : (
-                  /* Results Grid */
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {filteredProducts.map((product) => {
                       const imageSrc =
@@ -218,7 +218,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 )}
               </div>
             ) : (
-              /* Default Featured Recommendations */
+
               <div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {featuredProducts.map((product) => {

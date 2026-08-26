@@ -31,7 +31,7 @@ export default function SocialStudioGrid() {
   return (
     <section className="py-20 bg-[#f6f8f9] border-b border-[#b6b2a7]/40">
       <div className="w-full px-4 sm:px-6 md:px-8">
-        {/* Header */}
+
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4 border-b border-zinc-100 pb-6">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-400 block mb-1">
@@ -53,7 +53,7 @@ export default function SocialStudioGrid() {
           </a>
         </div>
 
-        {/* 4 Photo Grid */}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {images.map((img, idx) => (
             <motion.div

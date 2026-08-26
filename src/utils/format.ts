@@ -1,9 +1,7 @@
-/**
- * Utility functions for formatting numbers, currency (PYG - Guaraníes), and dates.
- */
+
 
 export function formatCurrency(amount: number): string {
-  // Format as Paraguayan Guaraní (Gs. 150.000)
+
   return new Intl.NumberFormat('es-PY', {
     style: 'currency',
     currency: 'PYG',

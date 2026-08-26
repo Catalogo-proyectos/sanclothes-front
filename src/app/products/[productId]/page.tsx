@@ -9,12 +9,7 @@ interface PageParams {
   params: Promise<{ productId: string }>;
 }
 
-/**
- * Fetches a product on the server so the HTML ships with the real content:
- * gives the crawler a populated <h1>/price, makes the hero image the LCP
- * candidate (discoverable in the initial HTML) and removes the client-side
- * loading flash that used to shift the layout.
- */
+
 async function getProduct(productId: string): Promise<CatalogProduct | null> {
   return fetchProduct(productId);
 }
@@ -38,8 +33,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
   const price = product.discountPrice ?? product.price;
   const title = `${product.title} — SANT CLOTHES®`;
-  // El catálogo puede llegar sin `description` (el backend no la propaga a Redis
-  // todavía), así que la metadescripción cae al nombre de la prenda.
+
+
   const description = (product.description || product.title).slice(0, 160);
   const image = product.images?.[0]?.url;
 
@@ -84,7 +79,7 @@ export default async function ProductDetailPage({ params }: PageParams) {
       ? 'https://schema.org/OutOfStock'
       : 'https://schema.org/InStock';
 
-  // Product + BreadcrumbList structured data for rich results.
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [

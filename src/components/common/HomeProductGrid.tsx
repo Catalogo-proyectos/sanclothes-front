@@ -3,16 +3,13 @@
 import { useCatalog } from '@/hooks/useCatalog';
 import ProductCard from '@/components/catalog/ProductCard';
 
-/**
- * COLUMNS_PER_ROW defines how many products fill one visual row at desktop width.
- * 5 columns × 3 rows = 15 products per block.
- */
+
 const COLS = 5;
 const ROWS_PER_BLOCK = 3;
 const PRODUCTS_PER_BLOCK = COLS * ROWS_PER_BLOCK;
 
 interface HomeProductGridProps {
-  /** 'top' = first 3 rows, 'bottom' = next 3 rows */
+
   position: 'top' | 'bottom';
 }
 
@@ -48,7 +45,7 @@ export default function HomeProductGrid({ position }: HomeProductGridProps) {
     );
   }
 
-  // Split products into two blocks
+
   const startIndex = position === 'top' ? 0 : PRODUCTS_PER_BLOCK;
   const slice = products.slice(startIndex, startIndex + PRODUCTS_PER_BLOCK);
 

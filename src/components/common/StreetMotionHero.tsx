@@ -11,7 +11,7 @@ export default function StreetMotionHero() {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-          {/* Left Column: Atelier Photoshoot Image */}
+
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -33,7 +33,7 @@ export default function StreetMotionHero() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-              {/* Image Badge */}
+
               <div className="absolute bottom-6 left-6 z-10">
                 <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-black bg-white px-3 py-1.5 uppercase border border-white">
                   SANT CLOTHES · PROCESO & CREACIÓN
@@ -42,7 +42,7 @@ export default function StreetMotionHero() {
             </div>
           </motion.div>
 
-          {/* Right Column: Brand Story Editorial Text */}
+
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -69,7 +69,7 @@ export default function StreetMotionHero() {
               CADA DISEÑO LLEVA UN VALOR PERSONAL: FRASES QUE INSPIRAN Y MENSAJES QUE MOTIVAN. CREAMOS PARA LOS SOÑADORES QUE EMPIEZAN DESDE CERO. HOODIES HEAVYWEIGHT DE 400G, SILUETAS OVERSIZE Y PIEZAS CON IDENTIDAD PROPIA, FABRICADAS CON ORGULLO EN PARAGUAY.
             </p>
 
-            {/* Feature Pills */}
+
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="p-3.5 bg-[#f6f8f9] border border-[#b6b2a7]">
                 <span className="text-[10px] font-mono font-bold text-[#17191c] uppercase block">

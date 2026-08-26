@@ -21,15 +21,15 @@ export default function CheckoutForm() {
   const { items, getSubtotal, getShippingCost, getTotal, clearCart } = useCart();
   const { isLoggedIn, user } = useAuth();
 
-  // §6: Guest checkout steps: email → otp → form. Logged-in users skip to form.
+
   const [step, setStep] = useState<CheckoutStep>(isLoggedIn ? 'form' : 'email');
 
-  // Email & OTP state
+
   const [guestEmail, setGuestEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [otpResponse, setOtpResponse] = useState<ConfirmOtpResponse | null>(null);
 
-  // Form state
+
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -49,7 +49,7 @@ export default function CheckoutForm() {
   const [error, setError] = useState('');
   const [createdOrder, setCreatedOrder] = useState<CheckoutResponse | null>(null);
 
-  // Receipt upload
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [receiptUploading, setReceiptUploading] = useState(false);
   const [receiptUploaded, setReceiptUploaded] = useState(false);
@@ -61,14 +61,14 @@ export default function CheckoutForm() {
     setFormData({ ...formData, [target.name]: value });
   };
 
-  // ── Step 1: Verify email (§6.1) ──
+
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      // Turnstile token is optional (§2.3)
+
       await verifyEmail(guestEmail);
       setStep('otp');
     } catch (err) {
@@ -82,7 +82,7 @@ export default function CheckoutForm() {
     }
   };
 
-  // ── Step 2: Confirm OTP (§6.2) ──
+
   const handleConfirmOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -114,7 +114,7 @@ export default function CheckoutForm() {
     }
   };
 
-  // ── Step 3: Submit order (§6.3) ──
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) {
@@ -182,12 +182,12 @@ export default function CheckoutForm() {
     }
   };
 
-  // ── Receipt upload (§6 / §2.4) ──
+
   const handleReceiptUpload = async () => {
     const file = fileInputRef.current?.files?.[0];
     if (!file || !createdOrder) return;
 
-    // §6: JPG/PNG/WebP/GIF/PDF, max 5MB
+
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       setReceiptError('El archivo supera los 5MB permitidos.');
@@ -214,7 +214,7 @@ export default function CheckoutForm() {
   const inputClass = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:ring-2 focus:ring-black outline-none';
   const labelClass = 'block text-xs font-bold uppercase text-slate-600 mb-1';
 
-  // ── SUCCESS VIEW ──
+
   if (step === 'success' && createdOrder) {
     return (
       <div className="max-w-3xl mx-auto my-12 p-8 bg-white rounded-3xl border border-slate-200 shadow-2xl space-y-6">
@@ -248,7 +248,7 @@ export default function CheckoutForm() {
           </div>
         </div>
 
-        {/* Receipt upload (§6 POST /checkout/:id/receipt) */}
+
         <div className="p-6 bg-slate-900 text-white rounded-2xl space-y-3">
           <h4 className="font-bold text-sm">Subir Comprobante de Pago</h4>
           <p className="text-xs text-slate-300">
@@ -294,7 +294,7 @@ export default function CheckoutForm() {
     );
   }
 
-  // ── EMAIL STEP (guest only) ──
+
   if (step === 'email') {
     return (
       <div className="max-w-md mx-auto my-12 p-8 bg-white rounded-3xl border border-slate-200 shadow-2xl space-y-6">
@@ -319,7 +319,7 @@ export default function CheckoutForm() {
             />
           </div>
 
-          {/* §2.3: Turnstile only on this endpoint, render widget if site key is configured */}
+
           {config.turnstile.enabled && (
             <div id="turnstile-widget" className="flex justify-center" />
           )}
@@ -343,7 +343,7 @@ export default function CheckoutForm() {
     );
   }
 
-  // ── OTP STEP ──
+
   if (step === 'otp') {
     return (
       <div className="max-w-md mx-auto my-12 p-8 bg-white rounded-3xl border border-slate-200 shadow-2xl space-y-6">
@@ -391,7 +391,7 @@ export default function CheckoutForm() {
     );
   }
 
-  // ── CHECKOUT FORM STEP ──
+
   return (
     <div className="max-w-5xl mx-auto my-8 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:col-span-2 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-lg space-y-6">
@@ -412,7 +412,7 @@ export default function CheckoutForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* §6.3: customer.fullName (2-100 chars) */}
+
           <div>
             <label className={labelClass}>Nombre Completo *</label>
             <input
@@ -438,7 +438,7 @@ export default function CheckoutForm() {
               />
             </div>
             <div>
-              {/* §6.3: phone validation — PY format */}
+
               <label className={labelClass}>Teléfono / WhatsApp *</label>
               <input
                 type="tel"
@@ -452,7 +452,7 @@ export default function CheckoutForm() {
             </div>
           </div>
 
-          {/* §6.3: shipping.address min 10 chars */}
+
           <div>
             <label className={labelClass}>Dirección de Entrega *</label>
             <input
@@ -491,7 +491,7 @@ export default function CheckoutForm() {
               />
             </div>
             <div>
-              {/* §6.3: postalCode 4-8 alphanumeric */}
+
               <label className={labelClass}>Código Postal *</label>
               <input
                 type="text"
@@ -507,7 +507,7 @@ export default function CheckoutForm() {
             </div>
           </div>
 
-          {/* §6.3: wantsClubMembership required */}
+
           <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
             <input
               type="checkbox"
@@ -522,7 +522,7 @@ export default function CheckoutForm() {
             </label>
           </div>
 
-          {/* Coupon code — no preview/validation (§6.3) */}
+
           <div>
             <label className={labelClass}>Código de Cupón (Opcional)</label>
             <input
@@ -538,7 +538,7 @@ export default function CheckoutForm() {
             </p>
           </div>
 
-          {/* Invoice data (optional) */}
+
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <input
@@ -582,7 +582,7 @@ export default function CheckoutForm() {
         </form>
       </div>
 
-      {/* Summary Box */}
+
       <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4 h-fit">
         <h3 className="font-extrabold text-sm uppercase text-black border-b pb-3">Resumen de Compra</h3>
 

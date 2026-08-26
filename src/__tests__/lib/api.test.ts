@@ -4,9 +4,9 @@ import { CutInfo } from '@/types/api';
 import type { BackendProduct } from '@/types/backend';
 
 describe('API Adapter & Mock Data Layer', () => {
-  // El catálogo simulado emite el modelo de la API real (BackendProduct), no el
-  // de vista: así el modo mock ejercita el adaptador y la capa de slots en lugar
-  // de saltárselos.
+
+
+
   it('should fetch catalog products from mock dataset when USE_MOCK is true', async () => {
     const products = await apiCall<BackendProduct[]>('GET', '/catalog');
     expect(Array.isArray(products)).toBe(true);
