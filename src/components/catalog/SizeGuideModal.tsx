@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Ruler, X } from 'lucide-react';
 import { fetchSizeGuide } from '@/lib/services/catalog';
 
@@ -23,7 +24,11 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
   const titleId = useId();
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [apiChart, setApiChart] = useState<Record<string, Record<string, string>> | null>(null);
 
@@ -51,12 +56,13 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     previouslyFocused.current = document.activeElement;
     closeButtonRef.current?.focus();
     return () => {
       (previouslyFocused.current as HTMLElement | null)?.focus?.();
     };
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -86,15 +92,16 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
-
   const apiSizes = apiChart ? Object.keys(apiChart) : [];
   const apiColumns = apiChart && apiSizes.length > 0
     ? Object.keys(apiChart[apiSizes[0]])
     : [];
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-[100] bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -194,6 +201,7 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
           Cerrar Guía
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

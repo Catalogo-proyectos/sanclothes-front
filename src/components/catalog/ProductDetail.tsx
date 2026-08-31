@@ -2,12 +2,14 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { CatalogProduct } from '@/types/api';
 import ProductCard from '@/components/catalog/ProductCard';
 import ProductGallery from '@/components/catalog/ProductGallery';
 import ProductPurchasePanel from '@/components/catalog/ProductPurchasePanel';
-import ProductLightbox from '@/components/catalog/ProductLightbox';
 import { GalleryImage } from './productGallery.types';
+
+const ProductLightbox = dynamic(() => import('@/components/catalog/ProductLightbox'), { ssr: false });
 
 interface ProductDetailProps {
   product: CatalogProduct;
@@ -26,10 +28,34 @@ export default function ProductDetail({ product, recommended }: ProductDetailPro
   const galleryImages = useMemo<GalleryImage[]>(() => {
     const source = product.imagesByCut?.[selectedCut] ?? product.images ?? [];
 
-    return source.map((img, i) => ({
-      url: img.url,
-      alt: img.alt || `${product.title} vista ${i + 1}`,
-    }));
+    if (!source || source.length === 0) {
+      return [{ url: '/img/Placeholer.jpeg', alt: product.title || 'Imagen de producto' }];
+    }
+
+    const isAllPlaceholder = source.every(
+      (img) => !img.url || img.url.includes('Placeholer') || img.url.includes('placeholder')
+    );
+    if (isAllPlaceholder) {
+      return [{ url: source[0]?.url || '/img/Placeholer.jpeg', alt: source[0]?.alt || product.title }];
+    }
+
+    const seenUrls = new Set<string>();
+    const uniqueImages: GalleryImage[] = [];
+
+    for (let i = 0; i < source.length; i++) {
+      const img = source[i];
+      if (!seenUrls.has(img.url)) {
+        seenUrls.add(img.url);
+        uniqueImages.push({
+          url: img.url,
+          alt: img.alt || `${product.title} vista ${uniqueImages.length + 1}`,
+        });
+      }
+    }
+
+    return uniqueImages.length > 0
+      ? uniqueImages
+      : [{ url: '/img/Placeholer.jpeg', alt: product.title || 'Imagen de producto' }];
   }, [product.imagesByCut, product.images, product.title, selectedCut]);
 
   const openZoom = useCallback((index: number) => setZoomIndex(index), []);

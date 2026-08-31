@@ -21,12 +21,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     images: [
       {
         url: '/img/Placeholer.jpeg',
-        alt: 'Le Sant Club Suede Tracksuit frente',
-        cutVariant: 'UNISEX',
-      },
-      {
-        url: '/img/Placeholer.jpeg',
-        alt: 'Le Sant Club Suede Tracksuit espalda',
+        alt: 'Le Sant Club Suede Tracksuit',
         cutVariant: 'UNISEX',
       },
     ],
@@ -53,12 +48,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     images: [
       {
         url: '/img/Placeholer.jpeg',
-        alt: 'Frente Remera Oversize TRECE13',
-        cutVariant: 'UNISEX',
-      },
-      {
-        url: '/img/Placeholer.jpeg',
-        alt: 'Espalda Remera Oversize TRECE13',
+        alt: 'Remera Oversize TRECE13',
         cutVariant: 'UNISEX',
       },
     ],
@@ -90,11 +80,6 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
       {
         url: '/img/Placeholer.jpeg',
         alt: 'Polo Canalé Old Money',
-        cutVariant: 'MASCULINO',
-      },
-      {
-        url: '/img/Placeholer.jpeg',
-        alt: 'Polo Canalé detalle',
         cutVariant: 'MASCULINO',
       },
     ],
@@ -263,11 +248,6 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
       {
         url: '/img/Placeholer.jpeg',
         alt: 'Chaqueta Bomber Satin frente',
-        cutVariant: 'UNISEX',
-      },
-      {
-        url: '/img/Placeholer.jpeg',
-        alt: 'Chaqueta Bomber Satin espalda',
         cutVariant: 'UNISEX',
       },
     ],
@@ -468,12 +448,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     images: [
       {
         url: '/img/Placeholer.jpeg',
-        alt: 'Remera Graphic Chrome World frente',
-        cutVariant: 'UNISEX',
-      },
-      {
-        url: '/img/Placeholer.jpeg',
-        alt: 'Remera Graphic Chrome World espalda',
+        alt: 'Remera Graphic Chrome World',
         cutVariant: 'UNISEX',
       },
     ],

@@ -12,8 +12,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
 import { NAV_CATEGORIES } from './navData';
 
-const SearchModal = dynamic(() => import('./SearchModal'));
-const CartDrawer = dynamic(() => import('../checkout/CartDrawer'));
+const SearchModal = dynamic(() => import('./SearchModal'), { ssr: false });
+const CartDrawer = dynamic(() => import('../checkout/CartDrawer'), { ssr: false });
 
 const MOBILE_MENU_IMAGES: Record<string, string> = {
   casual: '/img/hero/Hero Movil Casual.jpeg',

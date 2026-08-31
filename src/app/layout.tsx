@@ -3,6 +3,7 @@ import { Bebas_Neue } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
+import SmoothScrollProvider from '@/components/common/SmoothScrollProvider';
 import { Toaster } from 'sonner';
 import { config } from '@/lib/config';
 
@@ -137,6 +138,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen antialiased bg-[#f6f8f9] text-[#17191c] relative overflow-x-hidden">
+        <SmoothScrollProvider />
         <Header />
         <main className="relative z-10 bg-[#f6f8f9] min-h-screen shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]">
           {children}

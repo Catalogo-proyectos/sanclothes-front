@@ -17,7 +17,6 @@ async function FeaturedProductsSection() {
   try {
     products = await fetchCatalog();
   } catch {
-    // The rest of the home can stream even if the catalog API is unavailable.
   }
 
   return (

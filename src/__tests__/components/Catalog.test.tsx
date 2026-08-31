@@ -7,7 +7,6 @@ import { toCatalogProduct } from '@/lib/adapters/product';
 
 const CATALOG_PRODUCTS = MOCK_PRODUCTS.map(toBackendProduct).map(toCatalogProduct);
 
-
 vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
   useRouter: () => ({
@@ -36,7 +35,6 @@ describe('Catalog Components with Mock Layer', () => {
     });
   });
 
-
   it('paints the main image on top of the hover image', async () => {
     render(<ProductGrid initialProducts={CATALOG_PRODUCTS} />);
 
@@ -50,8 +48,7 @@ describe('Catalog Components with Mock Layer', () => {
     expect(principales.length).toBeGreaterThan(0);
     expect(traseras.length).toBeGreaterThan(0);
 
-
-    const card = principales[0].closest('a');
+    const card = traseras[0].closest('a');
     const imagesInCard = card ? Array.from(card.querySelectorAll('img')) : [];
 
     expect(imagesInCard).toHaveLength(2);

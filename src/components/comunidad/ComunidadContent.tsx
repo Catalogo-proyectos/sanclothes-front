@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Zap,
-  Gift,
-  Ticket,
-  MessageSquare,
-  Sparkles,
-  Camera,
   ShoppingBag,
+  ArrowUpRight,
+  Radio,
+  Flame,
+  Sparkles,
+  MessageCircle,
+  Users,
 } from 'lucide-react';
 
 const communityMobileSrcSet = getImageProps({
@@ -19,106 +20,66 @@ const communityMobileSrcSet = getImageProps({
   fill: true,
   quality: 85,
   sizes: '100vw',
+  priority: true,
 }).props.srcSet;
 
+const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/KRdxCooXAlJF2mCZd2wBtx';
+
 export default function ComunidadContent() {
-  const communityPosts = [
+  const whatsappFeatures = [
     {
-      id: 'post-1',
-      username: '@marcos_streetfit',
-      location: 'Ciudad del Este, Paraguay',
-      image: '/img/hero/IMG_3202.webp',
-      taggedProduct: 'Hoodie Acid Wash Drop #01 400G',
-      productId: 'prod_trece_02',
+      id: 'feature-1',
+      code: 'FASE 01 · LANZAMIENTOS',
+      title: 'ROPA LANZADA EN LA SEMANA',
+      description:
+        'Enterate al instante de cada nueva prenda producida en la semana, lanzamientos de colección y ediciones especiales recién salidas de fábrica.',
+      tag: 'NOVEDADES SEMANALES',
+      icon: Flame,
     },
     {
-      id: 'post-2',
-      username: '@valeria.ss26',
-      location: 'Asunción, Paraguay',
-      image: '/img/hero/IMG_2996.webp',
-      taggedProduct: 'Remera Heavyweight Acid Wash',
-      productId: 'prod_trece_03',
-    },
-    {
-      id: 'post-3',
-      username: '@lucas_oversized',
-      location: 'Encarnación, Paraguay',
-      image: '/img/secciones/IMG_4279.webp',
-      taggedProduct: 'Le Sant Club Suede Tracksuit',
-      productId: 'prod_trece_01',
-    },
-    {
-      id: 'post-4',
-      username: '@mateo.cde',
-      location: 'Ciudad del Este, Paraguay',
-      image: '/img/products/camisa-oversized-beige/IMG_5382.webp',
-      taggedProduct: 'Camisa Oversized Beige Heavy Cotton',
-      productId: 'prod_trece_04',
-    },
-    {
-      id: 'post-5',
-      username: '@bruno_urbanlab',
-      location: 'Asunción, Paraguay',
-      image: '/img/hero/IMG_1460.webp',
-      taggedProduct: 'Buzo Crewneck Oversized Boxy Fit',
-      productId: 'prod_trece_05',
-    },
-    {
-      id: 'post-6',
-      username: '@camila.street',
-      location: 'Foz do Iguaçu, Brasil',
-      image: '/img/hero/IMG_4390.webp',
-      taggedProduct: 'SANT Essential Heavy Tee',
-      productId: 'prod_trece_06',
-    },
-  ];
-
-  const clubBenefits = [
-    {
+      id: 'feature-2',
+      code: 'FASE 02 · REPOSICIONES',
+      title: 'AVISOS DE RESTOCKS EN VIVO',
+      description:
+        'Recibí el aviso inmediato cuando volvemos a tener stock de piezas agotadas como tracksuits, hoodies pesados y remeras oversize.',
+      tag: 'STOCK DISPONIBLE',
       icon: Zap,
-      code: 'FASE 01 · ACCESO',
-      title: 'EARLY ACCESS A DROPS',
-      description:
-        'Reserva tus prendas 24 horas antes de los lanzamientos oficiales al público. Asegurá tu talle en piezas de producción limitada.',
     },
     {
-      icon: Ticket,
-      code: 'FASE 02 · EVENTOS',
-      title: 'INVITACIONES A POP-UP STORES',
+      id: 'feature-3',
+      code: 'FASE 03 · BENEFICIOS',
+      title: 'DESCUENTOS & COMBOS EXCLUSIVOS',
       description:
-        'Pases VIP para aperturas de tienda, encuentros en nuestra fábrica de CDE y eventos de cultura urbana en todo Paraguay.',
+        'Accedé a promociones relámpago, precios especiales de pre-compra y beneficios que únicamente se comparten para la gente del grupo.',
+      tag: 'EXCLUSIVO WHATSAPP',
+      icon: Sparkles,
     },
     {
-      icon: Gift,
-      code: 'FASE 03 · MERCH',
-      title: 'REGALOS DE LA COMUNIDAD',
+      id: 'feature-4',
+      code: 'FASE 04 · COMUNIDAD',
+      title: 'CULTURA URBANA & NOVEDADES DE CDE',
       description:
-        'Recibí kits de stickers, insignias metálicas y regalos exclusivos incluidos en los pedidos de miembros activos.',
-    },
-    {
-      icon: MessageSquare,
-      code: 'FASE 04 · MOLDERÍA',
-      title: 'VOZ Y VOTO EN PROTOTIPOS',
-      description:
-        'Participá en encuestas secretas para elegir colores, gramajes y estampados antes de que entren a la línea de corte.',
+        'Enterate de fotos exclusivas de producción en el taller, nuevos conceptos y todo lo que pasa en el movimiento urbano de SANT CLOTHES.',
+      tag: 'CULTURA SANT',
+      icon: Users,
     },
   ];
 
-  const uploadSteps = [
+  const joinSteps = [
     {
       number: '01',
-      title: 'VESTÍ TU SANT',
-      description: 'Combiná tus piezas heavyweight con tu estilo diario.',
+      title: 'HACÉ CLICK EN EL ENLACE',
+      description: 'Accedé al link oficial de invitación del grupo de WhatsApp de SANT CLOTHES.',
     },
     {
       number: '02',
-      title: 'FOTOGRAFIÁ & ETIQUETÁ',
-      description: 'Publicá tu foto etiquetando a @SANCLOTHES.STUDIO o usa #SANTCLUB.',
+      title: 'ACEPTÁ LA INVITACIÓN',
+      description: 'Unite al grupo de WhatsApp sin costo y presentate con la comunidad.',
     },
     {
       number: '03',
-      title: 'APARECÉ EN EL SITE',
-      description: 'Seleccionamos semanalmente los mejores outfits para el muro oficial.',
+      title: 'ACTIVÁ LAS NOTIFICACIONES',
+      description: 'Recibí los links de drops anticipados y las novedades semanales en tu celular.',
     },
   ];
 
@@ -174,19 +135,20 @@ export default function ComunidadContent() {
 
               <div className="pt-3 flex flex-wrap gap-4 items-center">
                 <a
-                  href="https://www.instagram.com/santclothespy/"
+                  href={WHATSAPP_COMMUNITY_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 bg-[#17191c] text-white hover:bg-[#50524a] text-xs font-mono font-bold tracking-[0.2em] uppercase px-7 py-4 border border-[#17191c] transition-all shadow-md"
+                  className="inline-flex items-center gap-2.5 bg-[#17191c] text-white hover:bg-[#2e3136] text-xs font-mono font-bold tracking-[0.2em] uppercase px-7 py-4 border border-[#17191c] transition-all shadow-md group"
                 >
-                  <Camera className="w-4 h-4" />
-                  <span>UNIRSE EN INSTAGRAM</span>
+                  <MessageCircle className="w-4 h-4 text-emerald-400 fill-emerald-400/20" />
+                  <span>UNIRSE AL GRUPO DE WHATSAPP</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
                 <Link
-                  href="#street-style"
+                  href="#unirse"
                   className="inline-flex items-center gap-2 border border-[#17191c] text-[#17191c] hover:bg-[#17191c] hover:text-white text-xs font-mono font-bold tracking-[0.2em] uppercase px-7 py-4 transition-all"
                 >
-                  <span>VER LOOKS DE LA COMUNIDAD</span>
+                  <span>CÓMO UNIRTE</span>
                 </Link>
               </div>
             </div>
@@ -207,10 +169,10 @@ export default function ComunidadContent() {
               <div className="bg-[#f6f8f9] border border-[#b6b2a7]/50 p-5 flex items-center justify-between">
                 <div>
                   <span className="block font-[family-name:var(--font-bebas)] text-4xl text-[#17191c] tracking-wider leading-none">
-                    100%
+                    24/7
                   </span>
                   <span className="text-[10px] font-mono text-[#50524a] uppercase tracking-wider">
-                    CULTURA URBANA
+                    CANAL DIRECTO WHATSAPP
                   </span>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest">#02</span>
@@ -219,10 +181,10 @@ export default function ComunidadContent() {
               <div className="bg-[#f6f8f9] border border-[#b6b2a7]/50 p-5 flex items-center justify-between">
                 <div>
                   <span className="block font-[family-name:var(--font-bebas)] text-4xl text-[#17191c] tracking-wider leading-none">
-                    2
+                    100%
                   </span>
                   <span className="text-[10px] font-mono text-[#50524a] uppercase tracking-wider">
-                    TIENDAS EN CDE
+                    CULTURA STREETWEAR
                   </span>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest">#03</span>
@@ -232,139 +194,124 @@ export default function ComunidadContent() {
         </div>
       </section>
 
-      <section id="street-style" className="py-20 sm:py-28 scroll-mt-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
+      <section id="whatsapp-community" className="py-20 sm:py-28 scroll-mt-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
         <div className="max-w-7xl mx-auto px-6 sm:px-12 space-y-14">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-3 max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-mono font-bold uppercase tracking-[0.25em] text-[#50524a]">
+                  GRUPO OFICIAL SANT CLUB
+                </span>
+              </div>
               <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-none">
-                LA COMUNIDAD EN LAS CALLES
+                EL PUNTO DE ENCUENTRO EN WHATSAPP
               </h2>
               <p className="text-xs sm:text-sm font-mono text-[#50524a] uppercase tracking-wide leading-relaxed">
-                Fotos reales enviadas y etiquetadas por miembros de la comunidad en redes sociales. Hacé click en cualquier imagen para explorar la prenda.
+                Unite al grupo oficial de WhatsApp. Enterate de las prendas lanzadas en la semana, avisos inmediatos de restocks y promociones exclusivas para la comunidad.
               </p>
             </div>
 
-            <div className="inline-flex items-center gap-2 text-xs font-mono text-zinc-500 uppercase tracking-widest bg-white px-4 py-2 border border-[#b6b2a7]/40 shadow-sm">
-              <Camera className="w-4 h-4 text-black" />
-              <span>ETIQUETÁ @SANTCLOTHESPY</span>
-            </div>
+            <a
+              href={WHATSAPP_COMMUNITY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 bg-[#17191c] text-white hover:bg-black text-xs font-mono font-bold tracking-[0.2em] uppercase px-6 py-3.5 border border-[#17191c] shadow-sm transition-all shrink-0"
+            >
+              <MessageCircle className="w-4 h-4 text-emerald-400" />
+              <span>UNIRME AL GRUPO AHORA</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {communityPosts.map((post) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="group relative bg-white border border-[#b6b2a7]/40 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
-              >
-                <div className="relative aspect-[3/4] w-full bg-zinc-900 overflow-hidden">
-                  <Image
-                    src={post.image}
-                    alt={`${post.username} — Fit Sant Clothes`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
-
-                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-white bg-black/70 backdrop-blur-md px-3 py-1 border border-white/20">
-                      {post.username}
-                    </span>
-                    <span className="text-[9px] font-mono text-zinc-300 bg-black/60 backdrop-blur-md px-2.5 py-1 border border-white/10 uppercase">
-                      {post.location}
-                    </span>
-                  </div>
-
-                  <div className="absolute bottom-4 left-4 right-4 z-10 space-y-2">
-                    <div className="bg-white/95 backdrop-blur-md p-3 border border-black/10 shadow-lg flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <span className="block text-[9px] font-mono text-zinc-500 uppercase tracking-widest">
-                          PRENDA ETIQUETADA
-                        </span>
-                        <span className="block text-xs font-bold text-[#17191c] truncate uppercase">
-                          {post.taggedProduct}
-                        </span>
-                      </div>
-                      <Link
-                        href={`/products/${post.productId}`}
-                        className="shrink-0 p-2 bg-[#17191c] text-white hover:bg-black transition-colors"
-                        aria-label={`Ver producto ${post.taggedProduct}`}
-                      >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="beneficios" className="py-20 sm:py-28 scroll-mt-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
-        <div className="max-w-7xl mx-auto px-6 sm:px-12 space-y-16">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a] block">
-              PRIVILEGIOS EXCLUSIVOS · SANT CLUB
-            </span>
-            <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-none">
-              BENEFICIOS DE SER PARTE DEL CLUB
-            </h2>
-            <p className="text-xs sm:text-sm font-mono text-[#50524a] uppercase tracking-wide leading-relaxed">
-              No es un programa de puntos genérico. Es un pase directo a la cultura interna de nuestra fábrica.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {clubBenefits.map((benefit, index) => {
-              const IconComp = benefit.icon;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {whatsappFeatures.map((item, idx) => {
+              const IconComp = item.icon;
               return (
                 <motion.div
-                  key={benefit.title}
-                  initial={{ opacity: 0, y: 25 }}
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white border border-[#b6b2a7] p-6 sm:p-8 space-y-5 hover:border-[#17191c] transition-all duration-300 shadow-sm relative group flex flex-col justify-between"
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className="bg-white border border-[#b6b2a7]/50 p-6 sm:p-7 flex flex-col justify-between space-y-6 hover:border-[#17191c] transition-all duration-300 shadow-xs group"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-[#b6b2a7]/30 pb-3">
-                      <div className="w-12 h-12 bg-[#f6f8f9] border border-[#b6b2a7]/60 flex items-center justify-center shrink-0 group-hover:border-[#17191c] group-hover:bg-[#17191c] transition-colors">
-                        <IconComp className="w-5 h-5 text-[#17191c] group-hover:text-white transition-colors" />
+                      <div className="w-10 h-10 bg-[#f6f8f9] border border-[#b6b2a7]/60 flex items-center justify-center group-hover:bg-[#17191c] group-hover:border-[#17191c] transition-colors">
+                        <IconComp className="w-4 h-4 text-[#17191c] group-hover:text-white transition-colors" />
                       </div>
-                      <span className="text-[9px] font-mono font-bold tracking-[0.2em] uppercase text-[#17191c] bg-zinc-100 px-3 py-1 border border-[#b6b2a7]/50">
-                        {benefit.code}
+                      <span className="text-[9px] font-mono font-bold tracking-[0.2em] uppercase text-[#17191c] bg-zinc-100 px-2.5 py-1 border border-[#b6b2a7]/40">
+                        {item.code}
                       </span>
                     </div>
 
-                    <h3 className="font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-wider text-[#17191c] uppercase leading-tight">
-                      {benefit.title}
+                    <h3 className="font-[family-name:var(--font-bebas)] text-2xl tracking-wider text-[#17191c] uppercase leading-tight">
+                      {item.title}
                     </h3>
 
                     <p className="text-xs font-mono text-[#50524a] uppercase leading-relaxed tracking-wide">
-                      {benefit.description}
+                      {item.description}
                     </p>
                   </div>
 
                   <div className="pt-3 border-t border-zinc-100 flex items-center justify-between text-[9px] font-mono font-bold text-[#50524a] uppercase tracking-widest">
-                    <span>SANT CLUB ACCESS</span>
-                    <span className="text-[#17191c]">PASS #{String(index + 1).padStart(2, '0')}</span>
+                    <span>{item.tag}</span>
+                    <span className="text-[#17191c]">✓ ACTIVO</span>
                   </div>
                 </motion.div>
               );
             })}
           </div>
+
+          <div className="bg-[#17191c] text-white p-8 sm:p-12 lg:p-14 border border-[#17191c] shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 max-w-4xl space-y-6">
+              <div className="inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/30 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-emerald-400">
+                <Radio className="w-3 h-3 animate-pulse" />
+                <span>COMUNIDAD OFICIAL · ACCESO DIRECTO VÍA WHATSAPP</span>
+              </div>
+
+              <h3 className="text-3xl sm:text-5xl lg:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider leading-[0.95]">
+                ENTERATE DE CADA DROP ANTES DE QUE SE AGOTE
+              </h3>
+
+              <p className="text-xs sm:text-sm font-mono text-zinc-300 uppercase tracking-wide leading-relaxed max-w-2xl">
+                Aquí te enterarás de los drops más nuevos antes que nadie, de las prendas lanzadas en la semana, reposiciones de stock y todo lo que pasa en nuestra comunidad urbana.
+              </p>
+
+              <div className="pt-2 flex flex-wrap items-center gap-4">
+                <a
+                  href={WHATSAPP_COMMUNITY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 bg-white text-[#17191c] hover:bg-zinc-200 text-xs font-mono font-bold tracking-[0.2em] uppercase px-8 py-4 transition-all shadow-md group"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-600/20" />
+                  <span>ENTRAR AL GRUPO DE WHATSAPP</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                  Acceso 100% gratuito · Sin spam
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="manifiesto" className="py-20 sm:py-28 scroll-mt-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
-        <div className="max-w-5xl mx-auto px-6 sm:px-12 text-center space-y-8">
-          <div className="inline-flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#50524a]" />
+      <section id="manifiesto" className="py-14 sm:py-20 scroll-mt-24 bg-[#f6f8f9] text-[#17191c] border-b border-[#b6b2a7]/40">
+        <div className="max-w-5xl mx-auto px-6 sm:px-12 text-center space-y-6">
+          <div className="flex flex-col items-center justify-center gap-3">
+            <div className="w-16 sm:w-20 mx-auto">
+              <Image
+                src="/img/logo/logo-iso-negro.png"
+                alt="SANT CLOTHES"
+                width={96}
+                height={96}
+                className="h-auto w-full object-contain"
+              />
+            </div>
             <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
               MANIFIESTO DE COMUNIDAD
             </span>
@@ -385,22 +332,25 @@ export default function ComunidadContent() {
         </div>
       </section>
 
-      <section id="participar" className="py-20 sm:py-28 scroll-mt-24 bg-white text-[#17191c] border-b border-[#b6b2a7]/40">
+      <section id="unirse" className="py-20 sm:py-28 scroll-mt-24 bg-white text-[#17191c] border-b border-[#b6b2a7]/40">
         <div className="max-w-6xl mx-auto px-6 sm:px-12 space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <span className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#50524a]">
-              ¿CÓMO SUMARTE AL MURO OFICIAL?
+              PASO A PASO
             </span>
             <h2 className="text-4xl sm:text-6xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-none">
-              3 PASOS PARA APARECER EN EL SITE
+              ¿CÓMO SUMARTE AL SANT CLUB?
             </h2>
+            <p className="text-xs sm:text-sm font-mono text-[#50524a] uppercase tracking-wide">
+              Tres pasos sencillos para formar parte del círculo exclusivo de la marca.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {uploadSteps.map((step, idx) => (
+            {joinSteps.map((step, idx) => (
               <div
                 key={idx}
-                className="p-8 bg-[#f6f8f9] border border-[#b6b2a7]/30 space-y-4 relative"
+                className="p-8 bg-[#f6f8f9] border border-[#b6b2a7]/30 space-y-4 relative hover:border-[#17191c] transition-colors"
               >
                 <span className="font-[family-name:var(--font-bebas)] text-5xl text-zinc-300 block leading-none">
                   {step.number}
@@ -418,22 +368,31 @@ export default function ComunidadContent() {
           <div className="bg-[#17191c] text-white p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-center sm:text-left">
               <h3 className="text-2xl sm:text-3xl font-[family-name:var(--font-bebas)] uppercase tracking-wider">
-                ¿TENÉS TU OUTFIT LISTO?
+                ¿LISTO PARA EL PRÓXIMO DROP?
               </h3>
               <p className="text-xs font-mono text-zinc-400 uppercase tracking-wide">
-                Etiquetá a @santclothespy en Instagram o TikTok para ser destacado.
+                Ingresá ahora al grupo oficial de WhatsApp y asegurá tu lugar en el club.
               </p>
             </div>
 
-            <a
-              href="https://www.instagram.com/santclothespy/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 bg-white text-[#17191c] hover:bg-zinc-200 text-xs font-mono font-bold tracking-[0.2em] uppercase px-6 py-3.5 transition-all shadow-lg shrink-0"
-            >
-              <Camera className="w-4 h-4" />
-              <span>IR A INSTAGRAM</span>
-            </a>
+            <div className="flex items-center gap-4 flex-wrap justify-center">
+              <a
+                href={WHATSAPP_COMMUNITY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 bg-white text-[#17191c] hover:bg-zinc-200 text-xs font-mono font-bold tracking-[0.2em] uppercase px-6 py-3.5 transition-all shadow-lg shrink-0"
+              >
+                <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-600/20" />
+                <span>UNIRME AL WHATSAPP</span>
+              </a>
+              <Link
+                href="/catalog"
+                className="inline-flex items-center gap-2 border border-white/30 text-white hover:bg-white/10 text-xs font-mono font-bold tracking-[0.2em] uppercase px-6 py-3.5 transition-all shrink-0"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span>VER CATÁLOGO</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

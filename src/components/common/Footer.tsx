@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, FormEvent } from 'react';
 import { toast } from 'sonner';
 
-
 const FALLBACK_REVEAL_HEIGHT = 600;
 
 const FOOTER_NAV = [
@@ -44,9 +43,9 @@ const FOOTER_NAV = [
     href: '/comunidad',
     links: [
       { label: 'Sant Club', href: '/comunidad#sant-club' },
-      { label: 'Street Style', href: '/comunidad#street-style' },
-      { label: 'Beneficios', href: '/comunidad#beneficios' },
-      { label: 'Participar', href: '/comunidad#participar' },
+      { label: 'Grupo WhatsApp', href: '/comunidad#whatsapp-community' },
+      { label: 'Manifiesto', href: '/comunidad#manifiesto' },
+      { label: 'Cómo Unirse', href: '/comunidad#unirse' },
     ],
   },
 ];
@@ -100,10 +99,8 @@ export default function Footer() {
         ref={footerRef}
         className="fixed bottom-0 left-0 right-0 z-0 bg-[#f6f8f9] select-none border-t border-[#b6b2a7]/40 w-full overflow-hidden"
       >
-
         <div className="max-w-[1600px] mx-auto px-6 sm:px-12 pt-10 pb-0">
           <div className={`grid grid-cols-1 gap-10 lg:gap-12 pb-6 ${isLoginPage ? 'lg:grid-cols-1' : 'lg:grid-cols-12'}`}>
-
             {!isLoginPage && (
               <div className="lg:col-span-6 space-y-6">
                 <div>
@@ -136,7 +133,6 @@ export default function Footer() {
               </div>
             )}
 
-
             <nav
               aria-label="Secciones del sitio"
               className={`grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-7 ${isLoginPage ? 'mx-auto w-full max-w-3xl text-center' : 'lg:col-span-6'}`}
@@ -167,17 +163,14 @@ export default function Footer() {
                 </div>
               ))}
             </nav>
-
           </div>
         </div>
-
 
         <div className="w-full text-center pointer-events-none select-none py-2 overflow-hidden relative">
           <h2 className="font-[family-name:var(--font-bebas)] text-[23.5vw] leading-[0.85] tracking-tighter whitespace-nowrap text-[#17191c] opacity-[0.06] transition-opacity duration-500 hover:opacity-[0.12]">
             SANT CLOTHES
           </h2>
         </div>
-
 
         <div className="w-full py-4 px-6 text-center text-xs text-[#50524a] font-medium tracking-wide">
           <div className="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">

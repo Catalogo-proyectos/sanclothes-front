@@ -5,14 +5,14 @@ import { config } from '@/lib/config';
 export const metadata: Metadata = {
   title: 'Comunidad & Sant Club®',
   description:
-    'Unite al Sant Club. Acceso anticipado a drops exclusivos, pases VIP para aperturas y fotos de la comunidad en las calles de Paraguay.',
+    'Unite al Sant Club oficial en WhatsApp. Acceso anticipado 24h a drops exclusivos, pases VIP para aperturas y decisiones de moldería en Paraguay.',
   alternates: {
     canonical: '/comunidad',
   },
   openGraph: {
     title: 'Comunidad & Sant Club®',
     description:
-      'Unite al Sant Club. Acceso anticipado a drops exclusivos, pases VIP para aperturas y fotos de la comunidad en las calles de Paraguay.',
+      'Unite al Sant Club oficial en WhatsApp. Acceso anticipado 24h a drops exclusivos, pases VIP para aperturas y decisiones de moldería en Paraguay.',
     url: `${config.app.url}/comunidad`,
     images: [
       {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Comunidad & Sant Club®',
     description:
-      'Unite al Sant Club. Acceso anticipado a drops exclusivos, pases VIP para aperturas y fotos de la comunidad en las calles de Paraguay.',
+      'Unite al Sant Club oficial en WhatsApp. Acceso anticipado 24h a drops exclusivos, pases VIP para aperturas y decisiones de moldería en Paraguay.',
     images: ['/img/hero/IMG_3202.webp'],
   },
 };

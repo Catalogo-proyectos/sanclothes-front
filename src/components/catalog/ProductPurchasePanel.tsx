@@ -14,11 +14,13 @@ import {
   Zap,
 } from 'lucide-react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { CatalogProduct, ProductVariant } from '@/types/api';
 import { formatCurrency } from '@/utils/format';
 import { useCart } from '@/hooks/useCart';
 import { GalleryImage } from './productGallery.types';
-import SizeGuideModal from './SizeGuideModal';
+
+const SizeGuideModal = dynamic(() => import('./SizeGuideModal'), { ssr: false });
 
 interface ProductPurchasePanelProps {
   product: CatalogProduct;
@@ -261,7 +263,7 @@ export default function ProductPurchasePanel({
       </div>
 
 
-      {images.length > 1 && (
+      {images.length > 0 && (
         <div>
           <div className="flex items-center gap-3">
             {images.slice(0, 4).map((image, index) => (

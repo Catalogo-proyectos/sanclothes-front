@@ -27,8 +27,8 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
     images.length === 0 ||
     images.every((img) => isPlaceholderUrl(img.url));
 
-  if (hasOnlyPlaceholder) {
-    const placeholderImg = images?.[0] ?? {
+  if (hasOnlyPlaceholder || images.length <= 1) {
+    const singleImg = images?.[0] ?? {
       url: '/img/Placeholer.jpeg',
       alt: 'Imagen no disponible',
     };
@@ -38,12 +38,12 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         <button
           type="button"
           onClick={() => onOpenZoom(0)}
-          aria-label={`Ampliar imagen: ${placeholderImg.alt}`}
+          aria-label={`Ampliar imagen: ${singleImg.alt}`}
           className="group relative block aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden border border-zinc-200/80 bg-[#eceff1] cursor-zoom-in transition-colors duration-300 hover:border-[#17191c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
         >
           <Image
-            src={placeholderImg.url}
-            alt={placeholderImg.alt}
+            src={singleImg.url}
+            alt={singleImg.alt}
             fill
             priority
             fetchPriority="high"
@@ -62,14 +62,15 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
     );
   }
 
-  const hero = getSlotImage(images, 0);
-  const smallPair = [getSlotImage(images, 1), getSlotImage(images, 2)];
-  const bottomHero = getSlotImage(images, 3);
+  const hero = images[0];
+  const secondImage = images[1];
+  const thirdImage = images[2];
+  const fourthImage = images[3];
   const extras = images.length > 4 ? images.slice(4) : [];
 
   return (
     <div className="space-y-3 sm:space-y-4">
-
+      {/* Hero principal */}
       <button
         type="button"
         onClick={() => onOpenZoom(0)}
@@ -94,57 +95,84 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         </span>
       </button>
 
+      {/* Si hay 2 imágenes exactamente */}
+      {images.length === 2 && secondImage && (
+        <button
+          type="button"
+          onClick={() => onOpenZoom(1)}
+          aria-label={`Ampliar imagen 2: ${secondImage.alt}`}
+          className="group relative block aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden border border-zinc-200/80 bg-[#eceff1] cursor-zoom-in transition-colors duration-300 hover:border-[#17191c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
+        >
+          <Image
+            src={secondImage.url}
+            alt={secondImage.alt}
+            fill
+            loading="lazy"
+            sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 830px"
+            quality={85}
+            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          />
+          <span className="absolute bottom-4 right-4 p-2.5 bg-white/90 text-black border border-black/5 shadow-sm transition-colors duration-200 group-hover:bg-black group-hover:text-white">
+            <Maximize2 className="w-4 h-4" />
+          </span>
+        </button>
+      )}
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-        {smallPair.map((image, i) => {
-          const index = i + 1;
-          return (
-            <button
-              key={image.url + index}
-              type="button"
-              onClick={() => onOpenZoom(index % images.length)}
-              aria-label={`Ampliar imagen ${index + 1}: ${image.alt}`}
-              className="group relative block aspect-[3/4] w-full overflow-hidden border border-zinc-200/80 bg-[#eceff1] cursor-zoom-in transition-colors duration-300 hover:border-[#17191c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
-            >
-              <Image
-                src={image.url}
-                alt={image.alt}
-                fill
-                loading="lazy"
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1440px) 29vw, 410px"
-                quality={80}
-                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              />
-              <span className="absolute bottom-3 right-3 p-2 bg-white/90 text-black border border-black/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
-                <Maximize2 className="w-3.5 h-3.5" />
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Si hay 3 o más imágenes, mostrar fila de 2 */}
+      {images.length >= 3 && secondImage && thirdImage && (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          {[secondImage, thirdImage].map((image, i) => {
+            const index = i + 1;
+            return (
+              <button
+                key={image.url + index}
+                type="button"
+                onClick={() => onOpenZoom(index)}
+                aria-label={`Ampliar imagen ${index + 1}: ${image.alt}`}
+                className="group relative block aspect-[3/4] w-full overflow-hidden border border-zinc-200/80 bg-[#eceff1] cursor-zoom-in transition-colors duration-300 hover:border-[#17191c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
+              >
+                <Image
+                  src={image.url}
+                  alt={image.alt}
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, (max-width: 1440px) 29vw, 410px"
+                  quality={80}
+                  className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+                <span className="absolute bottom-3 right-3 p-2 bg-white/90 text-black border border-black/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <Maximize2 className="w-3.5 h-3.5" />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
+      {/* 4ta imagen opcional */}
+      {fourthImage && (
+        <button
+          type="button"
+          onClick={() => onOpenZoom(3)}
+          aria-label={`Ampliar imagen 4: ${fourthImage.alt}`}
+          className="group relative block aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden border border-zinc-200/80 bg-[#eceff1] cursor-zoom-in transition-colors duration-300 hover:border-[#17191c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
+        >
+          <Image
+            src={fourthImage.url}
+            alt={fourthImage.alt}
+            fill
+            loading="lazy"
+            sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 830px"
+            quality={85}
+            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          />
+          <span className="absolute bottom-4 right-4 p-2.5 bg-white/90 text-black border border-black/5 shadow-sm transition-colors duration-200 group-hover:bg-black group-hover:text-white">
+            <Maximize2 className="w-4 h-4" />
+          </span>
+        </button>
+      )}
 
-      <button
-        type="button"
-        onClick={() => onOpenZoom(3 % images.length)}
-        aria-label={`Ampliar imagen 4: ${bottomHero.alt}`}
-        className="group relative block aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden border border-zinc-200/80 bg-[#eceff1] cursor-zoom-in transition-colors duration-300 hover:border-[#17191c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
-      >
-        <Image
-          src={bottomHero.url}
-          alt={bottomHero.alt}
-          fill
-          loading="lazy"
-          sizes="(max-width: 1024px) 100vw, (max-width: 1440px) 58vw, 830px"
-          quality={85}
-          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-        />
-        <span className="absolute bottom-4 right-4 p-2.5 bg-white/90 text-black border border-black/5 shadow-sm transition-colors duration-200 group-hover:bg-black group-hover:text-white">
-          <Maximize2 className="w-4 h-4" />
-        </span>
-      </button>
-
-
+      {/* Extras (5ta en adelante) */}
       {extras.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {extras.map((image, i) => {

@@ -62,9 +62,9 @@ export default function NosotrosContent() {
     },
     {
       icon: ShieldCheck,
-      title: 'ALGODÓN 400G',
+      title: 'FÁBRICA Y CONTROL PROPIO',
       description:
-        'No escatimamos en materia prima. Nuestras telas mantienen su estructura, caída pesada y suavidad lavado tras lavado.',
+        'Desde el patronaje y el corte hasta el estampado final, producimos todo en nuestra propia planta de Ciudad del Este sin intermediarios.',
     },
     {
       icon: HeartHandshake,

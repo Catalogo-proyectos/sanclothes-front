@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { GalleryImage } from './productGallery.types';
@@ -13,7 +14,6 @@ interface ProductLightboxProps {
   onClose: () => void;
 }
 
-
 export default function ProductLightbox({
   images,
   index,
@@ -25,15 +25,21 @@ export default function ProductLightbox({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
   const titleId = useId();
+  const [mounted, setMounted] = useState(false);
 
   const total = images.length;
   const goPrev = useCallback(
     () => onIndexChange((index - 1 + total) % total),
     [index, total, onIndexChange]
   );
-  const goNext = useCallback(() => onIndexChange((index + 1) % total), [index, total, onIndexChange]);
+  const goNext = useCallback(
+    () => onIndexChange((index + 1) % total),
+    [index, total, onIndexChange]
+  );
 
-
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const { body } = document;
@@ -49,14 +55,14 @@ export default function ProductLightbox({
     };
   }, []);
 
-
   useEffect(() => {
+    if (!mounted) return;
     previouslyFocused.current = document.activeElement;
     closeButtonRef.current?.focus();
     return () => {
       (previouslyFocused.current as HTMLElement | null)?.focus?.();
     };
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -96,15 +102,18 @@ export default function ProductLightbox({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [goNext, goPrev, onClose, total]);
 
-  const current = images[index];
+  if (!mounted) return null;
 
-  return (
+  const current = images[index] ?? images[0];
+  if (!current) return null;
+
+  return createPortal(
     <div
       ref={panelRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 select-none backdrop-blur-sm"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -113,13 +122,14 @@ export default function ProductLightbox({
         Vista expandida de {productTitle}
       </h2>
 
+      {/* Botón Salir / Cerrar - Icono pequeño y minimalista */}
       <button
         ref={closeButtonRef}
         onClick={onClose}
-        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 text-white p-3 cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-2 text-zinc-400 hover:text-white cursor-pointer transition-colors duration-200 focus-visible:outline-none"
         aria-label="Cerrar vista expandida"
       >
-        <X className="w-7 h-7" />
+        <X className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.75]" />
       </button>
 
       {total > 1 && (
@@ -127,21 +137,21 @@ export default function ProductLightbox({
           <button
             onClick={goPrev}
             aria-label="Imagen anterior"
-            className="absolute left-2 sm:left-6 z-10 text-white p-3 cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="absolute left-2 sm:left-6 z-50 p-2 text-zinc-400 hover:text-white cursor-pointer transition-colors duration-200 focus-visible:outline-none"
           >
-            <ChevronLeft className="w-8 h-8" />
+            <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.75]" />
           </button>
           <button
             onClick={goNext}
             aria-label="Imagen siguiente"
-            className="absolute right-2 sm:right-6 z-10 text-white p-3 cursor-pointer transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="absolute right-2 sm:right-6 z-50 p-2 text-zinc-400 hover:text-white cursor-pointer transition-colors duration-200 focus-visible:outline-none"
           >
-            <ChevronRight className="w-8 h-8" />
+            <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.75]" />
           </button>
         </>
       )}
 
-      <div className="relative w-[92vw] h-[80vh] sm:w-[85vw] sm:h-[85vh]">
+      <div className="relative w-[92vw] h-[80vh] sm:w-[85vw] sm:h-[85vh] flex items-center justify-center pointer-events-none">
         <Image
           key={current.url}
           src={current.url}
@@ -149,19 +159,20 @@ export default function ProductLightbox({
           fill
           sizes="90vw"
           quality={90}
-          className="object-contain"
+          className="object-contain pointer-events-auto"
           priority
         />
       </div>
 
       {total > 1 && (
         <span
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/80 text-[11px] font-mono tracking-[0.2em] tabular-nums"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 text-zinc-400 text-xs font-mono tracking-[0.2em] tabular-nums"
           aria-live="polite"
         >
           {index + 1} / {total}
         </span>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

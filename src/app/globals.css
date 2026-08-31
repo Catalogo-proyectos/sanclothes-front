@@ -121,16 +121,32 @@ body {
   border-color: var(--white);
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+html {
+  scroll-behavior: smooth !important;
+  scroll-padding-top: 5rem;
 }
-::-webkit-scrollbar-track {
-  background: #ffffff;
+
+html,
+body,
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
-::-webkit-scrollbar-thumb {
-  background: #e4e4e7;
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
+
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
