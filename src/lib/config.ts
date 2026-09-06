@@ -1,8 +1,7 @@
 
 
 const requiredEnvVars = [
-  'NEXT_PUBLIC_API_URL',
-  'NEXT_PUBLIC_HEALTH_URL',
+  'NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN',
   'NEXT_PUBLIC_APP_URL',
   'NEXT_PUBLIC_ENV',
 ] as const;
@@ -19,18 +18,22 @@ if (typeof window !== 'undefined' || process.env.NODE_ENV === 'production') {
   });
 }
 
-const rawApiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5014/api';
-
-
-const apiOrigin = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+// The deployed environment provides an origin, while apiCall consumes the
+// versionless /api routes. Keep NEXT_PUBLIC_API_URL as a backwards-compatible
+// override for local environments that already provide the full API base URL.
+const configuredOrigin = env.NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN?.replace(/\/$/, '');
+const rawApiUrl = env.NEXT_PUBLIC_API_URL || (configuredOrigin ? `${configuredOrigin}/api` : 'http://localhost:5014/api');
+const apiOrigin = configuredOrigin || rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+const useBackend = env.NEXT_PUBLIC_USE_BACKEND === 'true';
+const useMock = env.NEXT_PUBLIC_USE_MOCK === 'true' || (!useBackend && env.NEXT_PUBLIC_USE_MOCK !== 'false');
 
 export const config = {
   api: {
     baseUrl: rawApiUrl,
 
     origin: apiOrigin,
-    healthUrl: env.NEXT_PUBLIC_HEALTH_URL || 'http://localhost:5014/health',
-    useMock: env.NEXT_PUBLIC_USE_MOCK === 'true' || env.NEXT_PUBLIC_USE_MOCK === undefined,
+    healthUrl: env.NEXT_PUBLIC_HEALTH_URL || `${apiOrigin}/health`,
+    useMock,
 
     mediaOrigin: env.NEXT_PUBLIC_MEDIA_ORIGIN || '',
   },
