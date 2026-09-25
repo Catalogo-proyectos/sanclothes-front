@@ -1,0 +1,29 @@
+# deps
+node_modules
+.pnpm-store
+.pnp
+
+# next
+.next
+out
+
+# build
+build
+
+# git / tooling
+.git
+.vercel
+coverage
+docs
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets / envs (nunca entran a la imagen ni al context)
+.env*
+!.env.example
+
+# misc
+.DS_Store
+*.pem
+nude-project.com.json
+skills-lock.json
