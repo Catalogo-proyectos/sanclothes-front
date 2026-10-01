@@ -15,7 +15,7 @@
 | Cliente HTTP | `src/lib/api.ts` — `apiCall()` con router de mocks integrado |
 | Modo actual | `NEXT_PUBLIC_USE_MOCK=true` → **todo el front corre contra `src/mocks/`**, nunca tocó el backend |
 | Base URL configurada | `http://localhost:3001/api` → **incorrecta**, el backend escucha en `5014` |
-| Tipos | `src/types/api.ts` — modelo heredado de la spec TRECE13, **no coincide con el backend real** |
+| Tipos | `src/types/api.ts` — modelo heredado de la spec original, **no coincide con el backend real** |
 | Estado | `useAuth` (Zustand, JWT en localStorage), `useCart` (Zustand + persist), `useCatalogFilter` |
 | Consumo real de API | Solo 5 puntos: `products/[productId]/page.tsx`, `LoginForm`, `CheckoutForm`, `Dashboard`, `useFetch` |
 
@@ -229,12 +229,12 @@ Producción: `https://api.santclothes.com.py`. El CORS del back ya permite `loca
 
 ### 2.2 `next.config.ts` — imágenes remotas
 
-Las fotos del catálogo llegan como URLs absolutas (`cdn.trecepy.com`, o `localhost:5014/uploads/...` en dev). Hay que habilitarlas o `next/image` tira error:
+Las fotos del catálogo llegan como URLs absolutas (`api.santclothes.com.py`, o `localhost:5014/uploads/...` en dev). Hay que habilitarlas o `next/image` tira error:
 
 ```ts
 remotePatterns: [
   { protocol: 'https', hostname: 'images.unsplash.com' },
-  { protocol: 'https', hostname: 'cdn.trecepy.com' },
+  { protocol: 'https', hostname: 'api.santclothes.com.py' },
   { protocol: 'https', hostname: 'api.santclothes.com.py' },
   { protocol: 'http',  hostname: 'localhost', port: '5014' },
 ],

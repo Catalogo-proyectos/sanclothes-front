@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { OrderSummaryItem, CustomerTier, TicketDetail } from '@/types/api';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { apiCall } from '@/lib/api';
+import { getStoredToken } from '@/lib/auth';
 import { useAuth } from '@/hooks/useAuth';
 import { config } from '@/lib/config';
 import PhoneInput from '@/components/common/PhoneInput';
@@ -106,7 +107,7 @@ export default function Dashboard() {
 
       const url = `${config.api.origin}/api/v1/me/tier`;
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${localStorage.getItem(config.jwt.storageKey) || ''}` },
+        headers: { Authorization: `Bearer ${getStoredToken() || ''}` },
       });
       if (res.ok) {
         setTier(await res.json());

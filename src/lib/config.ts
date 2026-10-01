@@ -2,6 +2,8 @@
 // Next.js solo inlinea NEXT_PUBLIC_* en el bundle del cliente cuando ve esa
 // sintaxis exacta; pasar por una variable intermedia (`const env = process.env`)
 // hace que en el navegador todo lea `undefined` (y el mock quede siempre activo).
+import { AUTH_TOKEN_KEY } from './storage-keys';
+
 const publicEnv = {
   NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN: process.env.NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
@@ -66,7 +68,7 @@ export const config = {
     giftCards: publicEnv.NEXT_PUBLIC_FEATURE_GIFT_CARDS === 'true',
   },
   jwt: {
-    storageKey: publicEnv.NEXT_PUBLIC_JWT_STORAGE_KEY || 'trece13_auth_token',
+    storageKey: publicEnv.NEXT_PUBLIC_JWT_STORAGE_KEY || AUTH_TOKEN_KEY,
   },
 
   turnstile: {

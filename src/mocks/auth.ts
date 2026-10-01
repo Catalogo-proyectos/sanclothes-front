@@ -1,7 +1,7 @@
 import { AuthResponse, CustomerProfile } from '@/types/api';
 
 export const MOCK_USER: CustomerProfile = {
-  id: 'user_trece_001',
+  id: 'user_sant_001',
   email: 'customer@example.com',
   firstName: 'Juan',
   lastName: 'Pérez',
@@ -14,7 +14,7 @@ export function generateMockJWT(payload: { userId?: string; email?: string; firs
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body = btoa(
     JSON.stringify({
-      userId: payload.userId || 'user_trece_001',
+      userId: payload.userId || 'user_sant_001',
       email: payload.email || 'customer@example.com',
       firstName: payload.firstName || 'Juan',
       lastName: payload.lastName || 'Pérez',
@@ -23,7 +23,7 @@ export function generateMockJWT(payload: { userId?: string; email?: string; firs
       exp: Math.floor(Date.now() / 1000) + 86400,
     })
   );
-  const signature = 'mock_signature_trece13';
+  const signature = 'mock_signature_sant';
   return `${header}.${body}.${signature}`;
 }
 

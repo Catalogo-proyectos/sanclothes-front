@@ -2,8 +2,6 @@ import { config } from '@/lib/config';
 
 
 const KNOWN_MEDIA_HOSTS = [
-  'https://cdn.trecepy.com',
-  'https://cdn.trece13.com',
   'https://api.santclothes.com.py',
   'http://localhost:5012',
   'http://localhost:5014',

@@ -8,7 +8,7 @@ export const MOCK_CUTS: CutInfo[] = [
 
 export const MOCK_PRODUCTS: CatalogProduct[] = [
   {
-    productId: 'prod_trece_01',
+    productId: 'prod_sant_01',
     slug: 'le-sants-club-suede-tracksuit',
     title: 'LE SANT CLUB SUEDE TRACKSUIT',
 
@@ -39,8 +39,8 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_02',
-    slug: 'remera-oversize-trece13',
+    productId: 'prod_sant_02',
+    slug: 'remera-oversize-sant',
     title: 'Remera Oversize Heavyweight 240g',
     description: 'Remera oversize 100% algodón 240g/m2. Fit streetwear de caída pesada con iso bordado en el pecho.',
     price: 150000,
@@ -48,7 +48,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     images: [
       {
         url: '/img/Placeholer.jpeg',
-        alt: 'Remera Oversize TRECE13',
+        alt: 'Remera Oversize SANT',
         cutVariant: 'UNISEX',
       },
     ],
@@ -70,7 +70,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_03',
+    productId: 'prod_sant_03',
     slug: 'polo-canale-old-money',
     title: 'Polo Canalé Silent Luxury',
     description: 'Polo de hilo acanalado de textura sedosa en tono marfil. Cuello campana sin botones y puños ajustados.',
@@ -95,7 +95,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_04',
+    productId: 'prod_sant_04',
     slug: 'hoodie-acid-wash-drop01',
     title: 'Hoodie Acid Wash Drop #01 400G',
     isFeatured: true,
@@ -137,7 +137,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_05',
+    productId: 'prod_sant_05',
     slug: 'camisa-lino-minimal-cream',
     title: 'Camisa de Lino Italiano Neutral',
     description: 'Camisa 100% lino orgánico lavado a la piedra. Caída fluida y botones de nácar natural.',
@@ -162,7 +162,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_06',
+    productId: 'prod_sant_06',
     slug: 'pantalones-cargo-tactical',
     title: 'Pantalón Cargo Tactical Black',
     description: 'Pantalón cargo de gabardina reforzada con 6 bolsillos funcionales y tiras ajustables en tobillos.',
@@ -187,7 +187,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_07',
+    productId: 'prod_sant_07',
     slug: 'top-cropped-streetwear',
     title: 'Top Cropped Raw Edge Atelier',
     description: 'Top corto acanalado con bordes al corte. Diseñado para alta comodidad y estética streetwear femenina.',
@@ -212,7 +212,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_08',
+    productId: 'prod_sant_08',
     slug: 'sueter-punto-cable-knit',
     title: 'Suéter Punto Cable-Knit Neutral',
     description: 'Suéter tejido en punto trenzado denso con mezcla de lana y algodón. Calce relajado y estructura suave.',
@@ -237,7 +237,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_09',
+    productId: 'prod_sant_09',
     slug: 'chaqueta-bomber-satin-edition',
     title: 'Chaqueta Bomber Satin Edition',
     isFeatured: true,
@@ -263,7 +263,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_10',
+    productId: 'prod_sant_10',
     slug: 'remera-oversize-acid-black',
     title: 'Remera Oversize Acid Black 280G',
     description: 'Remera oversize en algodón super denso 280 GSM con lavado acid wash oscuro y bordado en tono carbón.',
@@ -288,7 +288,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_11',
+    productId: 'prod_sant_11',
     slug: 'sweatpants-baggy-heavyweight',
     title: 'Sweatpants Baggy Heavyweight',
     description: 'Pantalón de friso pesado de tiro relajado con elástico ancho en cintura y cordones planos reforzados.',
@@ -313,7 +313,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_12',
+    productId: 'prod_sant_12',
     slug: 'camisa-corduroy-oversized-moss',
     title: 'Camisa Corduroy Oversized Moss',
     description: 'Camisa sobretodo de pana fina color verde musgo. Botones tonales y bolsillos dobles de parche.',
@@ -338,7 +338,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_13',
+    productId: 'prod_sant_13',
     slug: 'hoodie-zip-up-heavy-fleece',
     title: 'Hoodie Zip-Up Heavy Fleece 450G',
     isFeatured: true,
@@ -364,7 +364,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_14',
+    productId: 'prod_sant_14',
     slug: 'remera-boxy-fit-vintage-wash',
     title: 'Remera Boxy Fit Vintage Wash',
     description: 'Remera de hombros caídos y corte cuadrado en algodón peinado con tratamiento vintage stone wash.',
@@ -389,7 +389,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_15',
+    productId: 'prod_sant_15',
     slug: 'pantalon-denim-carpenter-wide-leg',
     title: 'Pantalón Denim Carpenter Wide-Leg',
     description: 'Jeans de tiro ancho en denim rígido de 14oz con detalle de presilla carpenter y triple costura.',
@@ -414,7 +414,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_16',
+    productId: 'prod_sant_16',
     slug: 'chaleco-puffer-quilted-atelier',
     title: 'Chaleco Puffer Quilted Atelier',
     description: 'Chaleco inflable ultraliviano acolchado en rombos con relleno sintético térmico e iso en cuello posterior.',
@@ -439,7 +439,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_17',
+    productId: 'prod_sant_17',
     slug: 'remera-graphic-chrome-world',
     title: 'Remera Graphic Chrome World',
     description: 'Remera 100% algodón pesada con estampado serigráfico de acabado metálico en la espalda.',
@@ -464,7 +464,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_18',
+    productId: 'prod_sant_18',
     slug: 'hoodie-oversized-monogram-black',
     title: 'Hoodie Oversized Monogram Black',
     description: 'Hoodie de friso de algodón pesado con bordado discreto de monograma en manga y capucha doble.',
@@ -489,7 +489,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_19',
+    productId: 'prod_sant_19',
     slug: 'pantalon-cargo-wide-leg-olive',
     title: 'Pantalón Cargo Wide-Leg Olive',
     description: 'Pantalón de lona de algodón lavado en verde oliva con bolsillos laterales fuelles y calce holgado.',
@@ -514,7 +514,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_20',
+    productId: 'prod_sant_20',
     slug: 'chaqueta-denim-wash-vintage',
     title: 'Chaqueta Denim Wash Vintage',
     description: 'Chaqueta de jean oversize en denim rígido de 14oz con tratamiento de gastado natural e insignias tonales.',
@@ -539,7 +539,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_21',
+    productId: 'prod_sant_21',
     slug: 'polo-pique-minimalist-atelier',
     title: 'Polo Piqué Minimalist Atelier',
     description: 'Polo de algodón piqué mercerizado de caída estructurada con cuello refinado y botones de nácar.',
@@ -564,7 +564,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_22',
+    productId: 'prod_sant_22',
     slug: 'sweatpants-flare-heavyweight',
     title: 'Sweatpants Flare Heavyweight',
     description: 'Pantalón deportivo con leve acampanado inferior y pinza frontal cosida en algodón frisado denso.',
@@ -589,7 +589,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_23',
+    productId: 'prod_sant_23',
     slug: 'remera-heavyweight-off-white',
     title: 'Remera Heavyweight Off-White',
     description: 'Remera unisex cuello cerrado confeccionada en jersey 260g teñido en tono crema natural.',
@@ -614,7 +614,7 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
   {
-    productId: 'prod_trece_24',
+    productId: 'prod_sant_24',
     slug: 'chaqueta-puffer-oversize-black',
     title: 'Chaqueta Puffer Oversize Black',
     description: 'Campera acolchada de alto volumen con aislamiento térmico sintético premium y cuello alzado.',
