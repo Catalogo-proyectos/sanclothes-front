@@ -9,6 +9,7 @@ import { apiCall, ApiError } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginResponse, RegisterResponse, GoogleAuthResponse } from '@/types/api';
 import { config } from '@/lib/config';
+import PhoneInput from '@/components/common/PhoneInput';
 
 type AuthMode = 'login' | 'register' | 'forgot';
 
@@ -38,6 +39,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
   const [regEmail, setRegEmail] = useState(initialMode === 'register' ? initialEmail : '');
   const [regPassword, setRegPassword] = useState('');
 
@@ -93,6 +95,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         lastName,
         email: regEmail,
         password: regPassword,
+        phone: phone || undefined,
       });
 
       authLogin(response.token, {
@@ -382,6 +385,21 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
                     className={inputClass}
                   />
                 </div>
+              </div>
+            )}
+
+            {mode === 'register' && (
+              <div className="space-y-2">
+                <label htmlFor="phone" className={labelClass}>
+                  Celular / WhatsApp (opcional)
+                </label>
+                <PhoneInput
+                  id="phone"
+                  value={phone}
+                  onChange={setPhone}
+                  className={inputClass}
+                  prefixClassName="pl-4 text-sm text-[#b6b2a7]"
+                />
               </div>
             )}
 

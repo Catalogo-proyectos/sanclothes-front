@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency } from '@/utils/format';
 import { ApiError } from '@/lib/api';
 import { config } from '@/lib/config';
+import PhoneInput from '@/components/common/PhoneInput';
 import {
   verifyEmail,
   confirmOtp,
@@ -439,15 +440,14 @@ export default function CheckoutForm() {
             </div>
             <div>
 
-              <label className={labelClass}>Teléfono / WhatsApp *</label>
-              <input
-                type="tel"
-                name="phone"
-                required
-                placeholder="+595 981 ..."
+              <label htmlFor="checkout-phone" className={labelClass}>Celular / WhatsApp *</label>
+              <PhoneInput
+                id="checkout-phone"
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={(phone) => setFormData((prev) => ({ ...prev, phone }))}
+                required
                 className={inputClass}
+                prefixClassName="text-xs font-medium text-slate-500"
               />
             </div>
           </div>
@@ -557,16 +557,16 @@ export default function CheckoutForm() {
             {formData.requestsInvoice && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pl-7">
                 <div>
-                  <label className={labelClass}>RUC</label>
-                  <input type="text" name="invoiceRuc" value={formData.invoiceRuc} onChange={handleChange} className={inputClass} />
+                  <label className={labelClass}>RUC *</label>
+                  <input type="text" name="invoiceRuc" required value={formData.invoiceRuc} onChange={handleChange} className={inputClass} />
                 </div>
                 <div>
-                  <label className={labelClass}>Razón Social</label>
-                  <input type="text" name="invoiceRazonSocial" value={formData.invoiceRazonSocial} onChange={handleChange} className={inputClass} />
+                  <label className={labelClass}>Razón Social *</label>
+                  <input type="text" name="invoiceRazonSocial" required value={formData.invoiceRazonSocial} onChange={handleChange} className={inputClass} />
                 </div>
                 <div>
-                  <label className={labelClass}>Dirección Fiscal</label>
-                  <input type="text" name="invoiceDireccionFiscal" value={formData.invoiceDireccionFiscal} onChange={handleChange} className={inputClass} />
+                  <label className={labelClass}>Dirección Fiscal *</label>
+                  <input type="text" name="invoiceDireccionFiscal" required value={formData.invoiceDireccionFiscal} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
             )}
