@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { bentoLayout, selectFeatured } from '@/lib/catalog/featured';
+import { bentoLayout, excludeProducts, selectBento, selectFeatured, selectFeaturedWithFallback } from '@/lib/catalog/featured';
 import type { CatalogProduct } from '@/types/api';
 
 function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
@@ -78,5 +78,38 @@ describe('bentoLayout', () => {
       expect(layout.secondary).toHaveLength(3);
       expect(layout.hero.productId).toBe('prod_0');
     }
+  });
+});
+
+describe('selectBento (sección Camperas & Chaquetas)', () => {
+  it('solo toma productos marcados como destacados, hasta 4', () => {
+    const products = [
+      ...build(6, { isFeatured: true }),
+      makeProduct({ productId: 'drop', isLimitedDrop: true }),
+    ];
+    const bento = selectBento(products);
+    expect(bento).toHaveLength(4);
+    expect(bento.every((p) => p.isFeatured)).toBe(true);
+  });
+
+  it('sin destacados devuelve vacío (no usa drops/badges como fallback)', () => {
+    const products = [
+      makeProduct({ productId: 'drop', isLimitedDrop: true }),
+      makeProduct({ productId: 'badge', badge: 'NEW' }),
+    ];
+    expect(selectBento(products)).toEqual([]);
+  });
+
+  it('la grilla de destacados no repite lo que ya está en el bento', () => {
+    const products = [
+      ...build(2, { isFeatured: true }),
+      makeProduct({ productId: 'x' }),
+      makeProduct({ productId: 'y' }),
+    ];
+    const bento = selectBento(products);
+    const grid = selectFeaturedWithFallback(excludeProducts(products, bento), 8);
+    const bentoIds = new Set(bento.map((p) => p.productId));
+    expect(grid.map((p) => p.productId)).toEqual(['x', 'y']);
+    expect(grid.some((p) => bentoIds.has(p.productId))).toBe(false);
   });
 });

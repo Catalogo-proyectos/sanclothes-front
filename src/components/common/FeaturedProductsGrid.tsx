@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { heroSlot } from '@/lib/images/slots';
 import { formatCurrency } from '@/utils/format';
 import type { CatalogProduct, ProductVariant } from '@/types/api';
+import type { CartItem } from '@/types/cart';
 
 
 const GRID_CAPACITY = 8;
@@ -29,7 +30,7 @@ export interface GridProduct {
 
 
 
-function toGridProduct(product: CatalogProduct): GridProduct {
+export function toGridProduct(product: CatalogProduct): GridProduct {
   const effectivePrice = product.discountPrice ?? product.price;
   const image = heroSlot(product.images ?? []);
 
@@ -46,6 +47,23 @@ function toGridProduct(product: CatalogProduct): GridProduct {
     imageAlt: image.alt,
     sizes: product.sizes?.length ? product.sizes.slice(0, 4) : ['S', 'M', 'L', 'XL'],
     variants: product.variants ?? [],
+  };
+}
+
+/** Ítem de carrito para una tarjeta de producto real (usa la variante real del talle). */
+export function toCartItem(product: GridProduct, size: string): CartItem {
+  const variant = product.variants.find((v) => v.size === size);
+  return {
+    variantId: variant?.variantId ?? `${product.id}-${size}`,
+    productId: product.id,
+    productName: product.name,
+    sku: variant?.sku ?? `${product.id}-${size}`,
+    size,
+    cut: variant?.cut ?? 'UNISEX',
+    unitPrice: product.price,
+    image: product.image,
+    quantity: 1,
+    maxStock: variant?.stock,
   };
 }
 
@@ -70,22 +88,7 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
     e.stopPropagation();
     const chosenSize = selectedSizes[product.id] || product.sizes[0];
 
-
-
-    const variant = product.variants.find((v) => v.size === chosenSize);
-
-    addItem({
-      variantId: variant?.variantId ?? `${product.id}-${chosenSize}`,
-      productId: product.id,
-      productName: product.name,
-      sku: variant?.sku ?? `${product.id}-${chosenSize}`,
-      size: chosenSize,
-      cut: variant?.cut ?? 'UNISEX',
-      unitPrice: product.price,
-      image: product.image,
-      quantity: 1,
-      maxStock: variant?.stock,
-    });
+    addItem(toCartItem(product, chosenSize));
 
     toast.success('¡AÑADIDO AL CARRITO!', {
       description: `${product.name} · TALLE ${chosenSize}`,

@@ -7,69 +7,25 @@ import { motion } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { toast } from 'sonner';
+import { toCartItem, toGridProduct, type GridProduct } from '@/components/common/FeaturedProductsGrid';
+import type { CatalogProduct } from '@/types/api';
 
-interface JacketProduct {
-  id: string;
-  productId: string;
-  tag: string;
-  name: string;
-  fabric: string;
-  price: number;
-  priceFormatted: string;
-  image: string;
-  sizes: string[];
+/** Máximo de productos en el bento 2x2 de esta sección. */
+export const BENTO_CAPACITY = 4;
+
+interface BrandStoryHeroProps {
+  /**
+   * Productos marcados como destacados en el admin ("Bento Grid / Destacados 2x2").
+   * Si no hay ninguno, la sección muestra solo la imagen editorial a lo ancho.
+   */
+  products?: CatalogProduct[];
 }
 
-const JACKET_PRODUCTS: JacketProduct[] = [
-  {
-    id: 'suede-tracksuit-jacket',
-    productId: 'prod_trece_01',
-    tag: 'CÁPSULA SPECIAL — LE SANT',
-    name: 'LE SANT CLUB SUEDE JACKET',
-    fabric: 'TEXTURA SUEDE & EMBROIDERED NOVA',
-    price: 390000,
-    priceFormatted: '₲ 390.000',
-    image: '/img/Placeholer.jpeg',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-  {
-    id: 'varsity-jacket-supra',
-    productId: 'prod_trece_09',
-    tag: 'LIMITED DROP — VARSITY',
-    name: 'SANT CLOTHES VARSITY JACKET',
-    fabric: 'APLIQUÉ EMBROIDERED & COLD WOOL',
-    price: 420000,
-    priceFormatted: '₲ 420.000',
-    image: '/img/Placeholer.jpeg',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-  {
-    id: 'zip-santis-club',
-    productId: 'prod_trece_13',
-    tag: 'SANT DROP',
-    name: 'SANT CLUB HALF-ZIP SWEATER',
-    fabric: '400G COTTON HEAVYWEIGHT · BROWN',
-    price: 340000,
-    priceFormatted: '₲ 340.000',
-    image: '/img/Placeholer.jpeg',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-  {
-    id: 'brown-hoodie-heavy',
-    productId: 'prod_trece_18',
-    tag: 'CORE ESSENTIALS',
-    name: 'SANT CLOTHES HEAVYWEIGHT HOODIE',
-    fabric: '400G FRISO HEAVYWEIGHT · BACK PRINT',
-    price: 280000,
-    priceFormatted: '₲ 280.000',
-    image: '/img/Placeholer.jpeg',
-    sizes: ['S', 'M', 'L', 'XL'],
-  },
-];
-
-export default function BrandStoryHero() {
+export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
   const { addItem } = useCart();
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
+  const bentoProducts = products.slice(0, BENTO_CAPACITY).map(toGridProduct);
+  const hasProducts = bentoProducts.length > 0;
 
   const handleSizeSelect = (productId: string, size: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -77,22 +33,12 @@ export default function BrandStoryHero() {
     setSelectedSizes((prev) => ({ ...prev, [productId]: size }));
   };
 
-  const handleAddToCart = (product: JacketProduct, e: React.MouseEvent) => {
+  const handleAddToCart = (product: GridProduct, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const chosenSize = selectedSizes[product.id] || product.sizes[0];
 
-    addItem({
-      variantId: `${product.id}-${chosenSize}`,
-      productId: product.id,
-      productName: product.name,
-      sku: `SKU-${product.id}-${chosenSize}`,
-      size: chosenSize,
-      cut: 'UNISEX',
-      unitPrice: product.price,
-      image: product.image,
-      quantity: 1,
-    });
+    addItem(toCartItem(product, chosenSize));
 
     toast.success('¡AÑADIDO AL CARRITO!', {
       description: `${product.name} · TALLE ${chosenSize}`,
@@ -110,7 +56,7 @@ export default function BrandStoryHero() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-6 flex flex-col h-full"
+            className={`${hasProducts ? 'lg:col-span-6' : 'lg:col-span-12'} flex flex-col h-full`}
           >
             <div
               className="relative w-full h-full min-h-[580px] lg:min-h-full bg-[#17191c] overflow-hidden border border-[#b6b2a7] group flex flex-col justify-end"
@@ -151,6 +97,7 @@ export default function BrandStoryHero() {
           </motion.div>
 
 
+          {hasProducts && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -159,21 +106,21 @@ export default function BrandStoryHero() {
             className="lg:col-span-6 flex flex-col justify-between"
           >
             <div className="grid grid-cols-2 gap-3 sm:gap-4 h-full">
-              {JACKET_PRODUCTS.map((product) => {
+              {bentoProducts.map((product) => {
                 const currentSize = selectedSizes[product.id] || product.sizes[0];
 
                 return (
                   <div key={product.id} className="group flex flex-col justify-between transition-all duration-300">
 
                     <Link
-                      href={`/products/${product.productId}`}
+                      href={`/products/${product.id}`}
                       aria-label={`Ver precompra de ${product.name}`}
                       className="relative block aspect-[3/4] w-full bg-[#f6f6f6] border border-zinc-200 group-hover:border-black overflow-hidden mb-2.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
                       style={{ borderRadius: '0px' }}
                     >
                       <Image
                         src={product.image}
-                        alt={product.name}
+                        alt={product.imageAlt || product.name}
                         fill
                         quality={80}
                         sizes="(min-width: 1024px) 25vw, 50vw"
@@ -185,7 +132,7 @@ export default function BrandStoryHero() {
                     <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
 
                       <Link
-                        href={`/products/${product.productId}`}
+                        href={`/products/${product.id}`}
                         aria-label={`Ver precompra de ${product.name}`}
                         className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
                       >
@@ -238,6 +185,7 @@ export default function BrandStoryHero() {
               })}
             </div>
           </motion.div>
+          )}
 
         </div>
       </div>

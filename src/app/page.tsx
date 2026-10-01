@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import ScrollLogoHero from '@/components/common/ScrollLogoHero';
 import Hero from '@/components/common/Hero';
 import BrandStoryHero from '@/components/common/BrandStoryHero';
@@ -9,18 +9,35 @@ import StreetMotionHero from '@/components/common/StreetMotionHero';
 import ShowroomExperience from '@/components/common/ShowroomExperience';
 import FinalVideoBanner from '@/components/common/FinalVideoBanner';
 import { fetchCatalog } from '@/lib/services/catalog';
-import { selectFeaturedWithFallback } from '@/lib/catalog/featured';
+import { excludeProducts, selectBento, selectFeaturedWithFallback } from '@/lib/catalog/featured';
 import type { CatalogProduct } from '@/types/api';
 
-async function FeaturedProductsSection() {
-  let products: CatalogProduct[] = [];
+// La home se pre-genera; sin esto los productos quedaban congelados en el momento
+// del build y un destacado marcado en el admin no aparecía hasta el próximo deploy.
+// Con ISR se regenera en segundo plano como máximo una vez por minuto.
+export const revalidate = 60;
+
+// Una sola llamada al catálogo por render, compartida por el bento y la grilla.
+const loadCatalog = cache(async (): Promise<CatalogProduct[]> => {
   try {
-    products = await fetchCatalog();
+    return await fetchCatalog();
   } catch {
+    return [];
   }
+});
+
+async function BrandStorySection() {
+  const products = await loadCatalog();
+  return <BrandStoryHero products={selectBento(products)} />;
+}
+
+async function FeaturedProductsSection() {
+  const products = await loadCatalog();
+  // Los destacados que ya se muestran en el bento no se repiten en la grilla.
+  const rest = excludeProducts(products, selectBento(products));
 
   return (
-    <FeaturedProductsGrid products={selectFeaturedWithFallback(products, 8)} />
+    <FeaturedProductsGrid products={selectFeaturedWithFallback(rest, 8)} />
   );
 }
 
@@ -54,7 +71,9 @@ export default function HomePage() {
 
 
       <div id="historia" className="scroll-mt-24">
-        <BrandStoryHero />
+        <Suspense fallback={<BrandStoryHero />}>
+          <BrandStorySection />
+        </Suspense>
       </div>
 
 
