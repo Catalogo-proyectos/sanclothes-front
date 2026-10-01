@@ -7,6 +7,7 @@ import { apiCall } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { config } from '@/lib/config';
 import PhoneInput from '@/components/common/PhoneInput';
+import OrderTicketModal from '@/components/customer/OrderTicketModal';
 import { toPyE164, toPyLocalDigits } from '@/lib/phone';
 
 const ORDER_STATUS_LABELS: Record<string, string> = {
@@ -36,6 +37,8 @@ export default function Dashboard() {
 
 
   const [orders, setOrders] = useState<OrderSummaryItem[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<OrderSummaryItem | null>(null);
+  const closeOrderTicket = useCallback(() => setSelectedOrder(null), []);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
 
@@ -224,7 +227,13 @@ export default function Dashboard() {
             </div>
           ) : (
             orders.map((order) => (
-              <div key={order.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+              <button
+                type="button"
+                key={order.id}
+                onClick={() => setSelectedOrder(order)}
+                aria-label={`Ver ticket del pedido ${order.orderNumber}`}
+                className="w-full text-left bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between transition-colors hover:border-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black cursor-pointer"
+              >
                 <div>
                   <div className="flex items-center gap-3">
                     <span className="font-extrabold text-sm text-black">{order.orderNumber}</span>
@@ -240,12 +249,20 @@ export default function Dashboard() {
                 </div>
                 <div className="text-right">
                   <p className="text-base font-black text-black">{formatCurrency(order.total)}</p>
-                  <p className="text-[10px] text-slate-400">{order.currency}</p>
+                  <p className="text-[10px] text-slate-400">Ver ticket →</p>
                 </div>
-              </div>
+              </button>
             ))
           )}
         </div>
+      )}
+
+      {selectedOrder && (
+        <OrderTicketModal
+          orderId={selectedOrder.id}
+          statusLabel={ORDER_STATUS_LABELS[selectedOrder.status] || selectedOrder.status}
+          onClose={closeOrderTicket}
+        />
       )}
 
 

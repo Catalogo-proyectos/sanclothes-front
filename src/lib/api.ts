@@ -264,7 +264,18 @@ async function handleMockRequest<T>(
     const orderId = path.replace('/me/orders/', '');
     const order = MOCK_ORDERS.find((o) => o.orderId === orderId || o.orderNumber === orderId);
     if (!order) throw new Error('Order not found');
-    return order as unknown as T;
+    // Misma forma que GET /me/orders/:id del backend (OrderDetail).
+    const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return {
+      id: order.orderId,
+      orderNumber: order.orderNumber,
+      createdAt: order.createdAt,
+      status: order.status,
+      currency: order.currency,
+      totals: { subtotal, shipping: Math.max(0, order.total - subtotal), total: order.total },
+      shippingAddress: { street: 'Av. Mariscal López 1234', city: 'Asunción', postalCode: '1429' },
+      items: order.items.map(({ productId, name, quantity, price }) => ({ productId, name, quantity, price })),
+    } as unknown as T;
   }
 
 

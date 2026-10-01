@@ -150,3 +150,10 @@ body,
   width: 0 !important;
   height: 0 !important;
 }
+
+/* Ticket de compra (OrderTicketModal): al imprimir solo se muestra el ticket. */
+@media print {
+  body:has(#order-ticket-print) > *:not(#order-ticket-print) {
+    display: none !important;
+  }
+}
