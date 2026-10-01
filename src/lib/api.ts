@@ -156,7 +156,7 @@ async function handleMockRequest<T>(
     const token = generateMockJWT({ email });
     return {
       token,
-      user: { id: 'user_trece_001', firstName: 'Juan', lastName: 'Pérez', email, role: 'customer' },
+      user: { id: 'user_sant_001', firstName: 'Juan', lastName: 'Pérez', email, role: 'customer' },
     } as unknown as T;
   }
 

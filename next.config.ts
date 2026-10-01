@@ -15,14 +15,6 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cdn.trecepy.com",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.trece13.com",
-      },
-      {
-        protocol: "https",
         hostname: "api.santclothes.com.py",
       },
       {

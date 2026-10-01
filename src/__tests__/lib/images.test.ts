@@ -48,14 +48,12 @@ function makeProduct(overrides: Partial<BackendProduct> = {}): BackendProduct {
 describe('normalizeImageUrl', () => {
   it('reapunta cada host conocido al origen de media vigente', () => {
     const hosts = [
-      'https://cdn.trecepy.com/catalog/foto.jpg',
-      'https://cdn.trece13.com/catalog/foto.jpg',
+      'https://api.santclothes.com.py/catalog/foto.jpg',
       'http://localhost:5012/catalog/foto.jpg',
       'http://localhost:5014/uploads/catalog/foto.jpg',
     ];
 
     expect(hosts.map((h) => normalizeImageUrl(h))).toEqual([
-      'https://cdn.santclothes.test/catalog/foto.jpg',
       'https://cdn.santclothes.test/catalog/foto.jpg',
       'https://cdn.santclothes.test/catalog/foto.jpg',
       'https://cdn.santclothes.test/uploads/catalog/foto.jpg',
@@ -84,8 +82,8 @@ describe('normalizeImageUrl', () => {
 
   it('sin origen configurado usa la URL tal como vino de la base', () => {
     mediaOrigin.value = '';
-    expect(normalizeImageUrl('https://cdn.trecepy.com/catalog/foto.jpg')).toBe(
-      'https://cdn.trecepy.com/catalog/foto.jpg'
+    expect(normalizeImageUrl('https://api.santclothes.com.py/catalog/foto.jpg')).toBe(
+      'https://api.santclothes.com.py/catalog/foto.jpg'
     );
   });
 
@@ -121,7 +119,7 @@ describe('imagesForCut', () => {
 
   it('usa el array legacy cuando no hay imagesByCut', () => {
     const legacy = makeProduct({
-      images: ['https://cdn.trecepy.com/catalog/legacy.jpg'],
+      images: ['https://api.santclothes.com.py/catalog/legacy.jpg'],
       imagesByCut: {},
       availableCuts: [],
     });

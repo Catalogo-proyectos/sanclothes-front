@@ -29,7 +29,7 @@ export const MOCK_ORDERS: MockOrder[] = [
     items: [
       {
         productId: 'prod_001',
-        name: 'Remera Oversize TRECE13 Heavyweight',
+        name: 'Remera Oversize SANT Heavyweight',
         sku: 'REM-TR13-FEM-S',
         quantity: 2,
         price: 140000,

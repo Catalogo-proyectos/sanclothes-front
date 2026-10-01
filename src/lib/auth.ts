@@ -1,4 +1,5 @@
 import { config } from './config';
+import { migrateLegacyStorageKey } from './storage-keys';
 import { DecodedJWTPayload } from '@/types/auth';
 
 
@@ -26,6 +27,7 @@ export function parseJWT(token: string): DecodedJWTPayload | null {
 
 export function getStoredToken(): string | null {
   if (typeof window === 'undefined') return null;
+  migrateLegacyStorageKey(config.jwt.storageKey);
   return localStorage.getItem(config.jwt.storageKey);
 }
 

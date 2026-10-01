@@ -2,6 +2,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItem, CartState } from '@/types/cart';
 import { fetchUserCart, saveUserCart, fetchGuestCart, saveGuestCart } from '@/lib/services/cart';
+import { CART_STORAGE_KEY, migrateLegacyStorageKey } from '@/lib/storage-keys';
+
+// Antes de que zustand hidrate el carrito desde localStorage.
+migrateLegacyStorageKey(CART_STORAGE_KEY);
 
 export const useCart = create<CartState>()(
   persist(
@@ -101,7 +105,7 @@ export const useCart = create<CartState>()(
       },
     }),
     {
-      name: 'trece13_shopping_cart',
+      name: CART_STORAGE_KEY,
     }
   )
 );

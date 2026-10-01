@@ -28,21 +28,21 @@ Sí, el backend ya tiene el sistema armado. Estas son las tres piezas y **una so
 
 ```jsonc
 {
-  "productId": "prod_trece_01",
+  "productId": "prod_sant_01",
   "slug": "camisa-oversized-beige",
   "name": "Camisa Oversized Beige",
 
   // (A) FUENTE DE VERDAD — agrupadas por corte
   "imagesByCut": {
-    "CLASSIC":   ["https://cdn.trecepy.com/catalog/1704067200000-frente.jpg",
-                  "https://cdn.trecepy.com/catalog/1704067200001-espalda.jpg",
-                  "https://cdn.trecepy.com/catalog/1704067200002-detalle.jpg"],
-    "OVERSIZED": ["https://cdn.trecepy.com/catalog/1704067200010-ov-frente.jpg",
-                  "https://cdn.trecepy.com/catalog/1704067200011-ov-lifestyle.jpg"]
+    "CLASSIC":   ["https://api.santclothes.com.py/catalog/1704067200000-frente.jpg",
+                  "https://api.santclothes.com.py/catalog/1704067200001-espalda.jpg",
+                  "https://api.santclothes.com.py/catalog/1704067200002-detalle.jpg"],
+    "OVERSIZED": ["https://api.santclothes.com.py/catalog/1704067200010-ov-frente.jpg",
+                  "https://api.santclothes.com.py/catalog/1704067200011-ov-lifestyle.jpg"]
   },
 
   // (B) LEGACY — acumulado plano de todas las subidas, en orden cronológico
-  "images": ["https://cdn.trecepy.com/catalog/1704067200000-frente.jpg", "…"],
+  "images": ["https://api.santclothes.com.py/catalog/1704067200000-frente.jpg", "…"],
 
   "availableCuts": ["CLASSIC", "OVERSIZED"],
   "variants": { "CLASSIC": { "M": { "sku": "CAM-BEI-M", "stock": 4 } } }
@@ -91,11 +91,11 @@ Si borrás la 1ª foto del corte `OVERSIZED`, del array `images` desaparece la 1
 
 | Escenario | URL generada |
 |:--|:--|
-| `CDN_URL` definido (producción) | `https://cdn.trecepy.com/catalog/1704067200000-foto.jpg` |
+| `CDN_URL` definido (producción) | `https://api.santclothes.com.py/catalog/1704067200000-foto.jpg` |
 | MinIO sin CDN (dev con docker) | `http://localhost:5012/catalog/1704067200000-foto.jpg` |
 | MinIO caído → fallback a disco | `http://localhost:5014/uploads/catalog/1704067200000-foto.jpg` |
 
-La URL **se congela en la DB al momento de subir**. Un producto sembrado en dev conserva `localhost:5012` aunque después lo mires en producción, y viceversa. El propio backend ya sufrió esto: el mock de `/shop-api` reescribe `cdn.trecepy.com → localhost:5014` a mano (`app.ts:293-296`) — pero **`GET /api/catalog` no reescribe nada**.
+La URL **se congela en la DB al momento de subir**. Un producto sembrado en dev conserva `localhost:5012` aunque después lo mires en producción, y viceversa. El propio backend ya sufrió esto: el mock de `/shop-api` reescribe `api.santclothes.com.py → localhost:5014` a mano (`app.ts:293-296`) — pero **`GET /api/catalog` no reescribe nada**.
 
 > **Regla del front**: toda URL de imagen pasa por `normalizeImageUrl()` (§4.1) antes de llegar a `next/image`.
 
@@ -143,12 +143,12 @@ import { config } from '@/lib/config';
 
 /**
  * Las URLs de imagen se congelan en la DB al subirlas y traen el host del entorno
- * donde se subieron (cdn.trecepy.com | localhost:5012 | localhost:5014/uploads).
+ * donde se subieron (api.santclothes.com.py | localhost:5012 | localhost:5014/uploads).
  * Ver lib/minio.ts:135-186 del backend. Acá las reapuntamos al host vigente.
  */
 const KNOWN_HOSTS = [
-  'https://cdn.trecepy.com',
-  'https://cdn.trece13.com',
+  'https://api.santclothes.com.py',
+  'https://api.santclothes.com.py',
   'http://localhost:5012',
   'http://localhost:5014',
 ];
@@ -464,15 +464,15 @@ api: {
 # .env.local (dev, MinIO por docker)
 NEXT_PUBLIC_MEDIA_ORIGIN=http://localhost:5012
 # .env.production
-NEXT_PUBLIC_MEDIA_ORIGIN=https://cdn.trecepy.com
+NEXT_PUBLIC_MEDIA_ORIGIN=https://api.santclothes.com.py
 ```
 
 ### 7.2 `next.config.ts`
 
 ```ts
 remotePatterns: [
-  { protocol: 'https', hostname: 'cdn.trecepy.com' },
-  { protocol: 'https', hostname: 'cdn.trece13.com' },       // productos viejos
+  { protocol: 'https', hostname: 'api.santclothes.com.py' },
+  { protocol: 'https', hostname: 'api.santclothes.com.py' },       // productos viejos
   { protocol: 'http',  hostname: 'localhost', port: '5012' }, // MinIO dev
   { protocol: 'http',  hostname: 'localhost', port: '5014' }, // fallback /uploads
   { protocol: 'https', hostname: 'images.unsplash.com' },     // borrar al eliminar los mocks

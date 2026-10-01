@@ -1,7 +1,7 @@
-# Auditoría de Cumplimiento: Proyecto vs TRECE13_FRONTEND_SPEC
+# Auditoría de Cumplimiento: Proyecto vs SANTCLOTHES_FRONTEND_SPEC
 
 **Fecha de auditoría**: 2026-08-12  
-**Documento de referencia**: `TRECE13_FRONTEND_SPEC_DEVELOP_ARCHITECTURE.md` (v1.0, 2026-07-19)  
+**Documento de referencia**: `SANTCLOTHES_FRONTEND_SPEC_DEVELOP_ARCHITECTURE.md` (v1.0, 2026-07-19)  
 **Proyecto auditado**: `sanclothes-front` (branch `main`)
 
 ---
@@ -282,7 +282,7 @@ Seleccion de los mas significativos:
 
 | Hook | Estado | Nota |
 |------|:------:|------|
-| `useAuth.ts` | OK | Zustand, interfaz correcta, usa `trece13_auth_token` |
+| `useAuth.ts` | OK | Zustand, interfaz correcta, usa `sant_auth_token` |
 | `useCart.ts` | OK | Zustand + persist, usa `clearCart()` (spec dice `clear()`) |
 | `useFetch.ts` | OK | Hook custom, retorna `{ data, loading, error }` |
 | `usePagination.ts` | **FALTA** | |
