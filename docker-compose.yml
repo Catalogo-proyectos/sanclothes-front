@@ -9,7 +9,7 @@ services:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5014/api}
         NEXT_PUBLIC_HEALTH_URL: ${NEXT_PUBLIC_HEALTH_URL:-http://localhost:5014/health}
         NEXT_PUBLIC_MEDIA_ORIGIN: ${NEXT_PUBLIC_MEDIA_ORIGIN:-http://localhost:5012}
-        NEXT_PUBLIC_USE_MOCK: ${NEXT_PUBLIC_USE_MOCK:-true}
+        NEXT_PUBLIC_USE_MOCK: ${NEXT_PUBLIC_USE_MOCK:-false}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
         NEXT_PUBLIC_ENV: ${NEXT_PUBLIC_ENV:-development}
         NEXT_PUBLIC_FEATURE_LOYALTY: ${NEXT_PUBLIC_FEATURE_LOYALTY:-true}
