@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,7 +13,9 @@ import {
   confirmOtp,
   createOrder,
   uploadReceipt,
+  fetchCheckoutOrder,
 } from '@/lib/services/checkout';
+import { fetchBankTransferInfo, type BankTransferInfo } from '@/lib/services/settings';
 import type { CheckoutResponse, ConfirmOtpResponse } from '@/types/api';
 
 type CheckoutStep = 'email' | 'otp' | 'form' | 'success';
@@ -49,6 +51,29 @@ export default function CheckoutForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [createdOrder, setCreatedOrder] = useState<CheckoutResponse | null>(null);
+  // El carrito se vacía al crear el pedido: el total se guarda antes y después se
+  // reemplaza por el del backend (incluye cupones y beneficios de tier).
+  const [orderTotal, setOrderTotal] = useState<number | null>(null);
+  const [bankInfo, setBankInfo] = useState<BankTransferInfo | null>(null);
+  const [bankInfoLoaded, setBankInfoLoaded] = useState(false);
+
+  useEffect(() => {
+    if (step !== 'success' || !createdOrder) return;
+    let cancelled = false;
+    fetchBankTransferInfo().then((info) => {
+      if (cancelled) return;
+      setBankInfo(info);
+      setBankInfoLoaded(true);
+    });
+    fetchCheckoutOrder(createdOrder.orderId)
+      .then((order) => {
+        if (!cancelled && Number.isFinite(order.totalAmount)) setOrderTotal(Math.round(order.totalAmount));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [step, createdOrder]);
 
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -161,6 +186,7 @@ export default function CheckoutForm() {
       });
 
       setCreatedOrder(order);
+      setOrderTotal(getTotal());
       clearCart();
       setStep('success');
     } catch (err) {
@@ -229,24 +255,49 @@ export default function CheckoutForm() {
 
         <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3">
           <h3 className="font-extrabold text-xs uppercase tracking-wider text-slate-500">Datos para Pago por Transferencia (SIPAP / QR)</h3>
+          {/* Los datos bancarios se cargan en el admin (Configuración → Datos para transferencia). */}
           <div className="grid grid-cols-2 gap-4 text-xs font-medium text-slate-700">
-            <div>
-              <p className="text-slate-400">Banco:</p>
-              <p className="font-bold text-black">Basa / Itaú</p>
-            </div>
-            <div>
-              <p className="text-slate-400">Titular:</p>
-              <p className="font-bold text-black">TRECE13 S.R.L.</p>
-            </div>
-            <div>
-              <p className="text-slate-400">RUC:</p>
-              <p className="font-bold text-black">80123456-7</p>
-            </div>
+            {bankInfo && (
+              <>
+                <div>
+                  <p className="text-slate-400">Banco:</p>
+                  <p className="font-bold text-black">{bankInfo.bankName}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400">Titular:</p>
+                  <p className="font-bold text-black">{bankInfo.accountHolder}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400">{bankInfo.accountType || 'Número de cuenta'}:</p>
+                  <p className="font-bold text-black select-all">{bankInfo.accountNumber}</p>
+                </div>
+                {bankInfo.ruc && (
+                  <div>
+                    <p className="text-slate-400">RUC / CI:</p>
+                    <p className="font-bold text-black select-all">{bankInfo.ruc}</p>
+                  </div>
+                )}
+                {bankInfo.alias && (
+                  <div>
+                    <p className="text-slate-400">Alias SIPAP:</p>
+                    <p className="font-bold text-black select-all">{bankInfo.alias}</p>
+                  </div>
+                )}
+              </>
+            )}
             <div>
               <p className="text-slate-400">Monto Total a Transferir:</p>
-              <p className="font-black text-emerald-700 text-sm">{formatCurrency(getTotal())}</p>
+              <p className="font-black text-emerald-700 text-sm">
+                {orderTotal !== null ? formatCurrency(orderTotal) : '—'}
+              </p>
             </div>
           </div>
+          {bankInfo?.notes && <p className="text-xs text-slate-600">{bankInfo.notes}</p>}
+          {bankInfoLoaded && !bankInfo && (
+            <p className="text-xs text-slate-600">
+              Te contactaremos por WhatsApp o email con los datos para completar la transferencia.
+            </p>
+          )}
         </div>
 
 
