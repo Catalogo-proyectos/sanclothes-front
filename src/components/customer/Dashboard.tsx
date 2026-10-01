@@ -6,6 +6,8 @@ import { formatCurrency, formatDate } from '@/utils/format';
 import { apiCall } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { config } from '@/lib/config';
+import PhoneInput from '@/components/common/PhoneInput';
+import { toPyE164, toPyLocalDigits } from '@/lib/phone';
 
 const ORDER_STATUS_LABELS: Record<string, string> = {
   pending: 'Pendiente',
@@ -90,7 +92,7 @@ export default function Dashboard() {
       setProfileForm({
         firstName: me.firstName || '',
         lastName: me.lastName || '',
-        phone: me.phone || '',
+        phone: toPyE164(toPyLocalDigits(me.phone || '')),
       });
     } catch {  }
   }, []);
@@ -338,12 +340,13 @@ export default function Dashboard() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-600 mb-1">Teléfono</label>
-                <input
-                  type="tel"
+                <label htmlFor="profile-phone" className="block text-xs font-bold uppercase text-slate-600 mb-1">Celular / WhatsApp (opcional)</label>
+                <PhoneInput
+                  id="profile-phone"
                   value={profileForm.phone}
-                  onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                  onChange={(phone) => setProfileForm((prev) => ({ ...prev, phone }))}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+                  prefixClassName="text-xs text-slate-500"
                 />
               </div>
               <button
