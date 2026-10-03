@@ -79,10 +79,11 @@ export default function ScrollLogoHero() {
       </h1>
       <div className="absolute inset-0 w-full h-full overflow-hidden">
 
+        {/* Celular en vertical: recorte central 810x1080 (~450 KB) en vez del
+            1080p de 4 MB; object-cover ya mostraba sólo esa franja central. */}
         <video
           ref={videoRef}
-          src="/img/video/ofi-3-clean.mp4"
-          poster="/img/video/ofi3-frames/frame_0001.webp"
+          poster="/img/video/ofi-3-poster.webp"
           autoPlay
           loop
           muted
@@ -90,7 +91,14 @@ export default function ScrollLogoHero() {
           preload="auto"
           aria-label="SANT CLOTHES — Video Hero en bucle"
           className="w-full h-full object-cover pointer-events-none select-none"
-        />
+        >
+          <source
+            src="/img/video/ofi-3-mobile.mp4"
+            type="video/mp4"
+            media="(max-width: 767px) and (orientation: portrait)"
+          />
+          <source src="/img/video/ofi-3-clean.mp4" type="video/mp4" />
+        </video>
       </div>
 
 
