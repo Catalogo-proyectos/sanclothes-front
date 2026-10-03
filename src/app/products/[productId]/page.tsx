@@ -4,10 +4,15 @@ import { cache } from 'react';
 import ProductDetail from '@/components/catalog/ProductDetail';
 import { fetchCatalog, fetchProduct } from '@/lib/services/catalog';
 import { config } from '@/lib/config';
+import { SIZE_PARAM } from '@/lib/catalog/sizes';
 import { CatalogProduct } from '@/types/api';
 
 interface PageParams {
   params: Promise<{ productId: string }>;
+}
+
+interface ProductPageProps extends PageParams {
+  searchParams: Promise<{ [SIZE_PARAM]?: string | string[] }>;
 }
 
 
@@ -66,8 +71,11 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   };
 }
 
-export default async function ProductDetailPage({ params }: PageParams) {
+export default async function ProductDetailPage({ params, searchParams }: ProductPageProps) {
   const { productId } = await params;
+  // Talle elegido en la tarjeta del catálogo (?talle=M); la ficha lo valida.
+  const sizeParam = (await searchParams)[SIZE_PARAM];
+  const initialSize = Array.isArray(sizeParam) ? sizeParam[0] : sizeParam;
   const [product, recommended] = await Promise.all([
     getProduct(productId),
     getRecommended(productId),
@@ -127,7 +135,12 @@ export default async function ProductDetailPage({ params }: PageParams) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProductDetail product={product} recommended={recommended} />
+      <ProductDetail
+        key={`${product.productId}:${initialSize ?? ''}`}
+        product={product}
+        recommended={recommended}
+        initialSize={initialSize}
+      />
     </div>
   );
 }

@@ -14,7 +14,9 @@ export default function FinalVideoBanner() {
 
         <LazyAutoplayVideo
           src="/img/video/video2.mp4"
+          mobileSrc="/img/video/video2-mobile.mp4"
           poster="/img/hero/IMG_4390.webp"
+          mobilePoster="/img/hero/IMG_4390-m.webp"
           ariaLabel="SANT CLOTHES, movimiento y cultura"
           className="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
