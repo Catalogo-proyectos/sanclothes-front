@@ -8,18 +8,21 @@ import ProductCard from '@/components/catalog/ProductCard';
 import ProductGallery from '@/components/catalog/ProductGallery';
 import ProductPurchasePanel from '@/components/catalog/ProductPurchasePanel';
 import { GalleryImage } from './productGallery.types';
+import { initialCutForSize } from '@/lib/catalog/sizes';
 
 const ProductLightbox = dynamic(() => import('@/components/catalog/ProductLightbox'), { ssr: false });
 
 interface ProductDetailProps {
   product: CatalogProduct;
   recommended: CatalogProduct[];
+  /** Talle elegido en la tarjeta del catálogo, si vino en la URL. */
+  initialSize?: string;
 }
 
 
-export default function ProductDetail({ product, recommended }: ProductDetailProps) {
+export default function ProductDetail({ product, recommended, initialSize }: ProductDetailProps) {
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
-  const [selectedCut, setSelectedCut] = useState<string>(product.cuts?.[0] ?? '');
+  const [selectedCut, setSelectedCut] = useState<string>(() => initialCutForSize(product, initialSize));
 
 
 
@@ -84,6 +87,7 @@ export default function ProductDetail({ product, recommended }: ProductDetailPro
             onPreviewImage={openZoom}
             selectedCut={selectedCut}
             onSelectCut={handleSelectCut}
+            initialSize={initialSize}
           />
         </div>
       </div>

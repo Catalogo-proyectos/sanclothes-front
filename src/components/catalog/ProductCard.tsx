@@ -4,11 +4,19 @@ import { memo, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { ShoppingBag } from 'lucide-react';
+import { ArrowRight, ShoppingBag } from 'lucide-react';
 import { CatalogProduct } from '@/types/api';
 import { formatCurrency } from '@/utils/format';
 import { useCart } from '@/hooks/useCart';
 import { cardSlots } from '@/lib/images/slots';
+import { productHref } from '@/lib/catalog/sizes';
+import {
+  defaultQuickSize,
+  needsCutChoice,
+  quickSizes,
+  quickVariant,
+  variantToCartItem,
+} from '@/lib/catalog/quickBuy';
 
 interface ProductCardProps {
   product: CatalogProduct;
@@ -18,12 +26,16 @@ interface ProductCardProps {
 function ProductCard({ product }: ProductCardProps) {
   const addItem = useCart((state) => state.addItem);
 
-  const availableSizes = product.sizes && product.sizes.length > 0
-    ? product.sizes
-    : ['XS', 'S', 'M', 'L', 'XL'];
+  // Sólo talles con variante real: un SKU inventado lo rechaza el checkout.
+  const variants = product.variants ?? [];
+  const sizes = quickSizes(variants);
+  const multiCut = needsCutChoice(variants);
 
-  const [selectedSize, setSelectedSize] = useState<string>(availableSizes[0] || 'S');
-
+  // null = el usuario todavía no eligió; sólo un talle elegido viaja a la ficha.
+  const [pickedSize, setSelectedSize] = useState<string | null>(null);
+  const selectedSize = pickedSize ?? defaultQuickSize(sizes);
+  const href = productHref(product.productId, pickedSize);
+  const variantToAdd = quickVariant(variants, selectedSize);
 
 
   const { main, hover, count } = useMemo(
@@ -41,30 +53,18 @@ function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!variantToAdd) return;
 
-    const selectedVariant = product.variants?.find((v) => v.size === selectedSize) || {
-      variantId: `var_${product.productId}_${selectedSize}`,
-      sku: `${product.slug}-${selectedSize}`,
-      size: selectedSize,
-      cut: product.cuts?.[0] || 'UNISEX',
-      price: effectivePrice,
-    };
-
-    addItem({
-      variantId: selectedVariant.variantId,
-      productId: product.productId,
-      productName: product.title,
-      sku: selectedVariant.sku,
-      size: selectedSize,
-      cut: selectedVariant.cut,
-      unitPrice: effectivePrice,
-      image: main.url,
-      quantity: 1,
-    });
+    addItem(
+      variantToCartItem(
+        { productId: product.productId, productName: product.title, unitPrice: effectivePrice, image: main.url },
+        variantToAdd
+      )
+    );
 
     toast.success('¡AÑADIDO AL CARRITO!', {
       icon: <ShoppingBag className="w-4 h-4 text-white" />,
-      description: `${product.title} · TALLE ${selectedSize} — ${formatCurrency(effectivePrice)}`,
+      description: `${product.title} · TALLE ${variantToAdd.size} — ${formatCurrency(effectivePrice)}`,
     });
   };
 
@@ -73,7 +73,7 @@ function ProductCard({ product }: ProductCardProps) {
 
       <div className="relative aspect-[3/4] w-full bg-[#f6f6f6] border border-zinc-200 group-hover:border-black overflow-hidden mb-2.5 transition-all duration-300">
 
-        <Link href={`/products/${product.productId}`} className="relative block w-full h-full">
+        <Link href={href} className="relative block w-full h-full">
           {hasHoverImage && (
             <Image
               src={hover.url}
@@ -109,7 +109,7 @@ function ProductCard({ product }: ProductCardProps) {
             {fabricSubtitle}
           </span>
 
-          <Link href={`/products/${product.productId}`}>
+          <Link href={href}>
             <h3 className="text-sm font-extrabold uppercase tracking-tight text-[#17191c] leading-snug line-clamp-2">
               {product.title}
             </h3>
@@ -126,9 +126,11 @@ function ProductCard({ product }: ProductCardProps) {
                 </span>
               )}
             </div>
-            <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">
-              TALLES: {selectedSize}
-            </span>
+            {selectedSize && (
+              <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">
+                TALLES: {selectedSize}
+              </span>
+            )}
           </div>
         </div>
 
@@ -136,38 +138,54 @@ function ProductCard({ product }: ProductCardProps) {
         <div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
 
           <div className="flex items-center justify-center gap-1.5">
-            {availableSizes.map((sz) => {
+            {sizes.map(({ size: sz, soldOut }) => {
               const isSelected = selectedSize === sz;
               return (
                 <button
                   key={sz}
                   type="button"
+                  disabled={soldOut}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     setSelectedSize(sz);
                   }}
-                  className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border cursor-pointer ${
-                    isSelected
-                      ? 'bg-white text-black border-white shadow-2xs'
-                      : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-white'
+                  className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border ${
+                    soldOut
+                      ? 'bg-transparent text-zinc-600 border-zinc-800 line-through cursor-not-allowed'
+                      : isSelected
+                        ? 'bg-white text-black border-white shadow-2xs cursor-pointer'
+                        : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-white cursor-pointer'
                   }`}
                 >
                   {sz}
+                  {soldOut && <span className="sr-only"> (sin stock)</span>}
                 </button>
               );
             })}
           </div>
 
 
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.98]"
-          >
-            <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
-            <span>AÑADIR AL CARRITO</span>
-          </button>
+          {sizes.length === 0 || multiCut ? (
+            // Varios cortes: el cliente elige Femenino/Masculino/Unisex en la ficha (con el talle ya marcado).
+            <Link
+              href={href}
+              className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
+            >
+              <span>{multiCut ? 'VER DETALLES' : 'VER PRENDA'}</span>
+              <ArrowRight className="w-4 h-4 stroke-[1.8]" />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={!variantToAdd}
+              className="w-full h-9 bg-white text-black hover:bg-zinc-200 disabled:bg-zinc-700 disabled:text-zinc-400 disabled:cursor-not-allowed text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.98]"
+            >
+              <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
+              <span>{variantToAdd ? 'AÑADIR AL CARRITO' : 'AGOTADO'}</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

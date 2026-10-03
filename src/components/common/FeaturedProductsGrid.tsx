@@ -11,6 +11,15 @@ import { heroSlot } from '@/lib/images/slots';
 import { formatCurrency } from '@/utils/format';
 import type { CatalogProduct, ProductVariant } from '@/types/api';
 import type { CartItem } from '@/types/cart';
+import { productHref } from '@/lib/catalog/sizes';
+import {
+  defaultQuickSize,
+  needsCutChoice,
+  quickSizes,
+  quickVariant,
+  variantToCartItem,
+  type QuickSize,
+} from '@/lib/catalog/quickBuy';
 
 
 const GRID_CAPACITY = 8;
@@ -24,8 +33,11 @@ export interface GridProduct {
   priceFormatted: string;
   image: string;
   imageAlt: string;
-  sizes: string[];
+  /** Sólo talles con variante real (SKU que el checkout acepta). */
+  sizes: QuickSize[];
   variants: ProductVariant[];
+  /** Tiene más de un corte: el cliente lo elige en la ficha. */
+  multiCut: boolean;
 }
 
 
@@ -45,26 +57,28 @@ export function toGridProduct(product: CatalogProduct): GridProduct {
     priceFormatted: formatCurrency(effectivePrice),
     image: image.url,
     imageAlt: image.alt,
-    sizes: product.sizes?.length ? product.sizes.slice(0, 4) : ['S', 'M', 'L', 'XL'],
+    sizes: quickSizes(product.variants ?? []),
     variants: product.variants ?? [],
+    multiCut: needsCutChoice(product.variants ?? []),
   };
 }
 
-/** Ítem de carrito para una tarjeta de producto real (usa la variante real del talle). */
-export function toCartItem(product: GridProduct, size: string): CartItem {
-  const variant = product.variants.find((v) => v.size === size);
-  return {
-    variantId: variant?.variantId ?? `${product.id}-${size}`,
-    productId: product.id,
-    productName: product.name,
-    sku: variant?.sku ?? `${product.id}-${size}`,
-    size,
-    cut: variant?.cut ?? 'UNISEX',
-    unitPrice: product.price,
-    image: product.image,
-    quantity: 1,
-    maxStock: variant?.stock,
-  };
+/** Talle que muestra la tarjeta: el elegido o, si no, el primero con stock. */
+export function currentGridSize(product: GridProduct, picked: string | undefined): string | undefined {
+  return picked ?? defaultQuickSize(product.sizes);
+}
+
+/**
+ * Ítem de carrito con la variante real del talle, o `null` si no hay una
+ * inequívoca con stock (varios cortes, agotado o sin variantes).
+ */
+export function toCartItem(product: GridProduct, size: string | undefined): CartItem | null {
+  const variant = quickVariant(product.variants, size);
+  if (!variant) return null;
+  return variantToCartItem(
+    { productId: product.id, productName: product.name, unitPrice: product.price, image: product.image },
+    variant
+  );
 }
 
 
@@ -86,12 +100,13 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
   const handleAddToCart = (product: GridProduct, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const chosenSize = selectedSizes[product.id] || product.sizes[0];
+    const item = toCartItem(product, currentGridSize(product, selectedSizes[product.id]));
+    if (!item) return;
 
-    addItem(toCartItem(product, chosenSize));
+    addItem(item);
 
     toast.success('¡AÑADIDO AL CARRITO!', {
-      description: `${product.name} · TALLE ${chosenSize}`,
+      description: `${product.name} · TALLE ${item.size}`,
     });
   };
 
@@ -135,7 +150,8 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {gridProducts.map((product, idx) => {
-            const currentSize = selectedSizes[product.id] || product.sizes[0];
+            const currentSize = currentGridSize(product, selectedSizes[product.id]);
+            const canAdd = toCartItem(product, currentSize) !== null;
 
             return (
               <motion.div
@@ -188,30 +204,46 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
                   <div className="absolute inset-0 z-20 bg-white text-[#17191c] p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-xl border border-zinc-200">
 
                     <div className="flex items-center justify-center gap-1.5">
-                      {product.sizes.map((sz) => (
+                      {product.sizes.map(({ size: sz, soldOut }) => (
                         <button
                           key={sz}
                           type="button"
+                          disabled={soldOut}
                           onClick={(e) => handleSizeSelect(product.id, sz, e)}
-                          className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border cursor-pointer ${currentSize === sz
-                            ? 'bg-[#17191c] text-white border-[#17191c] shadow-2xs'
-                            : 'bg-transparent text-[#17191c] border-zinc-300 hover:border-black'
+                          className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border ${soldOut
+                            ? 'bg-transparent text-zinc-400 border-zinc-200 line-through cursor-not-allowed'
+                            : currentSize === sz
+                              ? 'bg-[#17191c] text-white border-[#17191c] shadow-2xs cursor-pointer'
+                              : 'bg-transparent text-[#17191c] border-zinc-300 hover:border-black cursor-pointer'
                             }`}
                         >
                           {sz}
+                          {soldOut && <span className="sr-only"> (sin stock)</span>}
                         </button>
                       ))}
                     </div>
 
 
-                    <button
-                      type="button"
-                      onClick={(e) => handleAddToCart(product, e)}
-                      className="w-full h-9 bg-[#17191c] text-white hover:bg-zinc-800 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.98]"
-                    >
-                      <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
-                      <span>AÑADIR AL CARRITO</span>
-                    </button>
+                    {product.sizes.length === 0 || product.multiCut ? (
+                      // Varios cortes: el cliente elige el corte en la ficha, con el talle ya marcado.
+                      <Link
+                        href={productHref(product.id, selectedSizes[product.id])}
+                        className="w-full h-9 bg-[#17191c] text-white hover:bg-zinc-800 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
+                      >
+                        <span>{product.multiCut ? 'VER DETALLES' : 'VER PRENDA'}</span>
+                        <ArrowRight className="w-4 h-4 stroke-[1.8]" />
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => handleAddToCart(product, e)}
+                        disabled={!canAdd}
+                        className="w-full h-9 bg-[#17191c] text-white hover:bg-zinc-800 disabled:bg-zinc-200 disabled:text-zinc-500 disabled:cursor-not-allowed text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.98]"
+                      >
+                        <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
+                        <span>{canAdd ? 'AÑADIR AL CARRITO' : 'AGOTADO'}</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </motion.div>
