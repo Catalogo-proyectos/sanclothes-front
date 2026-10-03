@@ -69,10 +69,11 @@ export default function OrderTicketModal({ orderId, statusLabel, onClose }: Orde
 
   const items = order?.items ?? [];
   const address = order?.shippingAddress;
-  // El backend expone shipping = max(0, total - subtotal); si hubo cupón o
-  // beneficio de tier, la diferencia restante es el descuento aplicado.
+  // A2: el backend informa el descuento registrado. Pedidos anteriores a A2 no
+  // tienen desglose (discount null): ahí se mantiene la lectura histórica de
+  // la diferencia entre subtotal y total.
   const discount = order
-    ? Math.max(0, order.totals.subtotal + order.totals.shipping - order.totals.total)
+    ? order.totals.discount ?? Math.max(0, order.totals.subtotal + order.totals.shipping - order.totals.total)
     : 0;
   const addressLine = address
     ? [address.street, address.city, address.postalCode].filter(Boolean).join(', ')

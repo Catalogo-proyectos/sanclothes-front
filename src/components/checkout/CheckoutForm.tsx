@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { useCheckoutQuote } from '@/hooks/useCheckoutQuote';
+import QuoteSummary, { CouponNotice } from '@/components/checkout/QuoteSummary';
 import { formatCurrency } from '@/utils/format';
 import { ApiError } from '@/lib/api';
 import { config } from '@/lib/config';
@@ -14,14 +16,17 @@ import {
   createOrder,
   uploadReceipt,
   fetchCheckoutOrder,
+  getCheckoutIdentityToken,
 } from '@/lib/services/checkout';
+import { normalizeCouponCode } from '@/lib/services/quote';
 import { fetchBankTransferInfo, type BankTransferInfo } from '@/lib/services/settings';
 import type { CheckoutResponse, ConfirmOtpResponse } from '@/types/api';
+import type { CheckoutQuote } from '@/types/quote';
 
 type CheckoutStep = 'email' | 'otp' | 'form' | 'success';
 
 export default function CheckoutForm() {
-  const { items, getSubtotal, getShippingCost, getTotal, clearCart } = useCart();
+  const { items, clearCart } = useCart();
   const { isLoggedIn, user } = useAuth();
 
 
@@ -54,6 +59,10 @@ export default function CheckoutForm() {
   // El carrito se vacía al crear el pedido: el total se guarda antes y después se
   // reemplaza por el del backend (incluye cupones y beneficios de tier).
   const [orderTotal, setOrderTotal] = useState<number | null>(null);
+  // Cupón que se cotiza (se aplica con el botón, no en cada tecla).
+  const [appliedCoupon, setAppliedCoupon] = useState<string | undefined>(undefined);
+  // 409 PRICE_CHANGED: el total cambió y el cliente tiene que volver a confirmar.
+  const [priceChange, setPriceChange] = useState<{ previousTotal: number; newTotal: number; signature: string } | null>(null);
   const [bankInfo, setBankInfo] = useState<BankTransferInfo | null>(null);
   const [bankInfoLoaded, setBankInfoLoaded] = useState(false);
 
@@ -75,6 +84,31 @@ export default function CheckoutForm() {
     };
   }, [step, createdOrder]);
 
+
+  // Identidad de la quote = la misma con la que se crea el pedido (token OTP o
+  // sesión). Solo existe en el paso del formulario: ahí ya hubo OTP o login, y
+  // al pasar de anónimo a identificado cambia el token, así que se recotiza.
+  const identityToken = step === 'form' ? getCheckoutIdentityToken() : null;
+  const quoteState = useCheckoutQuote({
+    items,
+    couponCode: appliedCoupon,
+    token: identityToken,
+    enabled: step === 'form',
+  });
+  const { quote, status: quoteStatus } = quoteState;
+  const quoteCoupon = quoteStatus === 'ready' ? quote?.discount.coupon ?? null : null;
+  const couponBlocked = quoteCoupon?.status === 'INVALID' || quoteCoupon?.status === 'REQUIRES_IDENTITY';
+  const canSubmit = quoteState.canConfirm && !couponBlocked && items.length > 0;
+  const activePriceChange = priceChange && priceChange.signature === quoteState.signature ? priceChange : null;
+
+  const handleApplyCoupon = () => {
+    setAppliedCoupon(normalizeCouponCode(formData.couponCode));
+  };
+
+  const handleRemoveCoupon = () => {
+    setFormData((prev) => ({ ...prev, couponCode: '' }));
+    setAppliedCoupon(undefined);
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [receiptUploading, setReceiptUploading] = useState(false);
@@ -147,6 +181,10 @@ export default function CheckoutForm() {
       setError('El carrito está vacío');
       return;
     }
+    // Solo se confirma contra la última quote READY del servidor.
+    if (!canSubmit || !quote) return;
+    const confirmedQuote: CheckoutQuote = quote;
+    const confirmedSignature = quoteState.signature;
 
     setLoading(true);
     setError('');
@@ -155,12 +193,12 @@ export default function CheckoutForm() {
       const customerEmail = isLoggedIn ? user?.email || '' : guestEmail;
 
       const order = await createOrder({
+        // Sin precios: el backend precifica con el mismo motor de la quote.
         items: items.map((i) => ({
           sku: i.sku,
           productId: i.productId,
           size: i.size,
           qty: i.quantity,
-          unitPrice: i.unitPrice,
         })),
         customer: {
           email: customerEmail,
@@ -174,7 +212,9 @@ export default function CheckoutForm() {
           postalCode: formData.postalCode,
         },
         wantsClubMembership: formData.wantsClubMembership,
-        couponCode: formData.couponCode || undefined,
+        couponCode: appliedCoupon,
+        // Total que el cliente vio y aceptó. El backend solo lo compara.
+        expectedTotal: confirmedQuote.total,
         requestsInvoice: formData.requestsInvoice || undefined,
         invoiceData: formData.requestsInvoice
           ? {
@@ -186,12 +226,23 @@ export default function CheckoutForm() {
       });
 
       setCreatedOrder(order);
-      setOrderTotal(getTotal());
+      // Monto del servidor: el desglose persistido (o la quote aceptada, que es la misma).
+      setOrderTotal(order.totals?.total ?? confirmedQuote.total);
+      setPriceChange(null);
       clearCart();
       setStep('success');
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.code === 'INSUFFICIENT_STOCK') {
+        if (err.status === 409 && err.code === 'PRICE_CHANGED' && err.data?.quote) {
+          // No se creó el pedido: se muestra la quote nueva y el cliente tiene
+          // que confirmar otra vez, a mano. Nunca se reenvía solo.
+          const newQuote = err.data.quote as CheckoutQuote;
+          quoteState.replaceQuote(newQuote, confirmedSignature);
+          setPriceChange({ previousTotal: confirmedQuote.total, newTotal: newQuote.total, signature: confirmedSignature });
+        } else if (err.code === 'INVALID_PRODUCT' || err.code?.startsWith('COUPON_')) {
+          setError((err as Error).message);
+          quoteState.refresh();
+        } else if (err.code === 'INSUFFICIENT_STOCK') {
           setError(`Sin stock suficiente para SKU: ${err.data?.sku || 'desconocido'}`);
         } else if (err.code === 'EMAIL_MISMATCH') {
           setError('El email no coincide con el verificado. Volvé a iniciar el checkout.');
@@ -575,18 +626,43 @@ export default function CheckoutForm() {
 
 
           <div>
-            <label className={labelClass}>Código de Cupón (Opcional)</label>
-            <input
-              type="text"
-              name="couponCode"
-              placeholder="DESCUENTO10"
-              value={formData.couponCode}
-              onChange={handleChange}
-              className={inputClass}
-            />
-            <p className="text-[10px] text-slate-400 mt-1">
-              El cupón se valida al confirmar el pedido.
-            </p>
+            <label htmlFor="checkout-coupon" className={labelClass}>Código de Cupón (Opcional)</label>
+            <div className="flex gap-2">
+              <input
+                id="checkout-coupon"
+                type="text"
+                name="couponCode"
+                placeholder="DESCUENTO10"
+                value={formData.couponCode}
+                onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleApplyCoupon();
+                  }
+                }}
+                className={inputClass}
+              />
+              <button
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={!normalizeCouponCode(formData.couponCode) || normalizeCouponCode(formData.couponCode) === appliedCoupon}
+                className="px-4 bg-slate-900 text-white text-xs font-bold uppercase rounded-xl disabled:opacity-40"
+              >
+                Aplicar
+              </button>
+              {appliedCoupon && (
+                <button type="button" onClick={handleRemoveCoupon} className="px-3 text-xs font-bold text-slate-500 underline">
+                  Quitar
+                </button>
+              )}
+            </div>
+            <div className="mt-2">
+              {normalizeCouponCode(formData.couponCode) && normalizeCouponCode(formData.couponCode) !== appliedCoupon && (
+                <p className="text-[10px] text-slate-500 mb-1">Tocá &quot;Aplicar&quot; para que el cupón se tenga en cuenta en el total.</p>
+              )}
+              <CouponNotice coupon={quoteCoupon} />
+            </div>
           </div>
 
 
@@ -623,13 +699,47 @@ export default function CheckoutForm() {
             )}
           </div>
 
+          {activePriceChange && (
+            <div role="alert" data-testid="price-changed" className="p-3 bg-amber-50 text-amber-900 text-xs font-bold rounded-xl">
+              El total de tu compra cambió de {formatCurrency(activePriceChange.previousTotal)} a{' '}
+              {formatCurrency(activePriceChange.newTotal)}. Revisá el resumen y confirmá de nuevo si estás de acuerdo.
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={loading || items.length === 0}
+            disabled={loading || !canSubmit}
             className="w-full py-4 bg-black text-white font-extrabold uppercase rounded-2xl shadow-xl hover:bg-slate-800 transition-colors disabled:opacity-50 mt-4"
           >
-            {loading ? 'Procesando Orden...' : 'Confirmar Pedido'}
+            {loading
+              ? 'Procesando Orden...'
+              : activePriceChange && canSubmit
+                ? `Confirmar con el nuevo total (${formatCurrency(activePriceChange.newTotal)})`
+                : 'Confirmar Pedido'}
           </button>
+          {!loading && !canSubmit && items.length > 0 && (
+            <p className="text-[10px] text-slate-500 text-center" data-testid="confirm-blocked-reason">
+              {couponBlocked
+                ? 'Corregí o quitá el cupón para continuar.'
+                : quoteStatus === 'loading' || quoteStatus === 'stale'
+                  ? 'Calculando el total actualizado…'
+                  : quoteState.error?.status === 401
+                    ? 'Tu sesión de checkout venció.'
+                    : 'No es posible confirmar la compra con el total actual.'}
+              {quoteState.error?.status === 401 && (
+                <>
+                  {' '}
+                  <button
+                    type="button"
+                    onClick={() => { setStep('email'); setOtp(''); }}
+                    className="underline font-bold text-black"
+                  >
+                    Verificar el email de nuevo
+                  </button>
+                </>
+              )}
+            </p>
+          )}
         </form>
       </div>
 
@@ -638,30 +748,32 @@ export default function CheckoutForm() {
         <h3 className="font-extrabold text-sm uppercase text-black border-b pb-3">Resumen de Compra</h3>
 
         <div className="space-y-3 max-h-64 overflow-y-auto">
-          {items.map((item) => (
-            <div key={item.variantId} className="flex justify-between text-xs">
-              <div>
-                <p className="font-bold text-black">{item.productName}</p>
-                <p className="text-slate-500">Talle: {item.size} x {item.quantity}</p>
+          {items.map((item, index) => {
+            // Con quote READY, el importe de la línea es el del servidor (incluye
+            // flash y descuentos por cantidad); si no, referencia de catálogo.
+            const serverLine = quoteStatus === 'ready' ? quote?.lines[index] : undefined;
+            return (
+              <div key={item.variantId} className="flex justify-between text-xs">
+                <div>
+                  <p className="font-bold text-black">{item.productName}</p>
+                  <p className="text-slate-500">Talle: {item.size} x {item.quantity}</p>
+                </div>
+                <span className={serverLine ? 'font-bold' : 'font-bold text-slate-400'}>
+                  {formatCurrency(serverLine ? serverLine.lineTotal : item.unitPrice * item.quantity)}
+                </span>
               </div>
-              <span className="font-bold">{formatCurrency(item.unitPrice * item.quantity)}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className="border-t pt-3 space-y-2 text-xs text-slate-600">
-          <div className="flex justify-between">
-            <span>Subtotal:</span>
-            <span className="font-bold text-black">{formatCurrency(getSubtotal())}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Envío:</span>
-            <span className="font-bold text-black">{formatCurrency(getShippingCost())}</span>
-          </div>
-          <div className="flex justify-between text-sm font-black text-black pt-2 border-t">
-            <span>Total:</span>
-            <span>{formatCurrency(getTotal())}</span>
-          </div>
+        <div className="border-t pt-3">
+          <QuoteSummary
+            status={quoteStatus}
+            quote={quote}
+            error={quoteState.error}
+            hasPriceIssue={quoteState.hasPriceIssue}
+            onRetry={quoteState.refresh}
+          />
         </div>
       </div>
     </div>

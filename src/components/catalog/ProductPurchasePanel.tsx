@@ -344,8 +344,13 @@ export default function ProductPurchasePanel({
           <span id="qty-label" className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-zinc-700">
             CANTIDAD:
           </span>
-          <span className="text-xs font-mono font-bold text-[#17191c]">
-            TOTAL: {formatCurrency(effectivePrice * clampedQuantity)}
+          {/* Referencia de catálogo, no el total del pedido: descuentos por
+              cantidad, nivel, cupón y envío los calcula el servidor en el checkout. */}
+          <span
+            className="text-xs font-mono font-bold text-[#17191c]"
+            title="Precio de lista × cantidad. El total final se calcula en el checkout."
+          >
+            SUBTOTAL ESTIMADO: {formatCurrency(effectivePrice * clampedQuantity)}
           </span>
         </div>
 
