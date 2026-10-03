@@ -19,6 +19,7 @@ import { CatalogProduct, ProductVariant } from '@/types/api';
 import { formatCurrency } from '@/utils/format';
 import { useCart } from '@/hooks/useCart';
 import { GalleryImage } from './productGallery.types';
+import { sortSizes } from '@/lib/catalog/sizes';
 
 const SizeGuideModal = dynamic(() => import('./SizeGuideModal'), { ssr: false });
 
@@ -29,10 +30,11 @@ interface ProductPurchasePanelProps {
 
   selectedCut: string;
   onSelectCut: (cut: string) => void;
+  /** Talle con el que abre la ficha (viene de la tarjeta); si no existe, el primero. */
+  initialSize?: string;
 }
 
 const LOW_STOCK_THRESHOLD = 5;
-const FALLBACK_MAX_QTY = 10;
 
 export default function ProductPurchasePanel({
   product,
@@ -40,6 +42,7 @@ export default function ProductPurchasePanel({
   onPreviewImage,
   selectedCut,
   onSelectCut,
+  initialSize,
 }: ProductPurchasePanelProps) {
   const router = useRouter();
   const addItem = useCart((state) => state.addItem);
@@ -54,18 +57,26 @@ export default function ProductPurchasePanel({
       .map((v) => v.size);
 
     const unique = [...new Set(sizesForCut)];
-    if (unique.length > 0) return unique;
+    if (unique.length > 0) return sortSizes(unique);
 
-    return product.sizes?.length ? product.sizes : ['XS', 'S', 'M', 'L', 'XL'];
+    return sortSizes(product.sizes?.length ? product.sizes : ['XS', 'S', 'M', 'L', 'XL']);
   }, [product.variants, product.sizes, activeCut]);
 
-  const [pickedSize, setSelectedSize] = useState<string>(availableSizes[0]);
+  // Sólo variantes del corte activo: devolver la de otro corte metía al carrito
+  // un SKU de Femenino con la etiqueta de Masculino (o al revés).
+  const findVariant = useCallback(
+    (size: string): ProductVariant | undefined =>
+      product.variants?.find((v) => v.cut === activeCut && v.size === size),
+    [product.variants, activeCut]
+  );
+  const hasStock = (size: string) => (findVariant(size)?.stock ?? 0) > 0;
 
-
-
-
-
-  const selectedSize = availableSizes.includes(pickedSize) ? pickedSize : availableSizes[0];
+  // Talle de la URL si existe y tiene stock en este corte; si no, el primero con stock.
+  const [pickedSize, setSelectedSize] = useState<string>(initialSize ?? availableSizes[0]);
+  const selectedSize =
+    availableSizes.includes(pickedSize) && hasStock(pickedSize)
+      ? pickedSize
+      : availableSizes.find(hasStock) ?? availableSizes[0];
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [addedSuccess, setAddedSuccess] = useState(false);
@@ -82,42 +93,27 @@ export default function ProductPurchasePanel({
   const effectivePrice = product.discountPrice ?? product.price;
   const isSoldOut = product.stockStatus === 'OUT_OF_STOCK';
 
-  const findVariant = useCallback(
-    (size: string): ProductVariant | undefined =>
-      product.variants?.find((v) => v.cut === activeCut && v.size === size) ??
-      product.variants?.find((v) => v.size === size),
-    [product.variants, activeCut]
-  );
+  // Nunca se inventa un SKU: sin variante real con stock no se puede comprar
+  // (el checkout lo rechazaría con INVALID_PRODUCT).
+  const selectedVariant = findVariant(selectedSize);
+  const canBuy = !isSoldOut && !!selectedVariant && selectedVariant.stock > 0;
 
-  const selectedVariant = useMemo<ProductVariant>(
-    () =>
-      findVariant(selectedSize) ?? {
-        variantId: `var_${product.productId}_${activeCut}_${selectedSize}`,
-        sku: `${product.slug}-${activeCut}-${selectedSize}`,
-        cut: activeCut,
-        size: selectedSize,
-        price: effectivePrice,
-        stock: FALLBACK_MAX_QTY,
-      },
-    [findVariant, selectedSize, product.productId, product.slug, activeCut, effectivePrice]
-  );
-
-  const maxQuantity = isSoldOut ? 0 : Math.max(1, selectedVariant.stock);
-  const isLowStock = !isSoldOut && selectedVariant.stock <= LOW_STOCK_THRESHOLD;
+  const maxQuantity = canBuy ? selectedVariant.stock : 0;
+  const isLowStock = canBuy && selectedVariant.stock <= LOW_STOCK_THRESHOLD;
   const clampedQuantity = Math.min(quantity, maxQuantity);
 
   const handleSelectSize = useCallback((size: string) => setSelectedSize(size), []);
 
   const handleAddToCart = useCallback(() => {
-    if (isSoldOut) return;
+    if (!canBuy || !selectedVariant) return;
 
     addItem({
       variantId: selectedVariant.variantId,
       productId: product.productId,
       productName: product.title,
       sku: selectedVariant.sku,
-      size: selectedSize,
-      cut: activeCut,
+      size: selectedVariant.size,
+      cut: selectedVariant.cut,
       unitPrice: effectivePrice,
       image: images[0]?.url,
       quantity: clampedQuantity,
@@ -135,23 +131,22 @@ export default function ProductPurchasePanel({
       )}`,
     });
   }, [
-    isSoldOut,
+    canBuy,
     addItem,
     selectedVariant,
     product.productId,
     product.title,
     selectedSize,
-    activeCut,
     effectivePrice,
     images,
     clampedQuantity,
   ]);
 
   const handleBuyNow = useCallback(() => {
-    if (isSoldOut) return;
+    if (!canBuy) return;
     handleAddToCart();
     router.push('/checkout');
-  }, [isSoldOut, handleAddToCart, router]);
+  }, [canBuy, handleAddToCart, router]);
 
   const handleToggleWishlist = useCallback(() => {
     setIsWishlisted((prev) => {
@@ -312,7 +307,7 @@ export default function ProductPurchasePanel({
         >
           {availableSizes.map((size) => {
             const variant = findVariant(size);
-            const unavailable = isSoldOut || variant?.stock === 0;
+            const unavailable = isSoldOut || !variant || variant.stock <= 0;
             const isSelected = selectedSize === size;
             return (
               <button
@@ -354,7 +349,7 @@ export default function ProductPurchasePanel({
             <button
               type="button"
               onClick={() => setQuantity((q) => Math.max(1, Math.min(maxQuantity, q) - 1))}
-              disabled={clampedQuantity <= 1 || isSoldOut}
+              disabled={clampedQuantity <= 1 || !canBuy}
               aria-label="Reducir cantidad"
               className="w-12 h-12 flex items-center justify-center text-zinc-800 transition-colors hover:bg-zinc-100 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
             >
@@ -369,7 +364,7 @@ export default function ProductPurchasePanel({
             <button
               type="button"
               onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
-              disabled={clampedQuantity >= maxQuantity || isSoldOut}
+              disabled={clampedQuantity >= maxQuantity || !canBuy}
               aria-label="Aumentar cantidad"
               className="w-12 h-12 flex items-center justify-center text-zinc-800 transition-colors hover:bg-zinc-100 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c]"
             >
@@ -378,10 +373,10 @@ export default function ProductPurchasePanel({
           </div>
         </div>
 
-        {isLowStock && !isSoldOut && (
+        {isLowStock && (
           <p className="mt-2.5 text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-amber-800 flex items-center gap-1.5" aria-live="polite">
             <span className="w-2 h-2 rounded-full bg-amber-600 animate-ping inline-block" />
-            <span>ÚLTIMAS {selectedVariant.stock} UNIDADES EN TALLE {selectedSize}</span>
+            <span>ÚLTIMAS {selectedVariant?.stock} UNIDADES EN TALLE {selectedSize}</span>
           </p>
         )}
       </div>
@@ -392,9 +387,9 @@ export default function ProductPurchasePanel({
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={isSoldOut}
+            disabled={!canBuy}
             className={`flex-1 h-13 sm:h-14 px-3 sm:px-5 font-[family-name:var(--font-bebas)] text-lg sm:text-xl tracking-[0.08em] uppercase whitespace-nowrap flex items-center justify-center gap-2 shadow-md transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c] ${
-              isSoldOut
+              !canBuy
                 ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed shadow-none'
                 : addedSuccess
                   ? 'bg-emerald-900 border border-emerald-700 text-emerald-200 cursor-pointer scale-[0.99]'
@@ -403,6 +398,8 @@ export default function ProductPurchasePanel({
           >
             {isSoldOut ? (
               <span>SIN STOCK DISPONIBLE</span>
+            ) : !canBuy ? (
+              <span>TALLE NO DISPONIBLE</span>
             ) : addedSuccess ? (
               <>
                 <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-300 shrink-0" aria-hidden="true" />
@@ -442,7 +439,7 @@ export default function ProductPurchasePanel({
           </button>
         </div>
 
-        {!isSoldOut && (
+        {canBuy && (
           <button
             type="button"
             onClick={handleBuyNow}
