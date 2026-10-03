@@ -185,8 +185,11 @@ export interface OrderDetail {
   paymentMethod?: string;
   totals: {
     subtotal: number;
+    /** A2: descuento registrado; null en pedidos anteriores a A2 (sin desglose). */
+    discount?: number | null;
     shipping: number;
     total: number;
+    breakdownAvailable?: boolean;
   };
   shippingAddress: {
     street: string;
@@ -226,12 +229,12 @@ export interface ConfirmOtpResponse {
 
 
 export interface CheckoutRequest {
+  /** Sin precio: el backend precifica (A2). */
   items: Array<{
     sku: string;
     productId: string;
     size: string;
     qty: number;
-    unitPrice: number;
   }>;
   customer: {
     email: string;
@@ -246,6 +249,8 @@ export interface CheckoutRequest {
   };
   wantsClubMembership: boolean;
   couponCode?: string;
+  /** `quote.total` de la última quote READY. Solo se compara (409 PRICE_CHANGED), nunca es precio. */
+  expectedTotal?: number;
   requestsInvoice?: boolean;
   invoiceData?: {
     ruc?: string;
@@ -261,12 +266,18 @@ export interface CheckoutResponse {
   expiresAt: string;
   message: string;
   orderAccessToken: string;
+  /** Desglose persistido del pedido (A2). */
+  totals?: { subtotal: number; discount: number; shipping: number; total: number };
 }
 
 
 export interface CheckoutOrderDetail {
   id: string;
   totalAmount: number;
+  /** A2: null = pedido anterior a A2. */
+  subtotalAmount?: number | null;
+  discountAmount?: number | null;
+  shippingAmount?: number;
   status: string;
   dropType?: string;
   paymentReceiptUrl: string | null;
