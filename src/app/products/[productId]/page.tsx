@@ -5,6 +5,7 @@ import ProductDetail from '@/components/catalog/ProductDetail';
 import { fetchCatalog, fetchProduct } from '@/lib/services/catalog';
 import { config } from '@/lib/config';
 import { CatalogProduct } from '@/types/api';
+import { serializeJsonLd } from '@/lib/seo/jsonLd';
 
 interface PageParams {
   params: Promise<{ productId: string }>;
@@ -125,7 +126,7 @@ export default async function ProductDetailPage({ params }: PageParams) {
     <div className="bg-[#f6f8f9] min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <ProductDetail product={product} recommended={recommended} />
     </div>

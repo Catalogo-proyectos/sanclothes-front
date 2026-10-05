@@ -6,6 +6,7 @@ import Footer from '@/components/common/Footer';
 import SmoothScrollProvider from '@/components/common/SmoothScrollProvider';
 import { Toaster } from 'sonner';
 import { config } from '@/lib/config';
+import { serializeJsonLd } from '@/lib/seo/jsonLd';
 
 const bebas = Bebas_Neue({
   weight: '400',
@@ -134,7 +135,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       </head>
       <body className="min-h-screen antialiased bg-[#f6f8f9] text-[#17191c] relative overflow-x-hidden">
