@@ -5,7 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowUpRight } from 'lucide-react';
-import { MOCK_PRODUCTS } from '@/mocks/catalog';
+import { fetchCatalog } from '@/lib/services/catalog';
+import { selectFeaturedWithFallback } from '@/lib/catalog/featured';
+import type { CatalogProduct } from '@/types/api';
 import { formatCurrency } from '@/utils/format';
 
 interface SearchModalProps {
@@ -23,11 +25,38 @@ const TRENDING_CHIPS = [
 
 const FALLBACK_PRODUCT_IMAGE = '/img/hero/IMG_4390.webp';
 
+// El catálogo real se pide una sola vez por sesión de navegación, al abrir el
+// buscador. Antes buscaba en los productos de prueba (mocks) también en
+// producción: resultados falsos con links a productos inexistentes.
+let catalogPromise: Promise<CatalogProduct[]> | null = null;
+const loadCatalog = () => {
+  catalogPromise ??= fetchCatalog().catch(() => {
+    catalogPromise = null; // reintentar en la próxima apertura
+    return [];
+  });
+  return catalogPromise;
+};
+
+const normalize = (v: string | null | undefined) =>
+  (v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    loadCatalog().then((list) => {
+      if (active) setProducts(list);
+    });
+    return () => {
+      active = false;
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -49,17 +78,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   if (!isOpen) return null;
 
 
-  const trimmedQuery = query.trim().toLowerCase();
+  const trimmedQuery = normalize(query.trim());
   const filteredProducts = trimmedQuery
-    ? MOCK_PRODUCTS.filter(
-        (p) =>
-          p.title.toLowerCase().includes(trimmedQuery) ||
-          p.category.toLowerCase().includes(trimmedQuery) ||
-          p.description.toLowerCase().includes(trimmedQuery)
+    ? products.filter((p) =>
+        [p.title, p.categoryName, p.category, p.description, p.color, ...p.styles].some((field) =>
+          normalize(field).includes(trimmedQuery)
+        )
       )
     : [];
 
-  const featuredProducts = MOCK_PRODUCTS.slice(0, 4);
+  const featuredProducts = selectFeaturedWithFallback(products, 4);
 
   const handleChipClick = (chipQuery: string) => {
     setQuery(chipQuery);
@@ -198,7 +226,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                             </div>
                             <div>
                               <span className="text-[9px] font-mono text-[#50524a] uppercase tracking-wider block">
-                                {product.category}
+                                {product.categoryName}
                               </span>
                               <h4 className="text-xs font-bold text-[#17191c] uppercase tracking-tight line-clamp-1 group-hover:underline">
                                 {product.title}
@@ -248,7 +276,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           </div>
                           <div>
                             <span className="text-[9px] font-mono text-[#50524a] uppercase tracking-wider block">
-                              {product.category}
+                              {product.categoryName}
                             </span>
                             <h4 className="text-xs font-bold text-[#17191c] uppercase tracking-tight line-clamp-1 group-hover:underline">
                               {product.title}
