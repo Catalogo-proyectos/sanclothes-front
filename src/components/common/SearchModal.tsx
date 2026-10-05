@@ -28,12 +28,18 @@ const FALLBACK_PRODUCT_IMAGE = '/img/hero/IMG_4390.webp';
 // El catálogo real se pide una sola vez por sesión de navegación, al abrir el
 // buscador. Antes buscaba en los productos de prueba (mocks) también en
 // producción: resultados falsos con links a productos inexistentes.
+const CATALOG_TTL_MS = 5 * 60_000;
 let catalogPromise: Promise<CatalogProduct[]> | null = null;
+let catalogLoadedAt = 0;
 const loadCatalog = () => {
-  catalogPromise ??= fetchCatalog().catch(() => {
-    catalogPromise = null; // reintentar en la próxima apertura
-    return [];
-  });
+  if (catalogPromise && Date.now() - catalogLoadedAt > CATALOG_TTL_MS) catalogPromise = null; // precios/stock nuevos
+  if (!catalogPromise) {
+    catalogLoadedAt = Date.now();
+    catalogPromise = fetchCatalog().catch(() => {
+      catalogPromise = null; // reintentar en la próxima apertura
+      return [];
+    });
+  }
   return catalogPromise;
 };
 
@@ -44,6 +50,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [products, setProducts] = useState<CatalogProduct[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
 
@@ -51,7 +58,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     if (!isOpen) return;
     let active = true;
     loadCatalog().then((list) => {
-      if (active) setProducts(list);
+      if (!active) return;
+      setProducts(list);
+      setLoaded(true);
     });
     return () => {
       active = false;
@@ -181,7 +190,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   </span>
                 </div>
 
-                {filteredProducts.length === 0 ? (
+                {!loaded ? (
+                  <p role="status" className="py-16 text-center text-xs font-mono uppercase text-[#50524a] tracking-wide">Cargando catálogo…</p>
+                ) : filteredProducts.length === 0 ? (
 
                   <div className="py-16 text-center space-y-4">
                     <p className="text-xs font-mono uppercase text-[#50524a] tracking-wide">

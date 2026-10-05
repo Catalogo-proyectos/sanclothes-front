@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ChipId, DEFAULT_CHIP, isChipId, StyleId, isStyleId } from '@/lib/catalogFilters';
+import { ChipId, DEFAULT_CHIP, isChipId } from '@/lib/catalogFilters';
 
 interface CatalogFilterState {
   chip: ChipId;
@@ -7,7 +7,8 @@ interface CatalogFilterState {
 
   syncFromUrl: (value: string | null) => void;
 
-  style: StyleId | null;
+  /** Código del estilo activo (cualquiera de la taxonomía del admin). */
+  style: string | null;
   setStyle: (value: string | null) => void;
 }
 
@@ -19,7 +20,7 @@ export const useCatalogFilter = create<CatalogFilterState>((set) => ({
   style: null,
   setStyle: (value) =>
     set((s) => {
-      const next = isStyleId(value) ? value : null;
+      const next = value?.trim() ? value.trim() : null;
       return s.style === next ? s : { style: next };
     }),
 }));

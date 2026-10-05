@@ -43,7 +43,7 @@ export default function CatalogView({ initialProducts, taxonomy }: CatalogViewPr
   const reduceMotion = useReducedMotion();
   const setStyle = useCatalogFilter((s) => s.setStyle);
 
-  // El header resalta el estilo activo.
+  // El header resalta el estilo activo (cualquier código de la taxonomía).
   useEffect(() => {
     setStyle(query.style);
   }, [query.style, setStyle]);
@@ -112,7 +112,6 @@ export default function CatalogView({ initialProducts, taxonomy }: CatalogViewPr
 
         {styleProducts.length > 0 && (
           <CatalogFilters
-            key={queryKey}
             query={query}
             types={types}
             sizes={availableSizes(styleProducts)}

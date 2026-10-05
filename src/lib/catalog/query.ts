@@ -39,7 +39,9 @@ const toNumber = (v: string | null): number | null => {
 
 export function parseCatalogQuery(params: ParamsLike): CatalogQuery {
   const sort = params.get('orden');
-  const gender = params.get('genero');
+  // Compat con los links de antes del catálogo v2: &gender=men|women.
+  const legacyGender = params.get('gender');
+  const gender = params.get('genero') ?? (legacyGender === 'men' ? 'hombre' : legacyGender === 'women' ? 'mujer' : null);
   return {
     style: params.get('category')?.trim() || null,
     tipo: params.get('tipo')?.trim() || null,
@@ -116,7 +118,8 @@ export function filterByStyleCode(
 
 export function applyFilters(products: CatalogProduct[], q: CatalogQuery): CatalogProduct[] {
   return products.filter((p) => {
-    if (q.tipo && p.category !== q.tipo) return false;
+    // Sin distinguir mayúsculas: ?tipo=chaquetas encuentra CHAQUETAS.
+    if (q.tipo && p.category.toUpperCase() !== q.tipo.toUpperCase()) return false;
     if (q.sizes.length > 0 && !p.sizes.some((s) => q.sizes.includes(s.toUpperCase()))) return false;
     if (q.gender && !matchesGender(p, q.gender)) return false;
     const price = finalPrice(p);

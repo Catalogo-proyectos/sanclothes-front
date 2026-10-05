@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CatalogProduct } from '@/types/api';
@@ -29,6 +30,8 @@ interface BentoTileProps {
 export function BentoTile({ product, className = '', priority = false, sizes }: BentoTileProps) {
   const title = bentoTitle(product);
   const price = product.discountPrice ?? product.price;
+  // Si la imagen (propia del bento o del producto) no carga, el placeholder.
+  const [failed, setFailed] = useState(false);
 
   return (
     <Link
@@ -37,7 +40,8 @@ export function BentoTile({ product, className = '', priority = false, sizes }: 
       className={`group relative block overflow-hidden bg-[#17191c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17191c] focus-visible:ring-offset-2 ${className}`}
     >
       <Image
-        src={bentoImage(product)}
+        src={failed ? PLACEHOLDER_PRODUCT : bentoImage(product)}
+        onError={() => setFailed(true)}
         alt={product.images[0]?.alt ?? product.title}
         fill
         priority={priority}

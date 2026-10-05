@@ -32,19 +32,14 @@ const SORT_LABELS: Record<SortId, string> = {
 
 export default function CatalogFilters({ query, types, sizes, total }: CatalogFiltersProps) {
   const router = useRouter();
+  // El panel queda abierto mientras se eligen filtros (cada filtro cambia la URL).
   const [open, setOpen] = useState(false);
-  const [min, setMin] = useState(query.min?.toString() ?? '');
-  const [max, setMax] = useState(query.max?.toString() ?? '');
 
   const go = (next: Partial<CatalogQuery>) => {
     router.replace(catalogHref({ ...query, ...next }), { scroll: false });
   };
   const toggleSize = (size: string) =>
     go({ sizes: query.sizes.includes(size) ? query.sizes.filter((s) => s !== size) : [...query.sizes, size] });
-  const applyPrice = () => {
-    const toNum = (v: string) => (v.trim() === '' || Number.isNaN(Number(v)) ? null : Math.max(0, Math.round(Number(v))));
-    go({ min: toNum(min), max: toNum(max) });
-  };
   const extraFilters =
     query.sizes.length + (query.gender ? 1 : 0) + (query.min !== null || query.max !== null ? 1 : 0) + (query.onlyAvailable ? 1 : 0);
 
@@ -122,33 +117,8 @@ export default function CatalogFilters({ query, types, sizes, total }: CatalogFi
 
           <fieldset>
             <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-[#17191c]/50">Precio (Gs.)</legend>
-            <form
-              className="flex items-center gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                applyPrice();
-              }}
-            >
-              <input
-                inputMode="numeric"
-                aria-label="Precio mínimo"
-                placeholder="Mín."
-                value={min}
-                onChange={(e) => setMin(e.target.value.replace(/[^\d]/g, ''))}
-                onBlur={applyPrice}
-                className="w-full border border-[#17191c]/15 bg-transparent px-3 py-2 font-mono text-[11px] text-[#17191c] focus:border-[#17191c] focus:outline-none"
-              />
-              <span className="text-[#17191c]/40">–</span>
-              <input
-                inputMode="numeric"
-                aria-label="Precio máximo"
-                placeholder="Máx."
-                value={max}
-                onChange={(e) => setMax(e.target.value.replace(/[^\d]/g, ''))}
-                onBlur={applyPrice}
-                className="w-full border border-[#17191c]/15 bg-transparent px-3 py-2 font-mono text-[11px] text-[#17191c] focus:border-[#17191c] focus:outline-none"
-              />
-            </form>
+            {/* Se remonta solo cuando el precio de la URL cambia (p. ej. "Limpiar filtros"). */}
+            <PriceRange key={`${query.min ?? ''}-${query.max ?? ''}`} min={query.min} max={query.max} onApply={(range) => go(range)} />
           </fieldset>
 
           <fieldset className="flex flex-col justify-between gap-3">
@@ -160,11 +130,7 @@ export default function CatalogFilters({ query, types, sizes, total }: CatalogFi
             {hasActiveFilters(query) && (
               <button
                 type="button"
-                onClick={() => {
-                  setMin('');
-                  setMax('');
-                  go({ tipo: null, sizes: [], gender: null, min: null, max: null, onlyAvailable: false, sort: 'nuevos' });
-                }}
+                onClick={() => go({ tipo: null, sizes: [], gender: null, min: null, max: null, onlyAvailable: false, sort: 'nuevos' })}
                 className="flex items-center gap-1.5 self-start font-mono text-[10px] uppercase tracking-[0.14em] text-[#17191c]/60 underline-offset-4 hover:text-[#17191c] hover:underline"
               >
                 <X className="h-3 w-3" aria-hidden /> Limpiar filtros
@@ -174,5 +140,55 @@ export default function CatalogFilters({ query, types, sizes, total }: CatalogFi
         </div>
       )}
     </div>
+  );
+}
+
+const priceInput =
+  'w-full border border-[#17191c]/15 bg-transparent px-3 py-2 font-mono text-[11px] text-[#17191c] focus:border-[#17191c] focus:outline-none';
+const toAmount = (v: string) => (v.trim() === '' || Number.isNaN(Number(v)) ? null : Math.max(0, Math.round(Number(v))));
+
+function PriceRange({
+  min,
+  max,
+  onApply,
+}: {
+  min: number | null;
+  max: number | null;
+  onApply: (range: { min: number | null; max: number | null }) => void;
+}) {
+  const [from, setFrom] = useState(min?.toString() ?? '');
+  const [to, setTo] = useState(max?.toString() ?? '');
+  const apply = () => {
+    const next = { min: toAmount(from), max: toAmount(to) };
+    if (next.min !== min || next.max !== max) onApply(next);
+  };
+  return (
+    <form
+      className="flex items-center gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        apply();
+      }}
+    >
+      <input
+        inputMode="numeric"
+        aria-label="Precio mínimo"
+        placeholder="Mín."
+        value={from}
+        onChange={(e) => setFrom(e.target.value.replace(/[^\d]/g, ''))}
+        onBlur={apply}
+        className={priceInput}
+      />
+      <span className="text-[#17191c]/40">–</span>
+      <input
+        inputMode="numeric"
+        aria-label="Precio máximo"
+        placeholder="Máx."
+        value={to}
+        onChange={(e) => setTo(e.target.value.replace(/[^\d]/g, ''))}
+        onBlur={apply}
+        className={priceInput}
+      />
+    </form>
   );
 }

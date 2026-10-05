@@ -55,20 +55,29 @@ function isTaxonomy(value: unknown): value is CatalogTaxonomy {
   return !!v && Array.isArray(v.styles) && Array.isArray(v.categories);
 }
 
+// Si la API falla, el respaldo se usa directamente durante un rato: una caída
+// no debe sumar el timeout a CADA página (el layout pide la taxonomía siempre).
+const FALLBACK_TTL_MS = 60_000;
+let useFallbackUntil = 0;
+
 /** Server-side: se revalida cada 5 minutos (los cambios del admin aparecen solos). */
 export async function fetchTaxonomy(): Promise<CatalogTaxonomy> {
   if (config.api.useMock || !config.api.origin) return FALLBACK_TAXONOMY;
+  if (Date.now() < useFallbackUntil) return FALLBACK_TAXONOMY;
   try {
     const res = await fetch(`${config.api.origin}/api/v1/catalog/taxonomy`, {
       next: { revalidate: 300 },
-      signal: AbortSignal.timeout(4_000),
+      signal: AbortSignal.timeout(1_500),
     });
-    if (!res.ok) return FALLBACK_TAXONOMY;
-    const data: unknown = await res.json();
-    return isTaxonomy(data) && data.styles.length > 0 ? data : FALLBACK_TAXONOMY;
+    if (res.ok) {
+      const data: unknown = await res.json();
+      if (isTaxonomy(data) && data.styles.length > 0) return data;
+    }
   } catch {
-    return FALLBACK_TAXONOMY;
+    // cae al respaldo
   }
+  useFallbackUntil = Date.now() + FALLBACK_TTL_MS;
+  return FALLBACK_TAXONOMY;
 }
 
 export function findStyle(taxonomy: CatalogTaxonomy, code: string | null | undefined): TaxonomyStyle | null {

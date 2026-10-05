@@ -61,6 +61,15 @@ describe('parseCatalogQuery / catalogHref', () => {
     expect(catalogHref({})).toBe('/catalog');
   });
 
+  it('filtra el tipo sin distinguir mayúsculas y acepta el gender= de los links viejos', () => {
+    const jacket = product({ category: 'CHAQUETAS' });
+    expect(applyFilters([jacket, product()], parseCatalogQuery(params('tipo=chaquetas')))).toEqual([jacket]);
+    expect(parseCatalogQuery(params('gender=men')).gender).toBe('hombre');
+    expect(parseCatalogQuery(params('gender=women')).gender).toBe('mujer');
+    expect(parseCatalogQuery(params('gender=unisex')).gender).toBeNull();
+    expect(parseCatalogQuery(params('genero=mujer&gender=men')).gender).toBe('mujer');
+  });
+
   it('tipo, talle, precio, género, disponible u orden cuentan como filtro activo', () => {
     for (const qs of ['tipo=X', 'talle=M', 'genero=hombre', 'min=1', 'max=1', 'disponible=1', 'orden=precio-asc']) {
       expect(hasActiveFilters(parseCatalogQuery(params(`category=casual&${qs}`)))).toBe(true);
