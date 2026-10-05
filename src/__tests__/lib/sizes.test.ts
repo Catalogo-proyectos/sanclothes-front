@@ -19,6 +19,10 @@ function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
     category: 'HOMBRE',
     sizes: ['S', 'M', 'XS', 'L'],
     stockStatus: 'IN_STOCK',
+    styles: [],
+    categoryName: 'HOMBRE',
+    color: null,
+    bento: null,
     variants: [
       variant('FEMENINO', 'S'),
       variant('FEMENINO', 'M'),
