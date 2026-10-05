@@ -7,10 +7,10 @@ describe('useCart Zustand Store', () => {
   });
 
   it('should initialize with empty cart', () => {
-    const { items, getItemCount, getSubtotal } = useCart.getState();
+    const { items, getItemCount, getReferenceSubtotal } = useCart.getState();
     expect(items).toEqual([]);
     expect(getItemCount()).toBe(0);
-    expect(getSubtotal()).toBe(0);
+    expect(getReferenceSubtotal()).toBe(0);
   });
 
   it('should add item and update item count', () => {
@@ -26,10 +26,10 @@ describe('useCart Zustand Store', () => {
       quantity: 2,
     });
 
-    const { items, getItemCount, getSubtotal } = useCart.getState();
+    const { items, getItemCount, getReferenceSubtotal } = useCart.getState();
     expect(items).toHaveLength(1);
     expect(getItemCount()).toBe(2);
-    expect(getSubtotal()).toBe(300000);
+    expect(getReferenceSubtotal()).toBe(300000);
   });
 
   it('should increment quantity when adding existing variant', () => {
@@ -79,8 +79,8 @@ describe('useCart Zustand Store', () => {
     expect(useCart.getState().items).toHaveLength(0);
   });
 
-  it('should calculate shipping correctly (free over 300,000 Gs.)', () => {
-    const { addItem, getShippingCost } = useCart.getState();
+  it('no calcula envío ni total: el importe a cobrar sale de la quote del servidor', () => {
+    const { addItem } = useCart.getState();
 
     addItem({
       variantId: 'var_001',
@@ -93,21 +93,11 @@ describe('useCart Zustand Store', () => {
       quantity: 1,
     });
 
-
-    expect(getShippingCost()).toBe(20000);
-
-    addItem({
-      variantId: 'var_002',
-      productId: 'prod_01',
-      productName: 'Remera Oversize',
-      sku: 'REM-M',
-      size: 'M',
-      cut: 'FEMENINO',
-      unitPrice: 160000,
-      quantity: 1,
-    });
-
-
-    expect(getShippingCost()).toBe(0);
+    const state = useCart.getState() as unknown as Record<string, unknown>;
+    // La regla vieja (Gs. 20.000 de envío por debajo de Gs. 300.000) desapareció.
+    expect(state.getShippingCost).toBeUndefined();
+    expect(state.getTotal).toBeUndefined();
+    // Lo único que queda es la referencia visual de catálogo.
+    expect(useCart.getState().getReferenceSubtotal()).toBe(150000);
   });
 });

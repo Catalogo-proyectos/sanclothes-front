@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
+import { useCheckoutQuote } from '@/hooks/useCheckoutQuote';
+import { getCheckoutIdentityToken } from '@/lib/services/checkout';
+import QuoteSummary from '@/components/checkout/QuoteSummary';
 import { formatCurrency } from '@/utils/format';
 
 
@@ -17,7 +20,7 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const { items, removeItem, updateQuantity, getSubtotal, getTotal } = useCart();
+  const { items, removeItem, updateQuantity, getReferenceSubtotal } = useCart();
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
 
@@ -35,8 +38,18 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     };
   }, [isOpen, onClose]);
 
-  const subtotal = getSubtotal();
-  const total = getTotal();
+  // El total que se muestra es el del servidor. Mientras no hay quote, solo el
+  // subtotal de catálogo como referencia (nunca un "total" armado acá).
+  const quoteState = useCheckoutQuote({
+    items,
+    token: isOpen ? getCheckoutIdentityToken() : null,
+    enabled: isOpen,
+    // Vista informativa: si la sesión venció, se cotiza como anónimo.
+    anonymousFallbackOn401: true,
+  });
+  const { quote, status: quoteStatus } = quoteState;
+  const showServerTotals = quoteStatus === 'ready' || quoteStatus === 'stale';
+  const referenceSubtotal = getReferenceSubtotal();
   const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
 
 
@@ -109,7 +122,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
                 ) : (
 
-                  items.map((item) => {
+                  items.map((item, index) => {
                     const hasError = imageErrors[item.variantId];
                     const imageSrc = hasError || !item.image ? FALLBACK_IMAGE : item.image;
 
@@ -160,7 +173,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                           <div className="flex items-center justify-between pt-2">
                             <span className="text-xs font-mono font-bold text-[#17191c]">
-                              {formatCurrency(item.unitPrice * item.quantity)}
+                              {formatCurrency(
+                                quoteStatus === 'ready' && quote?.lines[index]
+                                  ? quote.lines[index].lineTotal
+                                  : item.unitPrice * item.quantity,
+                              )}
                             </span>
 
 
@@ -196,21 +213,20 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
               {items.length > 0 && (
                 <div className="p-6 border-t border-[#17191c]/10 bg-white space-y-4">
-                  <div className="space-y-2 text-xs font-mono text-[#50524a]">
-                    <div className="flex justify-between">
-                      <span>SUBTOTAL</span>
-                      <span className="text-[#17191c] font-semibold">{formatCurrency(subtotal)}</span>
+                  {!showServerTotals && (
+                    <div className="flex justify-between text-xs font-mono text-[#50524a]" data-testid="reference-subtotal">
+                      <span>SUBTOTAL (REFERENCIA)</span>
+                      <span className="text-[#17191c] font-semibold">{formatCurrency(referenceSubtotal)}</span>
                     </div>
-                  </div>
-
-                  <div className="flex justify-between items-baseline pt-3 border-t border-[#17191c]/10">
-                    <span className="text-xs font-mono font-bold uppercase text-[#17191c]">
-                      TOTAL ESTIMADO
-                    </span>
-                    <span className="text-2xl font-[family-name:var(--font-bebas)] tracking-wider text-[#17191c]">
-                      {formatCurrency(total)}
-                    </span>
-                  </div>
+                  )}
+                  <QuoteSummary
+                    variant="drawer"
+                    status={quoteStatus}
+                    quote={quote}
+                    error={quoteState.error}
+                    hasPriceIssue={quoteState.hasPriceIssue}
+                    onRetry={quoteState.refresh}
+                  />
 
                   <Link
                     href="/checkout"

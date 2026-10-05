@@ -8,6 +8,7 @@ export interface CartItem {
   size: string;
   cut: string;
   quantity: number;
+  /** Precio de catálogo al agregar: solo referencia visual, el backend precifica. */
   unitPrice: number;
   image?: string;
   maxStock?: number;
@@ -20,9 +21,8 @@ export interface CartState {
   updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;
   getItemCount: () => number;
-  getSubtotal: () => number;
-  getShippingCost: () => number;
-  getTotal: () => number;
+  /** Precio de catálogo × cantidad. Referencia visual: el importe real es la quote del servidor. */
+  getReferenceSubtotal: () => number;
 
   syncToServer: (mode: 'user' | 'guest') => Promise<void>;
 

@@ -1,4 +1,5 @@
 import { CheckoutRequest, CheckoutResponse, TicketDetail } from '@/types/api';
+import { MOCK_PRODUCTS } from './catalog';
 
 
 interface MockOrder {
@@ -83,6 +84,12 @@ export const MOCK_TICKETS: TicketDetail[] = [
   },
 ];
 
+// Modo demo: el pedido no trae precios (A2), se toman del dataset mock.
+function mockUnitPrice(productId: string, sku: string): number {
+  const product = MOCK_PRODUCTS.find((p) => p.productId === productId);
+  return product?.variants?.find((v) => v.sku === sku)?.price ?? product?.price ?? 0;
+}
+
 export function createMockOrder(request: CheckoutRequest): CheckoutResponse {
   const orderId = `ord_${Date.now()}`;
 
@@ -90,14 +97,14 @@ export function createMockOrder(request: CheckoutRequest): CheckoutResponse {
     orderId,
     orderNumber: `TR-${10000 + MOCK_ORDERS.length + 1}`,
     status: 'pending',
-    total: request.items.reduce((sum, i) => sum + i.unitPrice * i.qty, 0),
+    total: request.items.reduce((sum, i) => sum + mockUnitPrice(i.productId, i.sku) * i.qty, 0),
     currency: 'PYG',
     itemCount: request.items.reduce((sum, i) => sum + i.qty, 0),
     items: request.items.map((i) => ({
       productId: i.productId,
       name: 'Mock Product',
       quantity: i.qty,
-      price: i.unitPrice,
+      price: mockUnitPrice(i.productId, i.sku),
       sku: i.sku,
     })),
     createdAt: new Date().toISOString(),

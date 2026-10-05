@@ -62,19 +62,11 @@ export const useCart = create<CartState>()(
         return get().items.reduce((total, item) => total + item.quantity, 0);
       },
 
-      getSubtotal: () => {
+      // Referencia visual (precio de catálogo × cantidad) mientras no hay una
+      // quote del servidor. Nunca es el importe a cobrar: subtotal, descuentos,
+      // envío y total salen de POST /checkout/quote (useCheckoutQuote).
+      getReferenceSubtotal: () => {
         return get().items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-      },
-
-      getShippingCost: () => {
-        const subtotal = get().getSubtotal();
-        if (subtotal === 0) return 0;
-
-        return subtotal >= 300000 ? 0 : 20000;
-      },
-
-      getTotal: () => {
-        return get().getSubtotal() + get().getShippingCost();
       },
 
 
