@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ShoppingBag } from 'lucide-react';
+import { ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { toast } from 'sonner';
-import { toCartItem, toGridProduct, type GridProduct } from '@/components/common/FeaturedProductsGrid';
+import { currentGridSize, toCartItem, toGridProduct, type GridProduct } from '@/components/common/FeaturedProductsGrid';
+import { productHref } from '@/lib/catalog/sizes';
 import type { CatalogProduct } from '@/types/api';
 
 /** Máximo de productos en el bento 2x2 de esta sección. */
@@ -36,12 +37,13 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
   const handleAddToCart = (product: GridProduct, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const chosenSize = selectedSizes[product.id] || product.sizes[0];
+    const item = toCartItem(product, currentGridSize(product, selectedSizes[product.id]));
+    if (!item) return;
 
-    addItem(toCartItem(product, chosenSize));
+    addItem(item);
 
     toast.success('¡AÑADIDO AL CARRITO!', {
-      description: `${product.name} · TALLE ${chosenSize}`,
+      description: `${product.name} · TALLE ${item.size}`,
     });
   };
 
@@ -107,7 +109,8 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
           >
             <div className="grid grid-cols-2 gap-3 sm:gap-4 h-full">
               {bentoProducts.map((product) => {
-                const currentSize = selectedSizes[product.id] || product.sizes[0];
+                const currentSize = currentGridSize(product, selectedSizes[product.id]);
+                const canAdd = toCartItem(product, currentSize) !== null;
 
                 return (
                   <div key={product.id} className="group flex flex-col justify-between transition-all duration-300">
@@ -153,31 +156,47 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
                       <div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
 
                         <div className="flex items-center justify-center gap-1.5">
-                          {product.sizes.map((sz) => (
+                          {product.sizes.map(({ size: sz, soldOut }) => (
                             <button
                               key={sz}
                               type="button"
+                              disabled={soldOut}
                               onClick={(e) => handleSizeSelect(product.id, sz, e)}
-                              className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border cursor-pointer ${
-                                currentSize === sz
-                                  ? 'bg-white text-black border-white shadow-2xs'
-                                  : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-white'
+                              className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border ${
+                                soldOut
+                                  ? 'bg-transparent text-zinc-600 border-zinc-800 line-through cursor-not-allowed'
+                                  : currentSize === sz
+                                    ? 'bg-white text-black border-white shadow-2xs cursor-pointer'
+                                    : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-white cursor-pointer'
                               }`}
                             >
                               {sz}
+                              {soldOut && <span className="sr-only"> (sin stock)</span>}
                             </button>
                           ))}
                         </div>
 
 
-                        <button
-                          type="button"
-                          onClick={(e) => handleAddToCart(product, e)}
-                          className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.98]"
-                        >
-                          <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
-                          <span>AÑADIR AL CARRITO</span>
-                        </button>
+                        {product.sizes.length === 0 || product.multiCut ? (
+                          // Varios cortes: el cliente elige el corte en la ficha, con el talle ya marcado.
+                          <Link
+                            href={productHref(product.id, selectedSizes[product.id])}
+                            className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
+                          >
+                            <span>{product.multiCut ? 'VER DETALLES' : 'VER PRENDA'}</span>
+                            <ArrowRight className="w-4 h-4 stroke-[1.8]" />
+                          </Link>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(e) => handleAddToCart(product, e)}
+                            disabled={!canAdd}
+                            className="w-full h-9 bg-white text-black hover:bg-zinc-200 disabled:bg-zinc-700 disabled:text-zinc-400 disabled:cursor-not-allowed text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.98]"
+                          >
+                            <ShoppingBag className="w-4 h-4 stroke-[1.8]" />
+                            <span>{canAdd ? 'AÑADIR AL CARRITO' : 'AGOTADO'}</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
