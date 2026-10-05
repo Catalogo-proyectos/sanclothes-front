@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SECURITY_HEADERS } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -46,6 +47,11 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
+      {
+        // M4: headers de seguridad en todas las rutas (ver src/lib/security-headers.ts).
+        source: "/:path*",
+        headers: SECURITY_HEADERS,
+      },
       {
         source: "/img/:path*",
         headers: [
