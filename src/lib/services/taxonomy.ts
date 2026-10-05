@@ -33,16 +33,19 @@ export interface CatalogTaxonomy {
   fallback?: boolean;
 }
 
+// Mismo orden que el menú de siempre y que el seed de la migración 0036.
+const FALLBACK_ORDER = ['casual', 'streetwear', 'old-money', 'sports'];
+
 export const FALLBACK_TAXONOMY: CatalogTaxonomy = {
-  styles: CATALOG_STYLES.map((style, index) => ({
+  styles: CATALOG_STYLES.map((style) => ({
     code: style.id,
     name: style.label,
     description: style.caption,
-    sortOrder: (index + 1) * 10,
+    sortOrder: (FALLBACK_ORDER.indexOf(style.id) + 1) * 10 || 100,
     coverImage: null,
     coverImageMobile: null,
     categories: [],
-  })),
+  })).sort((x, y) => x.sortOrder - y.sortOrder),
   categories: [],
   fallback: true,
 };
