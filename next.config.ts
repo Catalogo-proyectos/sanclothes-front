@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
         hostname: "api.santclothes.com.py",
       },
       {
+        // CDN de producción (R2): ahí apuntan las URLs que guarda el backend al
+        // subir imágenes desde el admin. Sin esto /_next/image responde 400.
+        protocol: "https",
+        hostname: "cdn.santclothes.com.py",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         port: "5012",
