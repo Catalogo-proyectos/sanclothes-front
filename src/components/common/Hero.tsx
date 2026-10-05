@@ -157,7 +157,8 @@ export default function Hero() {
               onClick={() => setActiveMobileSlide(index)}
               aria-label={`Ver ${cat.title}`}
               aria-current={index === activeMobileSlide ? 'true' : undefined}
-              className={`h-[2px] transition-colors duration-300 ${index === activeMobileSlide ? 'bg-white' : 'bg-white/25'}`}
+              // La barrita mide 2px; el ::before invisible agranda el área táctil.
+              className={`relative h-[2px] transition-colors duration-300 before:absolute before:inset-x-0 before:-inset-y-5 before:content-[''] ${index === activeMobileSlide ? 'bg-white' : 'bg-white/25'}`}
             />
           ))}
         </div>

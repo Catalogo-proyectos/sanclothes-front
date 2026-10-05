@@ -96,6 +96,8 @@ export default function Header() {
                 alt="SANT CLOTHES"
                 width={144}
                 height={144}
+                loading="eager"
+                sizes="(max-width: 639px) 32px, 36px"
                 className={`h-8 sm:h-9 w-auto object-contain transition-all duration-300 group-hover:scale-110 ${logoFilter}`}
               />
             </Link>

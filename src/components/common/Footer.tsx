@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, FormEvent } from 'react';
 import { toast } from 'sonner';
+import { useLightPrefetch } from '@/hooks/useLightPrefetch';
 
 const FALLBACK_REVEAL_HEIGHT = 600;
 
@@ -58,6 +59,9 @@ export default function Footer() {
   const [revealHeight, setRevealHeight] = useState<number>(FALLBACK_REVEAL_HEIGHT);
 
   const [email, setEmail] = useState('');
+  // El footer es fixed detrás del contenido: el IntersectionObserver lo da por
+  // visible desde el inicio y prefetcheaba sus ~20 links al cargar.
+  const prefetch = useLightPrefetch();
 
   const isKnownRoute = (path: string) => {
     if (path === '/mantenimiento' || path === '/error-preview' || path === '/404') return false;
@@ -142,6 +146,7 @@ export default function Footer() {
                   {column.href ? (
                     <Link
                       href={column.href}
+                      prefetch={prefetch}
                       className="block font-[family-name:var(--font-bebas)] text-lg tracking-[0.12em] text-[#17191c] uppercase leading-none transition-opacity hover:opacity-70"
                     >
                       {column.title}
@@ -154,7 +159,7 @@ export default function Footer() {
                   <ul className="space-y-2 text-xs font-medium text-[#50524a]">
                     {column.links.map((link) => (
                       <li key={link.href}>
-                        <Link href={link.href} className="hover:text-[#17191c] transition-colors">
+                        <Link href={link.href} prefetch={prefetch} className="hover:text-[#17191c] transition-colors">
                           {link.label}
                         </Link>
                       </li>

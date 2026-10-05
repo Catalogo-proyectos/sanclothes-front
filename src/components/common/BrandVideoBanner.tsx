@@ -14,7 +14,9 @@ export default function BrandVideoBanner() {
 
         <LazyAutoplayVideo
           src="/img/video/video.mp4"
+          mobileSrc="/img/video/video-mobile.mp4"
           poster="/img/hero/Hero-Catalogo2.jpeg"
+          mobilePoster="/img/hero/Hero-Catalogo2-m.webp"
           ariaLabel="Campaña SANT CLOTHES en movimiento"
           className="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
