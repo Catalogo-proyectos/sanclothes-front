@@ -2,10 +2,13 @@ import type { Metadata, Viewport } from 'next';
 import { Bebas_Neue } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/common/Header';
+import { navCategoriesFromTaxonomy } from '@/components/common/navData';
+import { fetchTaxonomy } from '@/lib/services/taxonomy';
 import Footer from '@/components/common/Footer';
 import SmoothScrollProvider from '@/components/common/SmoothScrollProvider';
 import { Toaster } from 'sonner';
 import { config } from '@/lib/config';
+import { serializeJsonLd } from '@/lib/seo/jsonLd';
 
 const bebas = Bebas_Neue({
   weight: '400',
@@ -124,22 +127,26 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Menú de estilos editable desde el admin (revalida cada 5 min; con la API
+  // caída usa los 4 estilos de siempre).
+  const navCategories = navCategoriesFromTaxonomy(await fetchTaxonomy());
+
   return (
     <html lang="es" className={bebas.variable}>
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       </head>
       <body className="min-h-screen antialiased bg-[#f6f8f9] text-[#17191c] relative overflow-x-hidden">
         <SmoothScrollProvider />
-        <Header />
+        <Header navCategories={navCategories} />
         <main className="relative z-10 bg-[#f6f8f9] min-h-screen shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]">
           {children}
         </main>

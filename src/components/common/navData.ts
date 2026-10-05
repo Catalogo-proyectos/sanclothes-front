@@ -105,3 +105,35 @@ export const NAV_CATEGORIES: NavCategory[] = [
     featuredTag: 'HIGH PERFORMANCE',
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Catálogo v2: el menú sale de la taxonomía (estilos editables en el admin).
+// Los 4 estilos originales conservan su imagen y textos de arriba como respaldo;
+// los sub-links pasan a ser los tipos de prenda reales del estilo.
+// ---------------------------------------------------------------------------
+import type { CatalogTaxonomy } from '@/lib/services/taxonomy';
+import { catalogHref } from '@/lib/catalog/query';
+
+const DEFAULT_NAV_IMAGE = '/img/nav/casual.webp';
+
+export function navCategoriesFromTaxonomy(taxonomy: CatalogTaxonomy): NavCategory[] {
+  if (taxonomy.styles.length === 0) return NAV_CATEGORIES;
+  return taxonomy.styles.map((style) => {
+    const base = NAV_CATEGORIES.find((c) => c.id === style.code);
+    const href = catalogHref({ style: style.code });
+    const typeLinks = style.categories.map((c) => ({ label: c.name, href: catalogHref({ style: style.code, tipo: c.code }) }));
+    // Sin tipos cargados todavía: se mantienen las etiquetas de siempre, apuntando al estilo.
+    const legacy = (links: NavCategory['col1Links'] | undefined) => (links ?? []).map((l) => ({ label: l.label, href }));
+    return {
+      id: style.code,
+      name: style.name.toUpperCase(),
+      displayTitle: base?.displayTitle ?? style.name,
+      href,
+      col1Title: base?.col1Title ?? 'Colección',
+      col1Links: [{ label: 'Ver Todo', href }, ...(typeLinks.length > 0 ? typeLinks : legacy(base?.col1Links).slice(1))],
+      col2Links: typeLinks.length > 0 ? [] : legacy(base?.col2Links),
+      featuredImage: style.coverImage ?? base?.featuredImage ?? DEFAULT_NAV_IMAGE,
+      featuredTag: base?.featuredTag ?? style.name.toUpperCase(),
+    };
+  });
+}

@@ -6,7 +6,10 @@ export const MOCK_CUTS: CutInfo[] = [
   { code: 'UNISEX', name: 'Colección Unisex (Drop)', productsCount: 8 },
 ];
 
-export const MOCK_PRODUCTS: CatalogProduct[] = [
+type MockProduct = Omit<CatalogProduct, 'styles' | 'categoryName' | 'color' | 'bento'> &
+  Partial<Pick<CatalogProduct, 'styles' | 'categoryName' | 'color' | 'bento'>>;
+
+const RAW_MOCK_PRODUCTS: MockProduct[] = [
   {
     productId: 'prod_sant_01',
     slug: 'le-sants-club-suede-tracksuit',
@@ -639,3 +642,12 @@ export const MOCK_PRODUCTS: CatalogProduct[] = [
     ],
   },
 ];
+
+// Catálogo v2: valores por defecto de los campos nuevos (los mocks son anteriores).
+export const MOCK_PRODUCTS: CatalogProduct[] = RAW_MOCK_PRODUCTS.map((p) => ({
+  ...p,
+  styles: p.styles ?? (p.category ? [p.category] : []),
+  categoryName: p.categoryName ?? p.category,
+  color: p.color ?? null,
+  bento: p.bento ?? null,
+}));

@@ -33,6 +33,13 @@ export interface BackendComboItem {
   images?: string[];
 }
 
+export interface BackendBento {
+  title: string | null;
+  copy: string | null;
+  image: string | null;
+  priority: number;
+}
+
 export interface BackendProduct {
   productId: string;
   slug: string;
@@ -77,6 +84,12 @@ export interface BackendProduct {
 
   isFeatured?: boolean;
 
+  // Catálogo v2 (aditivos: un backend viejo no los manda)
+  createdAt?: string;
+  styles?: string[];
+  categoryName?: string;
+  color?: string | null;
+  bento?: BackendBento | null;
 
   description?: string | null;
   care?: string | null;

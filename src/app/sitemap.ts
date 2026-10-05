@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { fetchCatalog } from '@/lib/services/catalog';
-import { CATALOG_STYLES } from '@/lib/catalogFilters';
+import { fetchTaxonomy } from '@/lib/services/taxonomy';
 import { config } from '@/lib/config';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -34,8 +34,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const categoryRoutes: MetadataRoute.Sitemap = CATALOG_STYLES.map((style) => ({
-    url: `${baseUrl}/catalog?category=${style.id}`,
+  const taxonomy = await fetchTaxonomy();
+  const categoryRoutes: MetadataRoute.Sitemap = taxonomy.styles.map((style) => ({
+    url: `${baseUrl}/catalog?category=${style.code}`,
     lastModified: now,
     changeFrequency: 'weekly',
     priority: 0.75,

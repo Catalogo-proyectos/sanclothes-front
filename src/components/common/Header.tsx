@@ -10,7 +10,7 @@ import { User, LogOut, Search, X, Menu } from 'lucide-react';
 import CartIcon from './CartIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
-import { NAV_CATEGORIES } from './navData';
+import { NAV_CATEGORIES, type NavCategory } from './navData';
 
 const SearchModal = dynamic(() => import('./SearchModal'), { ssr: false });
 const CartDrawer = dynamic(() => import('../checkout/CartDrawer'), { ssr: false });
@@ -21,7 +21,12 @@ const MOBILE_MENU_IMAGES: Record<string, string> = {
   'old-money': '/img/hero/Hero Movil Old Money.jpeg',
   sports: '/img/hero/Hero Movil Sport.jpeg',
 };
-export default function Header() {
+interface HeaderProps {
+  /** Catálogo v2: menú armado con la taxonomía del admin (layout). */
+  navCategories?: NavCategory[];
+}
+
+export default function Header({ navCategories = NAV_CATEGORIES }: HeaderProps) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -105,7 +110,7 @@ export default function Header() {
 
 
           <nav className="hidden lg:flex lg:[@media(pointer:coarse)]:!hidden items-center gap-3 sm:gap-4 lg:gap-6 xl:gap-8 absolute left-[45%] -translate-x-1/2">
-            {NAV_CATEGORIES.map((cat) => {
+            {navCategories.map((cat) => {
               const isActive = cat.id === activeCategoryId;
               return (
                 <Link
@@ -278,7 +283,7 @@ export default function Header() {
               </motion.div>
 
               <div className="py-4">
-                {NAV_CATEGORIES.map((cat, i) => {
+                {navCategories.map((cat, i) => {
                   const isActive = cat.id === activeCategoryId;
 
                   return (
@@ -315,9 +320,9 @@ export default function Header() {
                           </span>
 
                           <span className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-                            {[...cat.col1Links.slice(1, 3), cat.col2Links[0]].map((line) => (
+                            {[...cat.col1Links.slice(1, 3), ...cat.col2Links.slice(0, 1)].map((line) => (
                               <span
-                                key={line.href}
+                                key={line.label}
                                 className={`font-mono text-[9px] font-bold uppercase tracking-[0.18em] ${isActive ? 'text-[#17191c]/45' : 'text-white/35'}`}
                               >
                                 {line.label}
@@ -429,7 +434,7 @@ export default function Header() {
 
               {false && (
                 <>
-              {NAV_CATEGORIES.map((cat, i) => (
+              {navCategories.map((cat, i) => (
                 <motion.div
                   key={cat.id}
                   initial={{ opacity: 0, y: 20 }}
