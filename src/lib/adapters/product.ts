@@ -121,5 +121,10 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
     isFeatured: product.isFeatured,
     isLimitedDrop: product.isLimitedDrop,
     tags: product.tags,
+    createdAt: product.createdAt,
+    styles: product.styles ?? [],
+    categoryName: product.categoryName ?? product.category,
+    color: product.color ?? null,
+    bento: product.bento ?? null,
   };
 }

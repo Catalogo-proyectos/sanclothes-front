@@ -46,6 +46,22 @@ export interface CatalogProduct {
   isFeatured?: boolean;
   isLimitedDrop?: boolean;
   tags?: string[];
+  // Catálogo v2
+  createdAt?: string;
+  styles: string[];
+  /** Nombre visible del tipo de prenda (Chaquetas, Remeras…). */
+  categoryName: string;
+  color: string | null;
+  bento: CatalogBento | null;
+}
+
+export interface CatalogBento {
+  /** null = usar el nombre del tipo de prenda. */
+  title: string | null;
+  copy: string | null;
+  /** null = usar la primera imagen del producto. */
+  image: string | null;
+  priority: number;
 }
 
 export interface CutInfo {
