@@ -2,11 +2,14 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { CatalogProduct } from '@/types/api';
 import ProductCard from '@/components/catalog/ProductCard';
 import ProductGallery from '@/components/catalog/ProductGallery';
 import ProductPurchasePanel from '@/components/catalog/ProductPurchasePanel';
+import ComboPurchasePanel from '@/components/catalog/ComboPurchasePanel';
+import HypeCountdown from '@/components/catalog/HypeCountdown';
 import { GalleryImage } from './productGallery.types';
 import { initialCutForSize } from '@/lib/catalog/sizes';
 
@@ -21,6 +24,8 @@ interface ProductDetailProps {
 
 
 export default function ProductDetail({ product, recommended, initialSize }: ProductDetailProps) {
+  const router = useRouter();
+  const refresh = useCallback(() => router.refresh(), [router]);
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
   const [selectedCut, setSelectedCut] = useState<string>(() => initialCutForSize(product, initialSize));
 
@@ -76,19 +81,46 @@ export default function ProductDetail({ product, recommended, initialSize }: Pro
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         <div className="lg:col-span-7 xl:col-span-8">
-          <ProductGallery images={galleryImages} onOpenZoom={openZoom} />
+          {product.hype ? (
+            // Hype: foto oculta hasta el lanzamiento (el backend tampoco la manda).
+            <div className="aspect-[4/5] w-full bg-[#17191c] flex flex-col items-center justify-center gap-3 text-white">
+              <span className="text-[11px] font-mono font-bold tracking-[0.3em] text-zinc-400">PRÓXIMO LANZAMIENTO</span>
+              <span className="text-6xl sm:text-8xl font-[family-name:var(--font-bebas)] tracking-[0.06em]">???</span>
+            </div>
+          ) : (
+            <ProductGallery images={galleryImages} onOpenZoom={openZoom} />
+          )}
         </div>
 
 
         <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
-          <ProductPurchasePanel
-            product={product}
-            images={galleryImages}
-            onPreviewImage={openZoom}
-            selectedCut={selectedCut}
-            onSelectCut={handleSelectCut}
-            initialSize={initialSize}
-          />
+          {product.hype ? (
+            <div className="space-y-6 text-[#17191c]">
+              <span className="inline-block bg-[#17191c] text-white text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-[0.2em]">
+                HYPE · PRÓXIMAMENTE
+              </span>
+              <h1 className="text-3xl sm:text-4xl xl:text-5xl font-[family-name:var(--font-bebas)] uppercase tracking-[0.05em] leading-[0.95]">
+                {product.title}
+              </h1>
+              {product.description && <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">{product.description}</p>}
+              <HypeCountdown launchAt={product.hype.launchAt} onLaunch={refresh} />
+              <p className="text-[11px] font-mono font-bold uppercase tracking-[0.15em] text-zinc-500">
+                Sale a la venta el{' '}
+                {new Date(product.hype.launchAt).toLocaleString('es-PY', { dateStyle: 'full', timeStyle: 'short', timeZone: 'America/Asuncion' })}
+              </p>
+            </div>
+          ) : product.combo ? (
+            <ComboPurchasePanel product={product} combo={product.combo} image={galleryImages[0]?.url} />
+          ) : (
+            <ProductPurchasePanel
+              product={product}
+              images={galleryImages}
+              onPreviewImage={openZoom}
+              selectedCut={selectedCut}
+              onSelectCut={handleSelectCut}
+              initialSize={initialSize}
+            />
+          )}
         </div>
       </div>
 

@@ -100,4 +100,14 @@ describe('useCart Zustand Store', () => {
     // Lo único que queda es la referencia visual de catálogo.
     expect(useCart.getState().getReferenceSubtotal()).toBe(150000);
   });
+
+  it('no deja superar el stock conocido (ni al agregar ni con el + del carrito)', () => {
+    const { addItem, updateQuantity } = useCart.getState();
+    addItem({ variantId: 'v', productId: 'p', productName: 'Remera', sku: 'REM-M', size: 'M', cut: 'CLASSIC', unitPrice: 100000, quantity: 9, maxStock: 3 });
+    expect(useCart.getState().items[0]!.quantity).toBe(3);
+    updateQuantity('v', 99);
+    expect(useCart.getState().items[0]!.quantity).toBe(3);
+    updateQuantity('v', 2);
+    expect(useCart.getState().items[0]!.quantity).toBe(2);
+  });
 });

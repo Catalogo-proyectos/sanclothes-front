@@ -1,6 +1,7 @@
 import type { BackendProduct } from '@/types/backend';
 import type { CatalogProduct, ProductImage, ProductVariant, StockStatus } from '@/types/api';
 import { imagesForCut } from '@/lib/images/resolve';
+import { comboHasStock, toComboInfo } from '@/lib/catalog/combo';
 
 
 
@@ -83,8 +84,17 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
   const variants = flattenVariants(product);
   const totalStock = variants.reduce((sum, v) => sum + v.stock, 0);
 
-  const stockStatus: StockStatus =
-    totalStock === 0 ? 'OUT_OF_STOCK' : totalStock <= LOW_STOCK_THRESHOLD ? 'LOW_STOCK' : 'IN_STOCK';
+  // Combo: sin variantes propias, se compra eligiendo el talle de cada prenda.
+  const combo = product.isCombo ? toComboInfo(product.comboItems) : null;
+  // Hype antes del lanzamiento: cuenta regresiva, sin talles ni precio.
+  const hype =
+    product.showHypeCountdown && product.publishAt && new Date(product.publishAt).getTime() > Date.now()
+      ? { launchAt: product.publishAt }
+      : null;
+
+  const stockStatus: StockStatus = combo
+    ? comboHasStock(combo) ? 'IN_STOCK' : 'OUT_OF_STOCK'
+    : totalStock === 0 ? 'OUT_OF_STOCK' : totalStock <= LOW_STOCK_THRESHOLD ? 'LOW_STOCK' : 'IN_STOCK';
 
   const cuts =
     product.availableCuts?.length
@@ -115,7 +125,14 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
     variants,
     flashSale:
       product.flashSale?.endAt && discountPrice !== null
-        ? { discountPercent: product.flashSale.discountValue, endsAt: product.flashSale.endAt }
+        ? {
+            // Solo un % real: en FIXED/OVERRIDE discountValue es un monto, no un porcentaje.
+            discountPercent:
+              product.flashSale.discountType === 'PERCENTAGE'
+                ? product.flashSale.discountValue
+                : price > 0 ? Math.round((1 - discountPrice / price) * 100) : 0,
+            endsAt: product.flashSale.endAt,
+          }
         : null,
     badge: product.badge ?? null,
     isFeatured: product.isFeatured,
@@ -126,5 +143,7 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
     categoryName: product.categoryName ?? product.category,
     color: product.color ?? null,
     bento: product.bento ?? null,
+    combo,
+    hype,
   };
 }

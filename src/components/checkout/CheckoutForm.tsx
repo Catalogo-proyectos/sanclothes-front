@@ -21,6 +21,7 @@ import {
 import { normalizeCouponCode } from '@/lib/services/quote';
 import { fetchBankTransferInfo, type BankTransferInfo } from '@/lib/services/settings';
 import type { CheckoutResponse, ConfirmOtpResponse } from '@/types/api';
+import TurnstileWidget from '@/components/checkout/TurnstileWidget';
 import type { CheckoutQuote } from '@/types/quote';
 
 type CheckoutStep = 'email' | 'otp' | 'form' | 'success';
@@ -122,16 +123,24 @@ export default function CheckoutForm() {
   };
 
 
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileReset, setTurnstileReset] = useState(0);
+
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (config.turnstile.enabled && !turnstileToken) {
+      setError('Completá la verificación de seguridad para continuar.');
+      return;
+    }
     setLoading(true);
     setError('');
 
     try {
-
-      await verifyEmail(guestEmail);
+      await verifyEmail(guestEmail, turnstileToken ?? undefined);
       setStep('otp');
     } catch (err) {
+      // El token es de un solo uso: para reintentar hace falta uno nuevo.
+      if (config.turnstile.enabled) setTurnstileReset((n) => n + 1);
       if (err instanceof ApiError && err.code === 'INVALID_EMAIL') {
         setError('El correo electrónico no es válido.');
       } else {
@@ -424,7 +433,7 @@ export default function CheckoutForm() {
 
 
           {config.turnstile.enabled && (
-            <div id="turnstile-widget" className="flex justify-center" />
+            <TurnstileWidget siteKey={config.turnstile.siteKey} onToken={setTurnstileToken} resetKey={turnstileReset} />
           )}
 
           <button
@@ -484,7 +493,7 @@ export default function CheckoutForm() {
 
           <button
             type="button"
-            onClick={() => { setStep('email'); setError(''); setOtp(''); }}
+            onClick={() => { setStep('email'); setError(''); setOtp(''); setTurnstileToken(null); }}
             className="w-full text-xs text-slate-500 hover:text-black transition-colors"
           >
             ← Cambiar correo

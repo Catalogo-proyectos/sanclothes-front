@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import { CatalogProduct } from '@/types/api';
+import HypeCountdown from '@/components/catalog/HypeCountdown';
 import { formatCurrency } from '@/utils/format';
 import { useCart } from '@/hooks/useCart';
 import { cardSlots } from '@/lib/images/slots';
@@ -67,6 +68,23 @@ function ProductCard({ product }: ProductCardProps) {
       description: `${product.title} · TALLE ${variantToAdd.size} — ${formatCurrency(effectivePrice)}`,
     });
   };
+
+  // Hype antes del lanzamiento: cuenta regresiva, sin foto, precio ni talles.
+  if (product.hype) {
+    return (
+      <Link href={href} className="group flex flex-col select-none">
+        <div className="relative aspect-[3/4] w-full bg-[#17191c] border border-[#17191c] mb-2.5 flex flex-col items-center justify-center gap-2 text-white">
+          <span className="text-[9px] font-mono font-bold tracking-[0.3em] text-zinc-400">PRÓXIMAMENTE</span>
+          <span className="text-4xl font-[family-name:var(--font-bebas)] tracking-[0.06em]">???</span>
+          <span className="text-xs"><HypeCountdown launchAt={product.hype.launchAt} variant="compact" /></span>
+        </div>
+        <div className="px-1">
+          <span className="text-[9px] font-mono font-bold tracking-[0.18em] text-zinc-500 uppercase">LANZAMIENTO HYPE</span>
+          <h3 className="text-sm font-extrabold uppercase tracking-tight text-[#17191c] leading-snug line-clamp-2">{product.title}</h3>
+        </div>
+      </Link>
+    );
+  }
 
   return (
     <div className="group flex flex-col justify-between transition-all duration-300 select-none">
@@ -172,7 +190,7 @@ function ProductCard({ product }: ProductCardProps) {
               href={href}
               className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
             >
-              <span>{multiCut ? 'VER DETALLES' : 'VER PRENDA'}</span>
+              <span>{product.combo ? 'ARMAR COMBO' : multiCut ? 'VER DETALLES' : 'VER PRENDA'}</span>
               <ArrowRight className="w-4 h-4 stroke-[1.8]" />
             </Link>
           ) : (
