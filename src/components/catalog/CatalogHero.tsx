@@ -9,13 +9,20 @@ import { StyleId, getCatalogHero, getStyle } from '@/lib/catalogFilters';
 interface CatalogHeroProps {
 
   styleId: StyleId | null;
+  /** Catálogo v2: nombre y portada del estilo cargados en el admin (tienen prioridad). */
+  styleName?: string | null;
+  coverImage?: string | null;
+  coverImageMobile?: string | null;
 }
 
-export default function CatalogHero({ styleId }: CatalogHeroProps) {
+export default function CatalogHero({ styleId, styleName, coverImage, coverImageMobile }: CatalogHeroProps) {
   const reduceMotion = useReducedMotion();
   const heroRef = useRef<HTMLElement>(null);
-  const art = getCatalogHero(styleId);
-  const caption = getStyle(styleId)?.label ?? 'Catálogo completo';
+  const fallbackArt = getCatalogHero(styleId);
+  const caption = styleName ?? getStyle(styleId)?.label ?? 'Catálogo completo';
+  const art = coverImage
+    ? { src: coverImage, mobileSrc: coverImageMobile ?? undefined, alt: `SANT CLOTHES — ${caption}` }
+    : fallbackArt;
   const mobileImage = art.mobileSrc
     ? getImageProps({
         src: art.mobileSrc,
