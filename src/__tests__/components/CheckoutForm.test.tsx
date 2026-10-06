@@ -27,6 +27,7 @@ vi.mock('@/lib/services/settings', () => ({
 }));
 
 import CheckoutForm from '@/components/checkout/CheckoutForm';
+import { verifyEmail } from '@/lib/services/checkout';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -301,5 +302,48 @@ describe('CheckoutForm con quote del servidor', () => {
     await waitFor(() => expect(fetchCheckoutQuote).toHaveBeenCalled());
     expect(fetchCheckoutQuote.mock.calls.at(-1)![1].token).toBe('otp-token');
     await waitFor(() => expect(quoteSummary()).toHaveAttribute('data-quote-status', 'ready'));
+  });
+  it('M7: 403 EMAIL_VERIFICATION_REQUIRED lleva al OTP existente con el email de la cuenta y, verificado, se puede reintentar', async () => {
+    await renderReady(makeQuote({ total: 100_000 }));
+    createOrder.mockRejectedValueOnce(
+      new ApiError('Verificá tu correo electrónico para poder completar la compra.', 403, 'EMAIL_VERIFICATION_REQUIRED', {
+        code: 'EMAIL_VERIFICATION_REQUIRED',
+      }),
+    );
+    fillForm();
+    submit();
+
+    // Pasa al paso de email, fijo en el correo de la cuenta (sin cerrar sesión).
+    expect(await screen.findByTestId('verify-email-intro')).toHaveTextContent(/necesitamos confirmar que este correo es tuyo/);
+    const emailInput = screen.getByDisplayValue('cliente@example.com');
+    expect(emailInput).toHaveAttribute('readonly');
+    expect(screen.queryByText(/pedido generado con éxito/i)).not.toBeInTheDocument();
+    expect(useAuth.getState().isLoggedIn).toBe(true);
+
+    fireEvent.submit(screen.getByRole('button', { name: /enviar código/i }).closest('form')!);
+    await waitFor(() => expect(verifyEmail).toHaveBeenCalledWith('cliente@example.com'));
+    expect(screen.queryByRole('button', { name: /cambiar correo/i })).not.toBeInTheDocument();
+
+    // OTP correcto: la identidad pasa a ser el token del OTP y se recotiza.
+    confirmOtp.mockImplementation(async () => {
+      identityToken = 'otp-token';
+      return { checkoutSessionToken: 'otp-token', guestCartToken: 'g', existingAccount: true, message: 'ok' };
+    });
+    const otpInput = await screen.findByPlaceholderText('000000');
+    fireEvent.change(otpInput, { target: { value: '123456' } });
+    fireEvent.submit(otpInput.closest('form')!);
+
+    expect(await screen.findByTestId('checkout-notice')).toHaveTextContent(/correo verificado/i);
+    // No se muestra el aviso de "ya tenés una cuenta" a quien ya está logueado.
+    expect(screen.queryByText(/podés iniciar sesión para un checkout más rápido/i)).not.toBeInTheDocument();
+    await waitFor(() => expect(fetchCheckoutQuote.mock.calls.at(-1)![1].token).toBe('otp-token'));
+    await waitFor(() => expect(quoteSummary()).toHaveAttribute('data-quote-status', 'ready'));
+
+    // Reintento explícito: ahora el pedido se crea.
+    createOrder.mockResolvedValueOnce({ orderId: 'ord_m7', status: 'x', expiresAt: '', message: 'ok', orderAccessToken: 'oat' });
+    fillForm();
+    submit();
+    await waitFor(() => expect(createOrder).toHaveBeenCalledTimes(2));
+    expect(createOrder.mock.calls[1]![0].customer.email).toBe('cliente@example.com');
   });
 });

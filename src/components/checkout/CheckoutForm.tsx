@@ -59,6 +59,10 @@ export default function CheckoutForm() {
   // El carrito se vacía al crear el pedido: el total se guarda antes y después se
   // reemplaza por el del backend (incluye cupones y beneficios de tier).
   const [orderTotal, setOrderTotal] = useState<number | null>(null);
+  // M7: una cuenta con email sin verificar no puede comprar con su sesión. Se
+  // reutiliza el flujo OTP del checkout, fijo en el email de la cuenta.
+  const [verifyingAccount, setVerifyingAccount] = useState(false);
+  const [notice, setNotice] = useState('');
   // Cupón que se cotiza (se aplica con el botón, no en cada tecla).
   const [appliedCoupon, setAppliedCoupon] = useState<string | undefined>(undefined);
   // 409 PRICE_CHANGED: el total cambió y el cliente tiene que volver a confirmar.
@@ -150,10 +154,18 @@ export default function CheckoutForm() {
 
     try {
       const res = await confirmOtp(guestEmail, otp);
-      setOtpResponse(res);
 
-      if (res.existingAccount) {
-        setError('Ya tenés una cuenta con ese email. Podés iniciar sesión para un checkout más rápido.');
+      if (verifyingAccount) {
+        // La cuenta ya está logueada: no es un invitado con cuenta existente.
+        // El backend dejó el email verificado; se vuelve al formulario y la
+        // quote se recalcula con la nueva identidad.
+        setVerifyingAccount(false);
+        setNotice('Correo verificado. Ya podés confirmar tu compra.');
+      } else {
+        setOtpResponse(res);
+        if (res.existingAccount) {
+          setError('Ya tenés una cuenta con ese email. Podés iniciar sesión para un checkout más rápido.');
+        }
       }
 
       setStep('form');
@@ -244,6 +256,15 @@ export default function CheckoutForm() {
           quoteState.refresh();
         } else if (err.code === 'INSUFFICIENT_STOCK') {
           setError(`Sin stock suficiente para SKU: ${err.data?.sku || 'desconocido'}`);
+        } else if (err.status === 403 && err.code === 'EMAIL_VERIFICATION_REQUIRED') {
+          // M7: no se reservó stock, no se creó el pedido ni se usó el cupón.
+          // Se verifica el email de la cuenta con el OTP existente, sin cerrar sesión.
+          setGuestEmail(user?.email || '');
+          setVerifyingAccount(true);
+          setNotice('');
+          setOtp('');
+          setError('');
+          setStep('email');
         } else if (err.code === 'EMAIL_MISMATCH') {
           setError('El email no coincide con el verificado. Volvé a iniciar el checkout.');
         } else if (err.code === 'EXPIRED_CHECKOUT_SESSION') {
@@ -401,9 +422,13 @@ export default function CheckoutForm() {
   if (step === 'email') {
     return (
       <div className="max-w-md mx-auto my-12 p-8 bg-white rounded-3xl border border-slate-200 shadow-2xl space-y-6">
-        <h2 className="text-xl font-black uppercase text-black text-center">Checkout — Verificar Email</h2>
-        <p className="text-xs text-slate-500 text-center">
-          Ingresá tu correo para recibir un código de verificación.
+        <h2 className="text-xl font-black uppercase text-black text-center">
+          {verifyingAccount ? 'Verificá tu correo para comprar' : 'Checkout — Verificar Email'}
+        </h2>
+        <p className="text-xs text-slate-500 text-center" data-testid="verify-email-intro">
+          {verifyingAccount
+            ? 'Para comprar con tu cuenta necesitamos confirmar que este correo es tuyo. Te enviamos un código de verificación.'
+            : 'Ingresá tu correo para recibir un código de verificación.'}
         </p>
 
         {error && (
@@ -418,7 +443,9 @@ export default function CheckoutForm() {
               required
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
-              className={inputClass}
+              // La verificación es del email de la cuenta: no se puede cambiar acá.
+              readOnly={verifyingAccount}
+              className={verifyingAccount ? `${inputClass} bg-slate-100 text-slate-500` : inputClass}
             />
           </div>
 
@@ -435,12 +462,14 @@ export default function CheckoutForm() {
             {loading ? 'Enviando...' : 'Enviar Código OTP'}
           </button>
 
-          <p className="text-[10px] text-slate-400 text-center">
-            ¿Ya tenés cuenta?{' '}
-            <Link href="/login" className="text-black font-bold underline">
-              Iniciar sesión
-            </Link>
-          </p>
+          {!verifyingAccount && (
+            <p className="text-[10px] text-slate-400 text-center">
+              ¿Ya tenés cuenta?{' '}
+              <Link href="/login" className="text-black font-bold underline">
+                Iniciar sesión
+              </Link>
+            </p>
+          )}
         </form>
       </div>
     );
@@ -482,13 +511,15 @@ export default function CheckoutForm() {
             {loading ? 'Verificando...' : 'Verificar Código'}
           </button>
 
-          <button
-            type="button"
-            onClick={() => { setStep('email'); setError(''); setOtp(''); }}
-            className="w-full text-xs text-slate-500 hover:text-black transition-colors"
-          >
-            ← Cambiar correo
-          </button>
+          {!verifyingAccount && (
+            <button
+              type="button"
+              onClick={() => { setStep('email'); setError(''); setOtp(''); }}
+              className="w-full text-xs text-slate-500 hover:text-black transition-colors"
+            >
+              ← Cambiar correo
+            </button>
+          )}
         </form>
       </div>
     );
@@ -507,6 +538,12 @@ export default function CheckoutForm() {
               Iniciar sesión
             </Link>{' '}
             para un checkout más rápido.
+          </div>
+        )}
+
+        {notice && (
+          <div role="status" data-testid="checkout-notice" className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl">
+            {notice}
           </div>
         )}
 
