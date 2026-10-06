@@ -22,7 +22,12 @@ export const useCart = create<CartState>()(
           const updatedItems = [...items];
           const currentQty = updatedItems[existingIndex].quantity;
           const maxStock = newItem.maxStock ?? 99;
-          updatedItems[existingIndex].quantity = Math.min(currentQty + qtyToAdd, maxStock);
+          // El tope guardado se actualiza al stock más reciente.
+          updatedItems[existingIndex] = {
+            ...updatedItems[existingIndex],
+            quantity: Math.min(currentQty + qtyToAdd, maxStock),
+            maxStock: newItem.maxStock ?? updatedItems[existingIndex].maxStock,
+          };
 
           set({ items: updatedItems });
         } else {
@@ -31,7 +36,7 @@ export const useCart = create<CartState>()(
               ...items,
               {
                 ...newItem,
-                quantity: qtyToAdd,
+                quantity: Math.min(qtyToAdd, newItem.maxStock ?? qtyToAdd),
               },
             ],
           });
@@ -49,9 +54,13 @@ export const useCart = create<CartState>()(
           get().removeItem(variantId);
           return;
         }
+        // Tope en el stock conocido: el + del carrito permitía pedir más de lo que hay
+        // y recién fallaba en el checkout.
         set((state) => ({
           items: state.items.map((item) =>
-            item.variantId === variantId ? { ...item, quantity } : item
+            item.variantId === variantId
+              ? { ...item, quantity: Math.min(quantity, item.maxStock ?? quantity) }
+              : item
           ),
         }));
       },

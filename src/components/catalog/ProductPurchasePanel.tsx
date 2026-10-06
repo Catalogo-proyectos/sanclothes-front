@@ -59,7 +59,8 @@ export default function ProductPurchasePanel({
     const unique = [...new Set(sizesForCut)];
     if (unique.length > 0) return sortSizes(unique);
 
-    return sortSizes(product.sizes?.length ? product.sizes : ['XS', 'S', 'M', 'L', 'XL']);
+    // Sin variantes no se inventan talles (antes mostraba XS–XL que no existían).
+    return sortSizes(product.sizes ?? []);
   }, [product.variants, product.sizes, activeCut]);
 
   // Sólo variantes del corte activo: devolver la de otro corte metía al carrito
