@@ -53,6 +53,23 @@ export interface CatalogProduct {
   categoryName: string;
   color: string | null;
   bento: CatalogBento | null;
+  /** Solo combos: sus prendas y los talles elegibles de cada una. */
+  combo?: ComboInfo | null;
+  /** Solo hype (antes del lanzamiento): fecha del lanzamiento para la cuenta regresiva. */
+  hype?: { launchAt: string } | null;
+}
+
+export interface ComboItemInfo {
+  productId: string;
+  name: string;
+  qty: number;
+  image?: string;
+  fixed: boolean;
+  options: Array<{ token: string; label: string; stock: number }>;
+}
+
+export interface ComboInfo {
+  items: ComboItemInfo[];
 }
 
 export interface CatalogBento {

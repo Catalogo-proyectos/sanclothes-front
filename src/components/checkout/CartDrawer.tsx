@@ -196,7 +196,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                               <button
                                 type="button"
                                 onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                                className="text-[#50524a] hover:text-[#17191c] transition-colors cursor-pointer"
+                                disabled={item.maxStock !== undefined && item.quantity >= item.maxStock}
+                                className="text-[#50524a] hover:text-[#17191c] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                 aria-label="Aumentar"
                               >
                                 <Plus className="w-3 h-3 stroke-[1.5]" />

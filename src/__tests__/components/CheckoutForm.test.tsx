@@ -321,7 +321,7 @@ describe('CheckoutForm con quote del servidor', () => {
     expect(useAuth.getState().isLoggedIn).toBe(true);
 
     fireEvent.submit(screen.getByRole('button', { name: /enviar código/i }).closest('form')!);
-    await waitFor(() => expect(verifyEmail).toHaveBeenCalledWith('cliente@example.com'));
+    await waitFor(() => expect(verifyEmail).toHaveBeenCalledWith('cliente@example.com', undefined));
     expect(screen.queryByRole('button', { name: /cambiar correo/i })).not.toBeInTheDocument();
 
     // OTP correcto: la identidad pasa a ser el token del OTP y se recotiza.

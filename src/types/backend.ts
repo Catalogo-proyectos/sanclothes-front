@@ -31,6 +31,10 @@ export interface BackendComboItem {
   allowedSizes: string[];
   name?: string;
   images?: string[];
+  /** Talle fijo: el cliente no lo elige. */
+  fixed?: boolean;
+  /** Talles elegibles en el formato que acepta el checkout ("M" o "MASCULINO M"). */
+  options?: Array<{ token: string; cut: string; size: string; sku: string; stock: number }>;
 }
 
 export interface BackendBento {
