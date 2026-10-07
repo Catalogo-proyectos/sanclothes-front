@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,14 +14,12 @@ import {
   verifyEmail,
   confirmOtp,
   createOrder,
-  uploadReceipt,
-  fetchCheckoutOrder,
   getCheckoutIdentityToken,
 } from '@/lib/services/checkout';
 import { normalizeCouponCode } from '@/lib/services/quote';
-import { fetchBankTransferInfo, type BankTransferInfo } from '@/lib/services/settings';
 import type { CheckoutResponse, ConfirmOtpResponse } from '@/types/api';
 import TurnstileWidget from '@/components/checkout/TurnstileWidget';
+import OrderPaymentPanel from '@/components/checkout/OrderPaymentPanel';
 import type { CheckoutQuote } from '@/types/quote';
 
 type CheckoutStep = 'email' | 'otp' | 'form' | 'success';
@@ -57,9 +55,6 @@ export default function CheckoutForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [createdOrder, setCreatedOrder] = useState<CheckoutResponse | null>(null);
-  // El carrito se vacía al crear el pedido: el total se guarda antes y después se
-  // reemplaza por el del backend (incluye cupones y beneficios de tier).
-  const [orderTotal, setOrderTotal] = useState<number | null>(null);
   // M7: una cuenta con email sin verificar no puede comprar con su sesión. Se
   // reutiliza el flujo OTP del checkout, fijo en el email de la cuenta.
   const [verifyingAccount, setVerifyingAccount] = useState(false);
@@ -68,26 +63,7 @@ export default function CheckoutForm() {
   const [appliedCoupon, setAppliedCoupon] = useState<string | undefined>(undefined);
   // 409 PRICE_CHANGED: el total cambió y el cliente tiene que volver a confirmar.
   const [priceChange, setPriceChange] = useState<{ previousTotal: number; newTotal: number; signature: string } | null>(null);
-  const [bankInfo, setBankInfo] = useState<BankTransferInfo | null>(null);
-  const [bankInfoLoaded, setBankInfoLoaded] = useState(false);
 
-  useEffect(() => {
-    if (step !== 'success' || !createdOrder) return;
-    let cancelled = false;
-    fetchBankTransferInfo().then((info) => {
-      if (cancelled) return;
-      setBankInfo(info);
-      setBankInfoLoaded(true);
-    });
-    fetchCheckoutOrder(createdOrder.orderId)
-      .then((order) => {
-        if (!cancelled && Number.isFinite(order.totalAmount)) setOrderTotal(Math.round(order.totalAmount));
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [step, createdOrder]);
 
 
   // Identidad de la quote = la misma con la que se crea el pedido (token OTP o
@@ -115,10 +91,6 @@ export default function CheckoutForm() {
     setAppliedCoupon(undefined);
   };
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [receiptUploading, setReceiptUploading] = useState(false);
-  const [receiptUploaded, setReceiptUploaded] = useState(false);
-  const [receiptError, setReceiptError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -247,8 +219,6 @@ export default function CheckoutForm() {
       });
 
       setCreatedOrder(order);
-      // Monto del servidor: el desglose persistido (o la quote aceptada, que es la misma).
-      setOrderTotal(order.totals?.total ?? confirmedQuote.total);
       setPriceChange(null);
       clearCart();
       setStep('success');
@@ -291,33 +261,6 @@ export default function CheckoutForm() {
   };
 
 
-  const handleReceiptUpload = async () => {
-    const file = fileInputRef.current?.files?.[0];
-    if (!file || !createdOrder) return;
-
-
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      setReceiptError('El archivo supera los 5MB permitidos.');
-      return;
-    }
-
-    setReceiptUploading(true);
-    setReceiptError('');
-
-    try {
-      await uploadReceipt(createdOrder.orderId, file);
-      setReceiptUploaded(true);
-    } catch (err) {
-      if (err instanceof ApiError && err.code === 'INVALID_ORDER_STATUS') {
-        setReceiptError('La orden no acepta comprobantes en su estado actual.');
-      } else {
-        setReceiptError((err as Error).message);
-      }
-    } finally {
-      setReceiptUploading(false);
-    }
-  };
 
   const inputClass = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:ring-2 focus:ring-black outline-none';
   const labelClass = 'block text-xs font-bold uppercase text-slate-600 mb-1';
@@ -334,99 +277,21 @@ export default function CheckoutForm() {
           <p className="text-xs text-slate-500">{createdOrder.message}</p>
         </div>
 
-        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3">
-          <h3 className="font-extrabold text-xs uppercase tracking-wider text-slate-500">Datos para Pago por Transferencia (SIPAP / QR)</h3>
-          {/* Los datos bancarios se cargan en el admin (Configuración → Datos para transferencia). */}
-          <div className="grid grid-cols-2 gap-4 text-xs font-medium text-slate-700">
-            {bankInfo && (
-              <>
-                <div>
-                  <p className="text-slate-400">Banco:</p>
-                  <p className="font-bold text-black">{bankInfo.bankName}</p>
-                </div>
-                <div>
-                  <p className="text-slate-400">Titular:</p>
-                  <p className="font-bold text-black">{bankInfo.accountHolder}</p>
-                </div>
-                <div>
-                  <p className="text-slate-400">{bankInfo.accountType || 'Número de cuenta'}:</p>
-                  <p className="font-bold text-black select-all">{bankInfo.accountNumber}</p>
-                </div>
-                {bankInfo.ruc && (
-                  <div>
-                    <p className="text-slate-400">RUC / CI:</p>
-                    <p className="font-bold text-black select-all">{bankInfo.ruc}</p>
-                  </div>
-                )}
-                {bankInfo.alias && (
-                  <div>
-                    <p className="text-slate-400">Alias SIPAP:</p>
-                    <p className="font-bold text-black select-all">{bankInfo.alias}</p>
-                  </div>
-                )}
-              </>
-            )}
-            <div>
-              <p className="text-slate-400">Monto Total a Transferir:</p>
-              <p className="font-black text-emerald-700 text-sm">
-                {orderTotal !== null ? formatCurrency(orderTotal) : '—'}
-              </p>
-            </div>
+        <OrderPaymentPanel orderId={String(createdOrder.orderId)} />
+
+        {isLoggedIn && (
+          <div className="flex gap-4 pt-4">
+            <Link
+              href="/dashboard"
+              className="flex-1 bg-black text-white text-center py-3.5 rounded-xl font-bold uppercase text-xs hover:bg-slate-800"
+            >
+              Ver Mis Pedidos
+            </Link>
           </div>
-          {bankInfo?.notes && <p className="text-xs text-slate-600">{bankInfo.notes}</p>}
-          {bankInfoLoaded && !bankInfo && (
-            <p className="text-xs text-slate-600">
-              Te contactaremos por WhatsApp o email con los datos para completar la transferencia.
-            </p>
-          )}
-        </div>
-
-
-        <div className="p-6 bg-slate-900 text-white rounded-2xl space-y-3">
-          <h4 className="font-bold text-sm">Subir Comprobante de Pago</h4>
-          <p className="text-xs text-slate-300">
-            Adjuntá el comprobante de transferencia (JPG, PNG, WebP, GIF o PDF, máx 5MB).
-          </p>
-
-          {receiptError && (
-            <p className="p-2 bg-red-500/20 text-red-300 text-xs font-bold rounded-lg">{receiptError}</p>
-          )}
-
-          {receiptUploaded ? (
-            <div className="p-3 bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-bold rounded-xl text-center">
-              Comprobante enviado para verificación por nuestro equipo.
-            </div>
-          ) : (
-            <div className="flex gap-3 items-center">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
-                className="text-xs text-slate-300"
-              />
-              <button
-                onClick={handleReceiptUpload}
-                disabled={receiptUploading}
-                className="bg-white text-black text-xs font-extrabold px-4 py-2 rounded-xl hover:bg-slate-200 disabled:opacity-50"
-              >
-                {receiptUploading ? 'Subiendo...' : 'Subir'}
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="flex gap-4 pt-4">
-          <Link
-            href="/dashboard"
-            className="flex-1 bg-black text-white text-center py-3.5 rounded-xl font-bold uppercase text-xs hover:bg-slate-800"
-          >
-            Ver Mi Pedido en Dashboard
-          </Link>
-        </div>
+        )}
       </div>
     );
   }
-
 
   if (step === 'email') {
     return (

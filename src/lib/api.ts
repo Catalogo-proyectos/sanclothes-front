@@ -229,6 +229,10 @@ async function handleMockRequest<T>(
       status: order.status,
       paymentReceiptUrl: null,
       createdAt: order.createdAt,
+      paymentDeadlineAt: new Date(Date.now() + 2 * 3600_000).toISOString(),
+      receiptUploadedAt: null,
+      receiptRejectionReason: null,
+      canUploadReceipt: true,
       items: order.items,
     } as unknown as T;
   }

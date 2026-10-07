@@ -315,6 +315,12 @@ export interface CheckoutOrderDetail {
   dropType?: string;
   paymentReceiptUrl: string | null;
   createdAt: string;
+  /** Hasta cuándo puede subir el comprobante; null = no vence (lo está revisando el equipo). */
+  paymentDeadlineAt?: string | null;
+  receiptUploadedAt?: string | null;
+  /** Solo si el estado es 'Comprobante Rechazado'. */
+  receiptRejectionReason?: string | null;
+  canUploadReceipt?: boolean;
   items: Array<{
     productId: string;
     name: string;

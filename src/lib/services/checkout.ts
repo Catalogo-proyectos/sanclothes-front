@@ -1,5 +1,5 @@
 import { config } from '@/lib/config';
-import { apiCall } from '@/lib/api';
+import { apiCall, ApiError } from '@/lib/api';
 import {
   getStoredToken,
   getCheckoutSessionToken,
@@ -69,7 +69,7 @@ export async function createOrder(
   const res = await apiCall<CheckoutResponse>('POST', '/checkout', request, token);
 
 
-  setOrderAccessToken(res.orderAccessToken);
+  setOrderAccessToken(res.orderId, res.orderAccessToken);
 
   return res;
 }
@@ -77,45 +77,56 @@ export async function createOrder(
 
 
 export async function fetchCheckoutOrder(orderId: string): Promise<CheckoutOrderDetail> {
-  const token = getOrderAccessToken();
-  if (!token) throw new Error('No order access token');
+  const token = getOrderAccessToken(orderId);
+  if (!token) throw new ApiError('No tenés acceso a este pedido desde este navegador.', 401, 'MISSING_ORDER_TOKEN');
   return apiCall<CheckoutOrderDetail>('GET', `/checkout/${orderId}`, undefined, token);
 }
-
-
 
 export async function uploadReceipt(
   orderId: string,
   file: File,
 ): Promise<ReceiptUploadResponse> {
-  const token = getOrderAccessToken();
-  if (!token) throw new Error('No order access token');
+  const token = getOrderAccessToken(orderId);
+  if (!token) throw new ApiError('No tenés acceso a este pedido desde este navegador.', 401, 'MISSING_ORDER_TOKEN');
 
   const formData = new FormData();
   formData.append('file', file);
 
-  const url = `${config.api.origin}/api/checkout/${orderId}/receipt`;
-  const res = await fetch(url, {
+  const res = await fetch(`${config.api.origin}/api/checkout/${orderId}/receipt`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-
-    },
+    headers: { Authorization: `Bearer ${token}` },
     body: formData,
   });
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.message || data.error || `Upload failed: ${res.status}`);
+    throw new ApiError(data.message || data.error || `Upload failed: ${res.status}`, res.status, data.code, data);
   }
 
   return res.json();
 }
 
-
-
-export function getReceiptUrl(orderId: string): string {
-  const token = getOrderAccessToken();
-
-  return `${config.api.origin}/api/checkout/${orderId}/receipt?token=${encodeURIComponent(token || '')}`;
+/**
+ * Abre el comprobante subido en una pestaña nueva. La ruta exige el token en el
+ * header, así que se descarga como blob (un <a href> no puede mandar headers).
+ * La pestaña se abre antes del fetch para que el navegador no la bloquee.
+ */
+export async function openReceipt(orderId: string): Promise<void> {
+  const token = getOrderAccessToken(orderId);
+  if (!token) throw new ApiError('No tenés acceso a este pedido desde este navegador.', 401, 'MISSING_ORDER_TOKEN');
+  const tab = window.open('', '_blank');
+  try {
+    const res = await fetch(`${config.api.origin}/api/checkout/${orderId}/receipt`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new ApiError('No se pudo abrir el comprobante.', res.status);
+    const url = URL.createObjectURL(await res.blob());
+    if (tab) tab.location.href = url;
+    else window.location.href = url;
+    // La pestaña ya lo cargó: liberar el blob.
+    window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  } catch (err) {
+    tab?.close();
+    throw err;
+  }
 }
