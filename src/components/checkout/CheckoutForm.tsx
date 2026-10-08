@@ -10,11 +10,13 @@ import { formatCurrency } from '@/utils/format';
 import { ApiError } from '@/lib/api';
 import { config } from '@/lib/config';
 import PhoneInput from '@/components/common/PhoneInput';
+import DeliveryLocationPicker from '@/components/checkout/DeliveryLocationPicker';
+import type { DeliveryLocation } from '@/types/api';
 import {
   verifyEmail,
   confirmOtp,
   createOrder,
-  getCheckoutIdentityToken,
+  getCheckoutIdentity,
 } from '@/lib/services/checkout';
 import { normalizeCouponCode } from '@/lib/services/quote';
 import type { CheckoutResponse, ConfirmOtpResponse } from '@/types/api';
@@ -29,7 +31,11 @@ export default function CheckoutForm() {
   const { isLoggedIn, user } = useAuth();
 
 
-  const [step, setStep] = useState<CheckoutStep>(isLoggedIn ? 'form' : 'email');
+  // null = todavía automático: sale de la sesión, que se restaura después del
+  // primer render (cookie httpOnly, M5). Un cliente logueado que entra directo a
+  // /checkout no pasa por el email; cualquier setStep explícito (p. ej. M7) manda.
+  const [chosenStep, setStep] = useState<CheckoutStep | null>(null);
+  const step: CheckoutStep = chosenStep ?? (isLoggedIn ? 'form' : 'email');
 
 
   const [guestEmail, setGuestEmail] = useState('');
@@ -52,6 +58,7 @@ export default function CheckoutForm() {
     invoiceDireccionFiscal: '',
   });
 
+  const [deliveryLocation, setDeliveryLocation] = useState<DeliveryLocation | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [createdOrder, setCreatedOrder] = useState<CheckoutResponse | null>(null);
@@ -69,7 +76,7 @@ export default function CheckoutForm() {
   // Identidad de la quote = la misma con la que se crea el pedido (token OTP o
   // sesión). Solo existe en el paso del formulario: ahí ya hubo OTP o login, y
   // al pasar de anónimo a identificado cambia el token, así que se recotiza.
-  const identityToken = step === 'form' ? getCheckoutIdentityToken() : null;
+  const identityToken = step === 'form' ? getCheckoutIdentity() : null;
   const quoteState = useCheckoutQuote({
     items,
     couponCode: appliedCoupon,
@@ -203,6 +210,7 @@ export default function CheckoutForm() {
           locality: formData.locality,
           province: formData.province,
           postalCode: formData.postalCode,
+          ...(deliveryLocation ? { location: deliveryLocation } : {}),
         },
         wantsClubMembership: formData.wantsClubMembership,
         couponCode: appliedCoupon,
@@ -519,6 +527,8 @@ export default function CheckoutForm() {
               />
             </div>
           </div>
+
+          <DeliveryLocationPicker value={deliveryLocation} onChange={setDeliveryLocation} />
 
 
           <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
