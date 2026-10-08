@@ -81,19 +81,22 @@ export function removeGuestCartToken(): void {
 
 
 
+// Token de acceso de invitado a UN pedido (ver y subir el comprobante). Por
+// pedido: el cliente puede tener la pestaña de un pedido y abrir el link de otro.
 const ORDER_TOKEN_KEY = 'sant_order_access_token';
+const orderTokenKey = (orderId: string | number) => `${ORDER_TOKEN_KEY}:${orderId}`;
 
-export function getOrderAccessToken(): string | null {
+export function getOrderAccessToken(orderId: string | number): string | null {
   if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem(ORDER_TOKEN_KEY);
+  return sessionStorage.getItem(orderTokenKey(orderId));
 }
 
-export function setOrderAccessToken(token: string): void {
+export function setOrderAccessToken(orderId: string | number, token: string): void {
   if (typeof window === 'undefined') return;
-  sessionStorage.setItem(ORDER_TOKEN_KEY, token);
+  sessionStorage.setItem(orderTokenKey(orderId), token);
 }
 
-export function removeOrderAccessToken(): void {
+export function removeOrderAccessToken(orderId: string | number): void {
   if (typeof window === 'undefined') return;
-  sessionStorage.removeItem(ORDER_TOKEN_KEY);
+  sessionStorage.removeItem(orderTokenKey(orderId));
 }
