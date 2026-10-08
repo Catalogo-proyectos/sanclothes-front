@@ -1,5 +1,5 @@
 import { config } from './config';
-import { getStoredToken } from './auth';
+import { clearStoredSession, ensureCsrfToken, hasStoredSession, setCsrfToken } from './auth';
 import type { CheckoutRequest, TicketDetail, TicketMessage } from '@/types/api';
 
 
@@ -16,7 +16,19 @@ export class ApiError extends Error {
 }
 
 
+/** Avisa a useAuth que la sesión en cookie ya no vale (401 en un request con sesión). */
+export const SESSION_EXPIRED_EVENT = 'sant:session-expired';
 
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+
+/**
+ * `requireAuth`:
+ *   - `true`: sesión del cliente (cookie httpOnly, M5) + CSRF en mutaciones.
+ *   - string: token Bearer de propósito único (OTP de checkout, pedido de invitado).
+ *   - `false`: request público.
+ * Siempre con `credentials: 'include'`: así el login recibe la cookie y los
+ * requests con sesión la mandan.
+ */
 export async function apiCall<T = unknown>(
   method: string,
   path: string,
@@ -30,25 +42,45 @@ export async function apiCall<T = unknown>(
     return handleMockRequest<T>(normalizedMethod, path, body, !!requireAuth);
   }
 
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (requireAuth) {
-    const token = typeof requireAuth === 'string' ? requireAuth : getStoredToken();
-    if (!token) {
-      throw new Error('Unauthorized: No JWT token found in storage.');
-    }
-    headers['Authorization'] = `Bearer ${token}`;
+  const useSession = requireAuth === true;
+  if (useSession && !hasStoredSession()) {
+    throw new ApiError('Iniciá sesión para continuar.', 401, 'UNAUTHORIZED');
   }
 
   const url = `${config.api.baseUrl}${path.startsWith('/') ? path : '/' + path}`;
-  const response = await fetch(url, {
-    method: normalizedMethod,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const send = async () => {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (typeof requireAuth === 'string') {
+      headers['Authorization'] = `Bearer ${requireAuth}`;
+    } else if (useSession && !SAFE_METHODS.has(normalizedMethod)) {
+      const csrf = await ensureCsrfToken();
+      if (csrf) headers['X-CSRF-Token'] = csrf;
+    }
+    return fetch(url, {
+      method: normalizedMethod,
+      headers,
+      credentials: 'include',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  };
+
+  let response = await send();
+
+  // CSRF vencido o rotado (p. ej. login en otra pestaña): se pide uno nuevo y se reintenta una vez.
+  if (useSession && response.status === 403) {
+    const code = await response.clone().json().then((d: { code?: string }) => d.code).catch(() => undefined);
+    if (code === 'CSRF_TOKEN_INVALID') {
+      setCsrfToken(null);
+      response = await send();
+    }
+  }
+
+  if (useSession && response.status === 401) {
+    clearStoredSession();
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+  }
 
   if (!response.ok) {
     let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
@@ -91,11 +123,8 @@ async function handleMockRequest<T>(
 
   await new Promise((res) => setTimeout(res, 150));
 
-  if (requireAuth) {
-    const token = getStoredToken();
-    if (!token) {
-      throw new Error('Unauthorized: Missing token in mock session.');
-    }
+  if (requireAuth === true && !hasStoredSession()) {
+    throw new Error('Unauthorized: Missing mock session.');
   }
 
 

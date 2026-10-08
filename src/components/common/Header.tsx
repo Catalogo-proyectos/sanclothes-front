@@ -34,6 +34,12 @@ export default function Header({ navCategories = NAV_CATEGORIES }: HeaderProps) 
   const isLoggedIn = useAuth((s) => s.isLoggedIn);
   const user = useAuth((s) => s.user);
   const logout = useAuth((s) => s.logout);
+  const syncFromStorage = useAuth((s) => s.syncFromStorage);
+
+  // Restaura la sesión en cualquier página (y migra la del storefront anterior, M5).
+  useEffect(() => {
+    void syncFromStorage();
+  }, [syncFromStorage]);
   const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
 

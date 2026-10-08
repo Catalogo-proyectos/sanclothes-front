@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useCheckoutQuote } from '@/hooks/useCheckoutQuote';
-import { getCheckoutIdentityToken } from '@/lib/services/checkout';
+import { getCheckoutIdentity } from '@/lib/services/checkout';
 import QuoteSummary from '@/components/checkout/QuoteSummary';
 import { formatCurrency } from '@/utils/format';
 
@@ -42,7 +42,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   // subtotal de catálogo como referencia (nunca un "total" armado acá).
   const quoteState = useCheckoutQuote({
     items,
-    token: isOpen ? getCheckoutIdentityToken() : null,
+    token: isOpen ? getCheckoutIdentity() : null,
     enabled: isOpen,
     // Vista informativa: si la sesión venció, se cotiza como anónimo.
     anonymousFallbackOn401: true,

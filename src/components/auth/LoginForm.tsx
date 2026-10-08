@@ -65,13 +65,13 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         password,
       });
 
-      authLogin(response.token, {
+      authLogin({
         userId: response.user.id,
         email: response.user.email,
         firstName: response.user.firstName,
         lastName: response.user.lastName,
         role: response.user.role,
-      });
+      }, response.csrfToken);
       setSuccessMessage('Autenticación exitosa. Redirigiendo…');
       setTimeout(() => {
         router.push('/dashboard');
@@ -98,13 +98,13 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         phone: phone || undefined,
       });
 
-      authLogin(response.token, {
+      authLogin({
         userId: response.user.id,
         email: response.user.email,
         firstName: response.user.firstName,
         lastName: response.user.lastName,
         role: response.user.role,
-      });
+      }, response.csrfToken);
       setSuccessMessage('Cuenta creada. Bienvenido a SANT CLUB.');
       setTimeout(() => {
         router.push('/dashboard');
@@ -129,13 +129,13 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     try {
       const response = await apiCall<GoogleAuthResponse>('POST', '/auth/google', { idToken });
 
-      authLogin(response.token, {
+      authLogin({
         userId: response.user.id,
         email: response.user.email,
         firstName: response.user.firstName,
         lastName: response.user.lastName,
         role: response.user.role,
-      });
+      }, response.csrfToken);
 
 
       if (response.user.avatarUrl) {

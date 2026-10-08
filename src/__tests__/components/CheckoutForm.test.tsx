@@ -11,7 +11,7 @@ vi.mock('@/lib/services/quote', async (importOriginal) => {
 });
 
 // Identidad de checkout simulada: null hasta que el OTP la crea.
-let identityToken: string | null = 'session-token';
+let identityToken: string | true | null = true;
 const createOrder = vi.fn();
 const confirmOtp = vi.fn();
 vi.mock('@/lib/services/checkout', () => ({
@@ -20,7 +20,7 @@ vi.mock('@/lib/services/checkout', () => ({
   createOrder: (...args: unknown[]) => createOrder(...args),
   uploadReceipt: vi.fn(),
   fetchCheckoutOrder: vi.fn().mockReturnValue(new Promise(() => {})),
-  getCheckoutIdentityToken: () => identityToken,
+  getCheckoutIdentity: () => identityToken,
 }));
 vi.mock('@/lib/services/settings', () => ({
   fetchBankTransferInfo: vi.fn().mockResolvedValue(null),
@@ -38,7 +38,6 @@ const quoteSummary = () => screen.getByTestId('quote-summary');
 function loginAs(email: string) {
   useAuth.setState({
     isLoggedIn: true,
-    token: 'session-token',
     user: { userId: 'u1', email, firstName: 'Cliente', lastName: 'Test' },
   });
 }
@@ -63,7 +62,7 @@ beforeEach(() => {
   fetchCheckoutQuote.mockReset();
   createOrder.mockReset();
   confirmOtp.mockReset();
-  identityToken = 'session-token';
+  identityToken = true;
   sessionStorage.clear();
   useCart.setState({ items: [makeCartItem()] });
   loginAs('cliente@example.com');
@@ -281,8 +280,20 @@ describe('CheckoutForm con quote del servidor', () => {
     expect(createOrder.mock.calls[1]![0].expectedTotal).toBe(125_000);
   });
 
+  it('M5: la sesión se restaura después del primer render → pasa del email al formulario solo', async () => {
+    useAuth.setState({ isLoggedIn: false, user: null });
+    fetchCheckoutQuote.mockResolvedValue(makeQuote());
+    render(<CheckoutForm />);
+    expect(screen.getByRole('button', { name: /enviar código/i })).toBeInTheDocument();
+
+    act(() => loginAs('cliente@example.com'));
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: /enviar código/i })).not.toBeInTheDocument());
+    await waitFor(() => expect(fetchCheckoutQuote).toHaveBeenCalled());
+  });
+
   it('OTP: el invitado pasa a identificado y se recotiza con su token', async () => {
-    useAuth.setState({ isLoggedIn: false, token: null, user: null });
+    useAuth.setState({ isLoggedIn: false, user: null });
     identityToken = null;
     confirmOtp.mockImplementation(async () => {
       identityToken = 'otp-token';

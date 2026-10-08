@@ -1,7 +1,7 @@
 import { config } from '@/lib/config';
 import { apiCall, ApiError } from '@/lib/api';
 import {
-  getStoredToken,
+  hasStoredSession,
   getCheckoutSessionToken,
   setCheckoutSessionToken,
   setGuestCartToken,
@@ -52,21 +52,23 @@ export async function confirmOtp(
 
 /**
  * Identidad con la que se crea el pedido: el token OTP del checkout o, si no
- * hay, la sesión. La quote usa EXACTAMENTE la misma, así el tier/cupón que se
- * cotiza es el que se cobra.
+ * hay, la sesión del cliente (`true` = cookie httpOnly, M5). La quote usa
+ * EXACTAMENTE la misma, así el tier/cupón que se cotiza es el que se cobra.
  */
-export function getCheckoutIdentityToken(): string | null {
-  return getCheckoutSessionToken() || getStoredToken();
+export type CheckoutIdentity = string | true;
+
+export function getCheckoutIdentity(): CheckoutIdentity | null {
+  return getCheckoutSessionToken() || (hasStoredSession() ? true : null);
 }
 
 export async function createOrder(
   request: CheckoutRequest,
 ): Promise<CheckoutResponse> {
 
-  const token = getCheckoutIdentityToken();
-  if (!token) throw new Error('No checkout or session token available');
+  const identity = getCheckoutIdentity();
+  if (!identity) throw new Error('No checkout or session token available');
 
-  const res = await apiCall<CheckoutResponse>('POST', '/checkout', request, token);
+  const res = await apiCall<CheckoutResponse>('POST', '/checkout', request, identity);
 
 
   setOrderAccessToken(res.orderId, res.orderAccessToken);

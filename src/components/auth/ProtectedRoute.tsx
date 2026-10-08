@@ -3,18 +3,17 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { getStoredToken } from '@/lib/auth';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { isLoggedIn, syncFromStorage } = useAuth();
 
   useEffect(() => {
-    syncFromStorage();
-    const token = getStoredToken();
-    if (!token) {
-      router.replace('/login');
-    }
+    let cancelled = false;
+    void syncFromStorage().then(() => {
+      if (!cancelled && !useAuth.getState().isLoggedIn) router.replace('/login');
+    });
+    return () => { cancelled = true; };
   }, [router, syncFromStorage]);
 
   if (!isLoggedIn) {
