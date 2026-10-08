@@ -1,5 +1,6 @@
 import { config } from '@/lib/config';
 import { ApiError } from '@/lib/api';
+import { ensureCsrfToken } from '@/lib/auth';
 import type { CartItem } from '@/types/cart';
 import type { CheckoutQuote, QuoteItemRequest, QuoteRequest } from '@/types/quote';
 
@@ -23,23 +24,30 @@ export function normalizeCouponCode(code: string | null | undefined): string | u
 }
 
 /**
- * POST /api/checkout/quote. `token` (opcional) identifica al cliente: sin él la
- * quote es anónima (sin tier; cupones personales → REQUIRES_IDENTITY).
+ * POST /api/checkout/quote. `token` (opcional) identifica al cliente: un token
+ * OTP (Bearer) o `true` = la sesión en cookie (M5). Sin él la quote es anónima
+ * (sin tier; cupones personales → REQUIRES_IDENTITY).
  */
 export async function fetchCheckoutQuote(
   request: QuoteRequest,
-  options: { token?: string | null; signal?: AbortSignal } = {},
+  options: { token?: string | true | null; signal?: AbortSignal } = {},
 ): Promise<CheckoutQuote> {
   if (config.api.useMock) {
     return mockQuote(request, Boolean(options.token));
   }
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (options.token) headers.Authorization = `Bearer ${options.token}`;
+  if (typeof options.token === 'string') {
+    headers.Authorization = `Bearer ${options.token}`;
+  } else if (options.token === true) {
+    const csrf = await ensureCsrfToken();
+    if (csrf) headers['X-CSRF-Token'] = csrf;
+  }
 
   const response = await fetch(`${config.api.baseUrl}/checkout/quote`, {
     method: 'POST',
     headers,
+    credentials: options.token === true ? 'include' : 'omit',
     body: JSON.stringify(request),
     signal: options.signal,
   });

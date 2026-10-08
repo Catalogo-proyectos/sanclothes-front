@@ -114,7 +114,9 @@ export interface ProductReview {
 
 
 export interface LoginResponse {
-  token: string;
+  /** Transición M5: el storefront ya no lo usa (la sesión va en cookie httpOnly). */
+  token?: string;
+  csrfToken?: string;
   user: {
     id: string;
     firstName: string;
@@ -128,7 +130,8 @@ export interface LoginResponse {
 export interface RegisterResponse {
   success: true;
   message: string;
-  token: string;
+  token?: string;
+  csrfToken?: string;
   user: {
     id: string;
     firstName: string;
@@ -140,7 +143,8 @@ export interface RegisterResponse {
 
 
 export interface GoogleAuthResponse {
-  token: string;
+  token?: string;
+  csrfToken?: string;
   isNewUser: boolean;
   user: {
     id: string;
@@ -279,6 +283,8 @@ export interface CheckoutRequest {
     locality: string;
     province: string;
     postalCode: string;
+    /** Opcional: ubicación compartida desde el navegador (el staff la abre en Maps). */
+    location?: DeliveryLocation;
   };
   wantsClubMembership: boolean;
   couponCode?: string;
@@ -416,3 +422,10 @@ export type PaginatedList<T> = {
   page: number;
   limit: number;
 };
+
+/** Ubicación de entrega (grados decimales; `accuracy` en metros). */
+export interface DeliveryLocation {
+  lat: number;
+  lng: number;
+  accuracy?: number;
+}

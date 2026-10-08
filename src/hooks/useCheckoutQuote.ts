@@ -32,7 +32,7 @@ interface UseCheckoutQuoteOptions {
   items: CartItem[];
   couponCode?: string | null;
   /** Token de identidad (OTP de checkout o sesión). null = quote anónima. */
-  token?: string | null;
+  token?: string | true | null;
   enabled?: boolean;
   debounceMs?: number;
   /** Si el token es rechazado (401), cotizar como anónimo en vez de fallar (solo para vistas informativas). */
@@ -48,7 +48,7 @@ interface Settled {
 interface SignaturePayload {
   items: QuoteItemRequest[];
   couponCode?: string;
-  token: string | null;
+  token: string | true | null;
   nonce: number;
 }
 

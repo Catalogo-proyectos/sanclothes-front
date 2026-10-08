@@ -25,20 +25,84 @@ export function parseJWT(token: string): DecodedJWTPayload | null {
 
 
 
-export function getStoredToken(): string | null {
+// M5 — la sesión del cliente vive en una cookie httpOnly que setea el API: el
+// JWT nunca pasa por JS. Acá solo quedan:
+//   - SESSION_KEY: datos para pintar la UI (nombre, email). NO es una
+//     credencial: si la cookie venció, el primer request da 401 y se borra.
+//   - el token CSRF, en memoria. Se reenvía en X-CSRF-Token en cada mutación;
+//     al recargar la página se pide de nuevo a GET /auth/csrf.
+const SESSION_KEY = 'sant_session';
+let csrfToken: string | null = null;
+
+export function getStoredSession(): DecodedJWTPayload | null {
   if (typeof window === 'undefined') return null;
-  migrateLegacyStorageKey(config.jwt.storageKey);
-  return localStorage.getItem(config.jwt.storageKey);
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? (JSON.parse(raw) as DecodedJWTPayload) : null;
+  } catch {
+    return null;
+  }
 }
 
-export function setStoredToken(token: string): void {
+export function setStoredSession(user: DecodedJWTPayload, csrf?: string | null): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(config.jwt.storageKey, token);
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+  } catch {
+    // localStorage bloqueado: la sesión dura lo que la pestaña.
+  }
+  if (csrf) csrfToken = csrf;
 }
 
-export function removeStoredToken(): void {
+export function clearStoredSession(): void {
+  csrfToken = null;
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(config.jwt.storageKey);
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {
+    // nada que borrar
+  }
+}
+
+export function hasStoredSession(): boolean {
+  return getStoredSession() !== null;
+}
+
+export function setCsrfToken(token: string | null): void {
+  csrfToken = token;
+}
+
+/** CSRF de la sesión: el de memoria o, tras recargar, el que devuelve el API. */
+export async function ensureCsrfToken(): Promise<string | null> {
+  if (csrfToken || config.api.useMock) return csrfToken;
+  const res = await fetch(`${config.api.baseUrl}/auth/csrf`, { credentials: 'include', cache: 'no-store' });
+  if (!res.ok) return null;
+  const data = (await res.json().catch(() => ({}))) as { csrfToken?: string };
+  csrfToken = data.csrfToken ?? null;
+  return csrfToken;
+}
+
+/**
+ * JWT que el storefront anterior guardaba en localStorage. Solo se lee para
+ * pasarlo a cookie una vez (POST /auth/session/migrate) y borrarlo.
+ */
+export function readLegacyStoredToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    migrateLegacyStorageKey(config.jwt.storageKey);
+    return localStorage.getItem(config.jwt.storageKey);
+  } catch {
+    return null;
+  }
+}
+
+export function removeLegacyStoredToken(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(config.jwt.storageKey);
+  } catch {
+    // nada que borrar
+  }
 }
 
 

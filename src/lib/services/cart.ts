@@ -1,5 +1,5 @@
 import { config } from '@/lib/config';
-import { getStoredToken, getGuestCartToken } from '@/lib/auth';
+import { ensureCsrfToken, getGuestCartToken, hasStoredSession } from '@/lib/auth';
 
 
 
@@ -18,18 +18,25 @@ interface CartSaveResponse {
 async function cartFetch<T>(
   method: 'GET' | 'POST',
   path: string,
-  token: string,
+  /** Token del carrito de invitado, o `'session'`: la cookie del cliente logueado (M5). */
+  auth: string,
   body?: unknown,
 ): Promise<T> {
   const url = `${config.api.origin}${path}`;
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
+  if (auth !== 'session') {
+    headers.Authorization = `Bearer ${auth}`;
+  } else if (method !== 'GET') {
+    const csrf = await ensureCsrfToken();
+    if (csrf) headers['X-CSRF-Token'] = csrf;
+  }
 
   const res = await fetch(url, {
     method,
     headers,
+    credentials: auth === 'session' ? 'include' : 'omit',
     body: body ? JSON.stringify(body) : undefined,
   });
 
@@ -44,15 +51,13 @@ async function cartFetch<T>(
 
 
 export async function fetchUserCart(): Promise<CartPayload> {
-  const token = getStoredToken();
-  if (!token) throw new Error('Not authenticated');
-  return cartFetch<CartPayload>('GET', '/api/v1/me/cart', token);
+  if (!hasStoredSession()) throw new Error('Not authenticated');
+  return cartFetch<CartPayload>('GET', '/api/v1/me/cart', 'session');
 }
 
 export async function saveUserCart(items: unknown[]): Promise<CartSaveResponse> {
-  const token = getStoredToken();
-  if (!token) throw new Error('Not authenticated');
-  return cartFetch<CartSaveResponse>('POST', '/api/v1/me/cart', token, { items });
+  if (!hasStoredSession()) throw new Error('Not authenticated');
+  return cartFetch<CartSaveResponse>('POST', '/api/v1/me/cart', 'session', { items });
 }
 
 
