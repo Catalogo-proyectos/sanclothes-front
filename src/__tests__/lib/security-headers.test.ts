@@ -13,6 +13,13 @@ describe('headers de seguridad del storefront (M4)', () => {
     expect(header('Strict-Transport-Security')).toMatch(/^max-age=\d+/);
   });
 
+  it('geolocalización solo para este origen; cámara y micrófono bloqueados', () => {
+    const policy = header('Permissions-Policy');
+    expect(policy).toContain('geolocation=(self)');
+    expect(policy).toContain('camera=()');
+    expect(policy).toContain('microphone=()');
+  });
+
   it('la CSP no restringe scripts (eso requiere nonces y es una decisión aparte)', () => {
     expect(header('Content-Security-Policy')).not.toMatch(/script-src|default-src/);
   });
