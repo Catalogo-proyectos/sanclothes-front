@@ -5,19 +5,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CATALOG_CHIPS, ChipId } from '@/lib/catalogFilters';
 import { useCatalogFilter } from '@/hooks/useCatalogFilter';
-import { MOCK_PRODUCTS } from '@/mocks/catalog';
-
-
 
 interface CategoryChipRailProps {
 
   inverted: boolean;
 }
-
-const CHIP_COUNTS: Record<ChipId, number> = CATALOG_CHIPS.reduce((acc, chip) => {
-  acc[chip.id] = MOCK_PRODUCTS.filter(chip.matches).length;
-  return acc;
-}, {} as Record<ChipId, number>);
 
 export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
   const router = useRouter();
@@ -28,8 +20,7 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
   const setChip = useCatalogFilter((s) => s.setChip);
   const syncFromUrl = useCatalogFilter((s) => s.syncFromUrl);
 
-
-  useEffect(() => {
+useEffect(() => {
     const adopt = () => syncFromUrl(new URLSearchParams(window.location.search).get('c'));
     adopt();
     window.addEventListener('popstate', adopt);
@@ -45,10 +36,7 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
         const query = id === 'todo' ? '' : `?c=${id}`;
         window.history.replaceState(null, '', `/catalog${query}`);
 
-
-
-
-        const grid = document.getElementById('catalog-grid');
+const grid = document.getElementById('catalog-grid');
         if (grid) {
           const top = window.scrollY + grid.getBoundingClientRect().top - 132;
           if (window.scrollY > top) {
@@ -64,8 +52,7 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
 
   const railBorder = inverted ? 'border-white/15' : 'border-[#17191c]/10';
 
-
-  const idleLabel = inverted
+const idleLabel = inverted
     ? 'text-white/80 hover:text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]'
     : 'text-[#17191c]/45 hover:text-[#17191c]';
   const activeLabel = inverted ? 'text-[#17191c]' : 'text-white';
@@ -108,9 +95,6 @@ export default function CategoryChipRail({ inverted }: CategoryChipRailProps) {
                 )}
                 <span className="font-[family-name:var(--font-bebas)] text-[15px] sm:text-[17px] uppercase leading-none tracking-[0.14em]">
                   {c.label}
-                </span>
-                <span className="font-mono text-[9px] leading-none tabular-nums opacity-60">
-                  {CHIP_COUNTS[c.id]}
                 </span>
               </button>
             );

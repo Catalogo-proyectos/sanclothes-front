@@ -16,10 +16,6 @@ import type {
   ReceiptUploadResponse,
 } from '@/types/api';
 
-
-
-
-
 export async function verifyEmail(
   email: string,
   turnstileToken?: string,
@@ -30,8 +26,6 @@ export async function verifyEmail(
   });
 }
 
-
-
 export async function confirmOtp(
   email: string,
   otp: string,
@@ -41,20 +35,12 @@ export async function confirmOtp(
     otp,
   });
 
-
-  setCheckoutSessionToken(res.checkoutSessionToken);
+setCheckoutSessionToken(res.checkoutSessionToken);
   setGuestCartToken(res.guestCartToken);
 
   return res;
 }
 
-
-
-/**
- * Identidad con la que se crea el pedido: el token OTP del checkout o, si no
- * hay, la sesión del cliente (`true` = cookie httpOnly, M5). La quote usa
- * EXACTAMENTE la misma, así el tier/cupón que se cotiza es el que se cobra.
- */
 export type CheckoutIdentity = string | true;
 
 export function getCheckoutIdentity(): CheckoutIdentity | null {
@@ -70,13 +56,10 @@ export async function createOrder(
 
   const res = await apiCall<CheckoutResponse>('POST', '/checkout', request, identity);
 
-
-  setOrderAccessToken(res.orderId, res.orderAccessToken);
+setOrderAccessToken(res.orderId, res.orderAccessToken);
 
   return res;
 }
-
-
 
 export async function fetchCheckoutOrder(orderId: string): Promise<CheckoutOrderDetail> {
   const token = getOrderAccessToken(orderId);
@@ -94,11 +77,20 @@ export async function uploadReceipt(
   const formData = new FormData();
   formData.append('file', file);
 
-  const res = await fetch(`${config.api.origin}/api/checkout/${orderId}/receipt`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${config.api.origin}/api/checkout/${orderId}/receipt`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+  } catch {
+    throw new ApiError(
+      'No pudimos conectar con el servidor. Revisá tu conexión e intentá nuevamente.',
+      0,
+      'NETWORK_ERROR',
+    );
+  }
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
@@ -108,11 +100,6 @@ export async function uploadReceipt(
   return res.json();
 }
 
-/**
- * Abre el comprobante subido en una pestaña nueva. La ruta exige el token en el
- * header, así que se descarga como blob (un <a href> no puede mandar headers).
- * La pestaña se abre antes del fetch para que el navegador no la bloquee.
- */
 export async function openReceipt(orderId: string): Promise<void> {
   const token = getOrderAccessToken(orderId);
   if (!token) throw new ApiError('No tenés acceso a este pedido desde este navegador.', 401, 'MISSING_ORDER_TOKEN');
@@ -125,7 +112,7 @@ export async function openReceipt(orderId: string): Promise<void> {
     const url = URL.createObjectURL(await res.blob());
     if (tab) tab.location.href = url;
     else window.location.href = url;
-    // La pestaña ya lo cargó: liberar el blob.
+
     window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
   } catch (err) {
     tab?.close();

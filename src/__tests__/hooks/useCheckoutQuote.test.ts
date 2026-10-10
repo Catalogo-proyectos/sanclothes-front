@@ -37,7 +37,7 @@ describe('useCheckoutQuote', () => {
     await waitFor(() => expect(result.current.status).toBe('ready'));
     expect(result.current.quote?.total).toBe(123_000);
     expect(result.current.canConfirm).toBe(true);
-    // El request no lleva precios.
+    
     expect(lastRequest()[0].items[0]).not.toHaveProperty('unitPrice');
     expect(lastRequest()[1].token).toBe('tok');
   });
@@ -110,7 +110,7 @@ describe('useCheckoutQuote', () => {
 
     rerender({ items: [makeCartItem({ quantity: 2 })], token: 'tok' });
     await waitFor(() => expect(fetchCheckoutQuote).toHaveBeenCalledTimes(2));
-    // El primer request quedó abortado.
+    
     expect((fetchCheckoutQuote.mock.calls[0]![1].signal as AbortSignal).aborted).toBe(true);
 
     await act(async () => second.resolve(makeQuote({ total: 200_000 })));

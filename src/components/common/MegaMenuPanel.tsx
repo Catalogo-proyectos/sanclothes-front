@@ -12,7 +12,6 @@ interface MegaMenuPanelProps {
   onNavigate: () => void;
 }
 
-
 function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
   return (
     <motion.div
@@ -32,8 +31,7 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
         </p>
       </div>
 
-
-      <div className="flex-1 grid grid-cols-2 gap-8 lg:gap-12 max-w-xl">
+<div className="flex-1 grid grid-cols-2 gap-8 lg:gap-12 max-w-xl">
 
         <div>
           <p className="text-[11px] font-black tracking-[0.2em] uppercase text-[#17191c] mb-4">
@@ -57,8 +55,7 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
           </ul>
         </div>
 
-
-        <div className="pt-[26px]">
+<div className="pt-[26px]">
           <ul className="space-y-2.5">
             {cat.col2Links.map((link) => (
               <li key={link.href}>
@@ -75,8 +72,7 @@ function MegaMenuPanel({ cat, isActive, onNavigate }: MegaMenuPanelProps) {
         </div>
       </div>
 
-
-      <div className="w-[320px] xl:w-[380px] shrink-0 self-stretch -my-8 ml-auto relative overflow-hidden bg-zinc-100 group/card">
+<div className="w-[320px] xl:w-[380px] shrink-0 self-stretch -my-8 ml-auto relative overflow-hidden bg-zinc-100 group/card">
         <Link
           href={cat.href}
           onClick={onNavigate}

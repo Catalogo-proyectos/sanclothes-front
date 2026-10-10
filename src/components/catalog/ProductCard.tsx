@@ -23,23 +23,19 @@ interface ProductCardProps {
   product: CatalogProduct;
 }
 
-
 function ProductCard({ product }: ProductCardProps) {
   const addItem = useCart((state) => state.addItem);
 
-  // Sólo talles con variante real: un SKU inventado lo rechaza el checkout.
-  const variants = product.variants ?? [];
+const variants = product.variants ?? [];
   const sizes = quickSizes(variants);
   const multiCut = needsCutChoice(variants);
 
-  // null = el usuario todavía no eligió; sólo un talle elegido viaja a la ficha.
-  const [pickedSize, setSelectedSize] = useState<string | null>(null);
+const [pickedSize, setSelectedSize] = useState<string | null>(null);
   const selectedSize = pickedSize ?? defaultQuickSize(sizes);
   const href = productHref(product.productId, pickedSize);
   const variantToAdd = quickVariant(variants, selectedSize);
 
-
-  const { main, hover, count } = useMemo(
+const { main, hover, count } = useMemo(
     () => cardSlots(product.images ?? []),
     [product.images]
   );
@@ -69,8 +65,7 @@ function ProductCard({ product }: ProductCardProps) {
     });
   };
 
-  // Hype antes del lanzamiento: cuenta regresiva, sin foto, precio ni talles.
-  if (product.hype) {
+if (product.hype) {
     return (
       <Link href={href} className="group flex flex-col select-none">
         <div className="relative aspect-[3/4] w-full bg-[#17191c] border border-[#17191c] mb-2.5 flex flex-col items-center justify-center gap-2 text-white">
@@ -119,8 +114,7 @@ function ProductCard({ product }: ProductCardProps) {
         </Link>
       </div>
 
-
-      <div className="relative min-h-[110px] px-1 flex flex-col justify-between overflow-hidden">
+<div className="relative min-h-[110px] px-1 flex flex-col justify-between overflow-hidden">
 
         <div className="flex flex-col gap-1 transition-all duration-300 ease-out group-hover:opacity-0 group-hover:pointer-events-none group-hover:-translate-y-2">
           <span className="text-[9px] font-mono font-bold tracking-[0.18em] text-zinc-500 uppercase truncate">
@@ -152,8 +146,7 @@ function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
 
-
-        <div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
+<div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
 
           <div className="flex items-center justify-center gap-1.5">
             {sizes.map(({ size: sz, soldOut }) => {
@@ -168,13 +161,12 @@ function ProductCard({ product }: ProductCardProps) {
                     e.stopPropagation();
                     setSelectedSize(sz);
                   }}
-                  className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border ${
-                    soldOut
+                  className={`text-[11px] font-mono font-bold flex-1 h-8 flex items-center justify-center transition-colors border ${soldOut
                       ? 'bg-transparent text-zinc-600 border-zinc-800 line-through cursor-not-allowed'
                       : isSelected
                         ? 'bg-white text-black border-white shadow-2xs cursor-pointer'
                         : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-white cursor-pointer'
-                  }`}
+                    }`}
                 >
                   {sz}
                   {soldOut && <span className="sr-only"> (sin stock)</span>}
@@ -183,9 +175,8 @@ function ProductCard({ product }: ProductCardProps) {
             })}
           </div>
 
+{sizes.length === 0 || multiCut ? (
 
-          {sizes.length === 0 || multiCut ? (
-            // Varios cortes: el cliente elige Femenino/Masculino/Unisex en la ficha (con el talle ya marcado).
             <Link
               href={href}
               className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"

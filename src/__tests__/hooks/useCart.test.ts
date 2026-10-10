@@ -94,10 +94,10 @@ describe('useCart Zustand Store', () => {
     });
 
     const state = useCart.getState() as unknown as Record<string, unknown>;
-    // La regla vieja (Gs. 20.000 de envío por debajo de Gs. 300.000) desapareció.
+    
     expect(state.getShippingCost).toBeUndefined();
     expect(state.getTotal).toBeUndefined();
-    // Lo único que queda es la referencia visual de catálogo.
+    
     expect(useCart.getState().getReferenceSubtotal()).toBe(150000);
   });
 

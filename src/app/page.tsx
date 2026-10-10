@@ -12,12 +12,8 @@ import { fetchCatalog } from '@/lib/services/catalog';
 import { excludeProducts, selectBento, selectFeaturedWithFallback } from '@/lib/catalog/featured';
 import type { CatalogProduct } from '@/types/api';
 
-// La home se pre-genera; sin esto los productos quedaban congelados en el momento
-// del build y un destacado marcado en el admin no aparecía hasta el próximo deploy.
-// Con ISR se regenera en segundo plano como máximo una vez por minuto.
 export const revalidate = 60;
 
-// Una sola llamada al catálogo por render, compartida por el bento y la grilla.
 const loadCatalog = cache(async (): Promise<CatalogProduct[]> => {
   try {
     return await fetchCatalog();
@@ -33,7 +29,7 @@ async function BrandStorySection() {
 
 async function FeaturedProductsSection() {
   const products = await loadCatalog();
-  // Los destacados que ya se muestran en el bento no se repiten en la grilla.
+  
   const rest = excludeProducts(products, selectBento(products));
 
   return (
@@ -64,39 +60,31 @@ export default function HomePage() {
         <ScrollLogoHero />
       </div>
 
-
-      <div id="colecciones" className="scroll-mt-24">
+<div id="colecciones" className="scroll-mt-24">
         <Hero />
       </div>
 
-
-      <div id="historia" className="scroll-mt-24">
+<div id="historia" className="scroll-mt-24">
         <Suspense fallback={<BrandStoryHero />}>
           <BrandStorySection />
         </Suspense>
       </div>
 
+<BrandVideoBanner />
 
-      <BrandVideoBanner />
+<StudioRackHero />
 
-
-      <StudioRackHero />
-
-
-      <div id="destacados" className="scroll-mt-24">
+<div id="destacados" className="scroll-mt-24">
         <Suspense fallback={<FeaturedProductsFallback />}>
           <FeaturedProductsSection />
         </Suspense>
       </div>
 
+<StreetMotionHero />
 
-      <StreetMotionHero />
+<FinalVideoBanner />
 
-
-      <FinalVideoBanner />
-
-
-      <ShowroomExperience />
+<ShowroomExperience />
     </div>
   );
 }

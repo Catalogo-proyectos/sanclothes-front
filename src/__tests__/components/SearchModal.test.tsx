@@ -35,7 +35,7 @@ describe('SearchModal', () => {
       fireEvent.change(input, { target: { value: query } });
       await waitFor(() => expect(screen.getAllByText('Campera Real Del Catálogo').length).toBeGreaterThan(0));
     }
-    // Un producto de prueba de los mocks no aparece.
+    
     fireEvent.change(input, { target: { value: 'Heavyweight 240g' } });
     await waitFor(() => expect(screen.queryByText('Remera Oversize Heavyweight 240g')).not.toBeInTheDocument());
   });

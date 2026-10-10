@@ -21,7 +21,7 @@ export default function Error({
       <div className="my-auto space-y-6 max-w-xl mx-auto flex flex-col items-center py-12">
         <div className="relative w-24 h-24 sm:w-28 sm:h-28 aspect-square">
           <Image
-            src="/img/logo/logo-iso-negro.png"
+            src="/img/web/logo/logo-iso-negro.webp"
             alt="SANT CLOTHES®"
             fill
             priority

@@ -14,7 +14,7 @@ export default function StudioRackHero() {
       >
 
         <Image
-          src="/img/hero/IMG_4390.webp"
+          src="/img/web/hero/IMG_4390.webp"
           alt="SANT CLOTHES — Studio Experience & Design Atelier"
           fill
           quality={80}
@@ -23,11 +23,9 @@ export default function StudioRackHero() {
           className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
 
+<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 pointer-events-none" />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 pointer-events-none" />
-
-
-        <motion.div
+<motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

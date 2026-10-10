@@ -2,13 +2,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { BackendProduct } from '@/types/backend';
 import { PLACEHOLDER_PRODUCT } from '@/lib/images/constants';
 
-
 const mediaOrigin = { value: 'https://cdn.santclothes.test' };
 
 vi.mock('@/lib/config', () => ({
   config: {
     get api() {
-      return { mediaOrigin: mediaOrigin.value, baseUrl: '', healthUrl: '', useMock: true };
+      return { mediaOrigin: mediaOrigin.value, baseUrl: '', healthUrl: '' };
     },
   },
 }));

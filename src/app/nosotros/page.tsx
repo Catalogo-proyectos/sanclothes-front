@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     url: `${config.app.url}/nosotros`,
     images: [
       {
-        url: '/img/hero/IMG_4390.webp',
+        url: '/img/web/hero/mudanza-al-sant.webp',
         width: 1200,
         height: 630,
-        alt: 'SANT CLOTHES — Historia de Marca',
+        alt: 'SANT CLOTHES — Mudanza al SANT al anochecer, historia de marca',
       },
     ],
   },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: 'Nuestra Historia | SANT CLOTHES®',
     description:
       'Conocé la historia de Matías y Lucas Santos. De los primeros cortes en plena pandemia de 2020 a crear fábrica propia y liderar el streetwear oversize en Paraguay.',
-    images: ['/img/hero/IMG_4390.webp'],
+    images: ['/img/web/hero/mudanza-al-sant.webp'],
   },
 };
 

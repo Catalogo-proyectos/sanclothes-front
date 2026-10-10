@@ -3,15 +3,12 @@ import type { CatalogProduct, ProductImage, ProductVariant, StockStatus } from '
 import { imagesForCut } from '@/lib/images/resolve';
 import { comboHasStock, toComboInfo } from '@/lib/catalog/combo';
 
-
-
 const LOW_STOCK_THRESHOLD = 5;
 
 interface EffectivePrice {
   price: number;
   discountPrice: number | null;
 }
-
 
 export function resolvePrice(product: BackendProduct, now: number = Date.now()): EffectivePrice {
   const base = product.price;
@@ -44,7 +41,6 @@ export function resolvePrice(product: BackendProduct, now: number = Date.now()):
   return { price: base, discountPrice: null };
 }
 
-
 export function flattenVariants(product: BackendProduct): ProductVariant[] {
   const map = product.variantsByCut ?? product.variants ?? {};
   const { price, discountPrice } = resolvePrice(product);
@@ -61,7 +57,6 @@ export function flattenVariants(product: BackendProduct): ProductVariant[] {
     }))
   );
 }
-
 
 export function urgencyLabel(stock: number): string | null {
   if (stock <= 0) return 'Agotado';
@@ -84,9 +79,8 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
   const variants = flattenVariants(product);
   const totalStock = variants.reduce((sum, v) => sum + v.stock, 0);
 
-  // Combo: sin variantes propias, se compra eligiendo el talle de cada prenda.
-  const combo = product.isCombo ? toComboInfo(product.comboItems) : null;
-  // Hype antes del lanzamiento: cuenta regresiva, sin talles ni precio.
+const combo = product.isCombo ? toComboInfo(product.comboItems) : null;
+
   const hype =
     product.showHypeCountdown && product.publishAt && new Date(product.publishAt).getTime() > Date.now()
       ? { launchAt: product.publishAt }
@@ -112,8 +106,7 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
     slug: product.slug,
     title: product.name,
 
-
-    description: product.description ?? '',
+description: product.description ?? '',
     price,
     discountPrice,
     images: toProductImages(product, null),
@@ -126,7 +119,7 @@ export function toCatalogProduct(product: BackendProduct): CatalogProduct {
     flashSale:
       product.flashSale?.endAt && discountPrice !== null
         ? {
-            // Solo un % real: en FIXED/OVERRIDE discountValue es un monto, no un porcentaje.
+
             discountPercent:
               product.flashSale.discountType === 'PERCENTAGE'
                 ? product.flashSale.discountValue

@@ -1,13 +1,43 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import CatalogView from '@/components/catalog/CatalogView';
-import { MOCK_PRODUCTS } from '@/mocks/catalog';
-import { toBackendProduct } from '@/mocks/toBackend';
-import { toCatalogProduct } from '@/lib/adapters/product';
 import { FALLBACK_TAXONOMY } from '@/lib/services/taxonomy';
 import type { CatalogProduct } from '@/types/api';
 
-const CATALOG_PRODUCTS = MOCK_PRODUCTS.map(toBackendProduct).map(toCatalogProduct);
+const product = (
+  productId: string,
+  title: string,
+  category: string,
+  categoryName: string,
+): CatalogProduct => ({
+  productId,
+  slug: productId,
+  title,
+  description: `${title} de prueba`,
+  price: 250_000,
+  discountPrice: null,
+  images: [
+    { url: `/${productId}-front.webp`, alt: `${title} vista principal` },
+    { url: `/${productId}-back.webp`, alt: `${title} vista trasera` },
+  ],
+  cuts: ['CLASSIC'],
+  category,
+  categoryName,
+  sizes: ['S', 'M'],
+  stockStatus: 'IN_STOCK',
+  variants: [
+    { variantId: `${productId}-s`, sku: `${productId}-S`, cut: 'CLASSIC', size: 'S', price: 250_000, stock: 4 },
+  ],
+  styles: ['streetwear'],
+  color: 'Negro',
+  bento: null,
+});
+
+const CATALOG_PRODUCTS: CatalogProduct[] = [
+  product('remera-test', 'Remera Oversize Heavyweight 240g', 'REMERAS', 'Remeras'),
+  product('hoodie-test', 'Hoodie Acid Wash Drop #01 400G', 'HOODIES', 'Hoodies'),
+  product('camisa-test', 'Camisa Oversized de prueba', 'CAMISAS', 'Camisas'),
+];
 
 let currentParams = new URLSearchParams();
 vi.mock('next/navigation', () => ({

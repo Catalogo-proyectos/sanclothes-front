@@ -1,6 +1,5 @@
 import { CatalogProduct } from '@/types/api';
 
-
 export type ChipId = 'todo' | 'hombre' | 'mujer' | 'new-drop' | 'essentials' | 'sale';
 
 export interface CatalogChip {
@@ -67,7 +66,6 @@ export function filterByChip(products: CatalogProduct[], id: ChipId): CatalogPro
   return products.filter(chip.matches);
 }
 
-
 export type StyleId = 'streetwear' | 'old-money' | 'casual' | 'sports';
 
 export interface CatalogStyle {
@@ -87,8 +85,8 @@ export interface CatalogHeroArt {
 }
 
 export const DEFAULT_CATALOG_HERO: CatalogHeroArt = {
-  src: '/img/hero/Hero-Catalogo2.jpeg',
-  mobileSrc: '/img/hero/Hero Movil Streetweater.jpeg',
+  src: '/img/web/hero/hero-catalogo-2.webp',
+  mobileSrc: '/img/movil/hero/catalogo-streetwear.webp',
   alt: 'SANT CLOTHES — campera varsity SS24',
 };
 
@@ -99,8 +97,8 @@ export const CATALOG_STYLES: CatalogStyle[] = [
     caption: 'Drop SS26 · Gramaje alto y siluetas oversized',
     categories: ['streetwear', 'hoodies'],
     hero: {
-      src: '/img/hero/Hero-Catalogo2.jpeg',
-      mobileSrc: '/img/hero/Hero Movil Streetweater.jpeg',
+      src: '/img/web/hero/hero-catalogo-2.webp',
+      mobileSrc: '/img/movil/hero/catalogo-streetwear.webp',
       alt: 'SANT CLOTHES — colección Streetwear',
     },
   },
@@ -110,8 +108,8 @@ export const CATALOG_STYLES: CatalogStyle[] = [
     caption: 'Silent luxury · Tejidos nobles y cortes limpios',
     categories: ['old-money', 'polos'],
     hero: {
-      src: '/img/hero/Sants Hero Old Money.jpeg',
-      mobileSrc: '/img/hero/Hero Movil Old Money.jpeg',
+      src: '/img/web/hero/catalogo-old-money.webp',
+      mobileSrc: '/img/movil/hero/catalogo-old-money.webp',
       alt: 'SANT CLOTHES — medio cierre Old Money en algodón perchado',
     },
   },
@@ -121,8 +119,8 @@ export const CATALOG_STYLES: CatalogStyle[] = [
     caption: 'Base del guardarropa · Uso diario',
     categories: ['casual', 'remeras', 'pantalones'],
     hero: {
-      src: '/img/hero/Sants Casual.jpeg',
-      mobileSrc: '/img/hero/Hero Movil Casual.jpeg',
+      src: '/img/web/hero/catalogo-casual.webp',
+      mobileSrc: '/img/movil/hero/catalogo-casual.webp',
       alt: 'SANT CLOTHES — remera Santclub de la línea Casual',
     },
   },
@@ -132,8 +130,8 @@ export const CATALOG_STYLES: CatalogStyle[] = [
     caption: 'Performance · Prendas técnicas',
     categories: ['sports', 'performance', 'tracksuits'],
     hero: {
-      src: '/img/hero/Sants Hero Sport.jpeg',
-      mobileSrc: '/img/hero/Hero Movil Sport.jpeg',
+      src: '/img/web/hero/catalogo-sports.webp',
+      mobileSrc: '/img/movil/hero/catalogo-sports.webp',
       alt: 'SANT CLOTHES — camiseta Sport Division 01',
     },
   },
@@ -150,7 +148,6 @@ export function getCatalogHero(id: StyleId | null): CatalogHeroArt {
 export function isStyleId(value: string | null | undefined): value is StyleId {
   return !!value && CATALOG_STYLES.some((s) => s.id === value);
 }
-
 
 export function filterByStyle(products: CatalogProduct[], id: StyleId | null): CatalogProduct[] {
   const style = getStyle(id);

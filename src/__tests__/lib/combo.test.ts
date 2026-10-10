@@ -22,7 +22,7 @@ describe('combos en la tienda', () => {
     expect(item?.sku).toMatch(/^combo_1~[0-9a-f]{8}$/);
     expect(comboCartItem(product, combo, { 0: 'M', 1: 'U', 2: 'FEMENINO L' }) ?? { sku: 'otro' }).not.toMatchObject({ sku: item?.sku });
     expect(item).toMatchObject({ productId: 'combo_1', size: 'M/MASCULINO L', cut: 'COMBO', unitPrice: 300_000 });
-    // Remera M: 3 · Gorra: 10 · Buzo L (2 por combo): 5 → 2 combos.
+
     expect(item?.maxStock).toBe(2);
   });
 

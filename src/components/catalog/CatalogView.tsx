@@ -28,23 +28,16 @@ interface CatalogViewProps {
   taxonomy: CatalogTaxonomy;
 }
 
-// Backend anterior al catálogo v2 (sin `styles`): el filtro por estilo de antes.
 const legacyStyleFilter = (products: CatalogProduct[], style: string) =>
   isStyleId(style) ? filterByStyle(products, style) : [];
 
-/**
- * Catálogo v2. Sin filtros → secciones por tipo de prenda con sus bentos.
- * Con cualquier filtro (tipo, talle, género, precio, stock u orden) → grilla
- * simple sin bentos, de a PAGE_SIZE con "Cargar más".
- */
 export default function CatalogView({ initialProducts, taxonomy }: CatalogViewProps) {
   const searchParams = useSearchParams();
   const query = useMemo(() => parseCatalogQuery(searchParams), [searchParams]);
   const reduceMotion = useReducedMotion();
   const setStyle = useCatalogFilter((s) => s.setStyle);
 
-  // El header resalta el estilo activo (cualquier código de la taxonomía).
-  useEffect(() => {
+useEffect(() => {
     setStyle(query.style);
   }, [query.style, setStyle]);
 
@@ -59,8 +52,7 @@ export default function CatalogView({ initialProducts, taxonomy }: CatalogViewPr
     [taxonomy.categories]
   );
 
-  // Chips de tipo: los que tienen productos en este estilo, en el orden del admin.
-  const types: FilterTypeOption[] = useMemo(() => {
+const types: FilterTypeOption[] = useMemo(() => {
     const counts = new Map<string, { name: string; count: number }>();
     for (const p of styleProducts) {
       const entry = counts.get(p.category) ?? { name: p.categoryName, count: 0 };
@@ -83,8 +75,7 @@ export default function CatalogView({ initialProducts, taxonomy }: CatalogViewPr
     [filtering, styleProducts, categoryOrder]
   );
 
-  // La paginación queda atada a la URL: si cambian los filtros, vuelve a la página 1.
-  const queryKey = searchParams.toString();
+const queryKey = searchParams.toString();
   const [paging, setPaging] = useState({ key: queryKey, pages: 1 });
   const pages = paging.key === queryKey ? paging.pages : 1;
 

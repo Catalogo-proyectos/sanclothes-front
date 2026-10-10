@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// M5 — el servicio real (no el modo demo): config con useMock = false.
 vi.mock('@/lib/config', () => ({
-  config: { api: { useMock: false, baseUrl: 'https://api.test/api' }, jwt: { storageKey: 'sant_auth_token' } },
+  config: { api: { baseUrl: 'https://api.test/api' }, jwt: { storageKey: 'sant_auth_token' } },
 }));
 
 import { apiCall, ApiError, SESSION_EXPIRED_EVENT } from '@/lib/api';
@@ -12,7 +11,6 @@ import { useAuth } from '@/hooks/useAuth';
 const user = { userId: '1', email: 'c@test.local', firstName: 'C', lastName: 'L' };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 
-/** JWT sin firma válida: el front solo lee el payload (exp) para migrar. */
 const fakeJwt = (payload: Record<string, unknown>) =>
   `x.${btoa(JSON.stringify(payload)).replace(/=+$/, '')}.y`;
 
@@ -50,7 +48,7 @@ describe('apiCall con sesión en cookie (M5)', () => {
   });
 
   it('tras recargar (sin CSRF en memoria) lo pide a /auth/csrf', async () => {
-    setStoredSession(user); // sin csrf
+    setStoredSession(user);
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(json({ csrfToken: 'csrf-recuperado' }))

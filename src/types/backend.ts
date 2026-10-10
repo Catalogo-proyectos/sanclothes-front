@@ -1,6 +1,5 @@
 
 
-
 export type BackendCut = string;
 
 export type DropType = 'DROP_01' | 'DROP_02' | 'ESPECIAL';
@@ -31,9 +30,9 @@ export interface BackendComboItem {
   allowedSizes: string[];
   name?: string;
   images?: string[];
-  /** Talle fijo: el cliente no lo elige. */
+  
   fixed?: boolean;
-  /** Talles elegibles en el formato que acepta el checkout ("M" o "MASCULINO M"). */
+  
   options?: Array<{ token: string; cut: string; size: string; sku: string; stock: number }>;
 }
 
@@ -54,14 +53,11 @@ export interface BackendProduct {
   price: number;
   isDropActive: boolean;
 
+images: string[];
 
-  images: string[];
+imagesByCut?: Record<BackendCut, string[]>;
 
-
-  imagesByCut?: Record<BackendCut, string[]>;
-
-
-  variants: Record<BackendCut, Record<string, BackendVariant>>;
+variants: Record<BackendCut, Record<string, BackendVariant>>;
 
   variantsByCut?: Record<BackendCut, Record<string, BackendVariant>>;
   availableCuts?: BackendCut[];
@@ -85,11 +81,9 @@ export interface BackendProduct {
   publishAt?: string | null;
   unpublishAt?: string | null;
 
+isFeatured?: boolean;
 
-  isFeatured?: boolean;
-
-  // Catálogo v2 (aditivos: un backend viejo no los manda)
-  createdAt?: string;
+createdAt?: string;
   styles?: string[];
   categoryName?: string;
   color?: string | null;

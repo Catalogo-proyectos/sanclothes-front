@@ -1,17 +1,5 @@
 import type { CatalogProduct } from '@/types/api';
 
-/**
- * Catálogo v2 — estado del catálogo en la URL y filtros. Funciones puras.
- *
- *   ?category=<estilo>   (se mantiene el nombre por los links ya publicados)
- *   &tipo=<código>       tipo de prenda
- *   &talle=S,M           talles (cualquiera)
- *   &genero=hombre|mujer
- *   &min=&max=           precio final (con descuento) en guaraníes
- *   &disponible=1        solo con stock (si hay talle elegido: stock en ese talle)
- *   &orden=nuevos|precio-asc|precio-desc
- */
-
 export type SortId = 'nuevos' | 'precio-asc' | 'precio-desc';
 export type GenderId = 'hombre' | 'mujer';
 
@@ -39,7 +27,7 @@ const toNumber = (v: string | null): number | null => {
 
 export function parseCatalogQuery(params: ParamsLike): CatalogQuery {
   const sort = params.get('orden');
-  // Compat con los links de antes del catálogo v2: &gender=men|women.
+  
   const legacyGender = params.get('gender');
   const gender = params.get('genero') ?? (legacyGender === 'men' ? 'hombre' : legacyGender === 'women' ? 'mujer' : null);
   return {
@@ -57,7 +45,6 @@ export function parseCatalogQuery(params: ParamsLike): CatalogQuery {
   };
 }
 
-/** Serializa la query (solo lo que no es default) para armar links. */
 export function catalogHref(query: Partial<CatalogQuery>): string {
   const p = new URLSearchParams();
   if (query.style) p.set('category', query.style);
@@ -72,11 +59,6 @@ export function catalogHref(query: Partial<CatalogQuery>): string {
   return qs ? `/catalog?${qs}` : '/catalog';
 }
 
-/**
- * ¿Hay algún filtro además del estilo? Con filtros activos el catálogo pasa a
- * grilla simple sin bentos (un bento de chaquetas filtrado por talle XS sin
- * productos al lado no tiene sentido).
- */
 export function hasActiveFilters(q: CatalogQuery): boolean {
   return (
     q.tipo !== null ||
@@ -91,7 +73,6 @@ export function hasActiveFilters(q: CatalogQuery): boolean {
 
 export const finalPrice = (p: CatalogProduct) => p.discountPrice ?? p.price;
 
-// Cortes neutros: valen para hombre y para mujer.
 const NEUTRAL_CUTS = new Set(['CLASSIC', 'UNISEX']);
 const GENDER_CUT: Record<GenderId, string> = { hombre: 'MASCULINO', mujer: 'FEMENINO' };
 
@@ -104,7 +85,6 @@ function hasStockIn(p: CatalogProduct, sizes: string[]): boolean {
   return p.variants.some((v) => v.stock > 0 && (sizes.length === 0 || sizes.includes(v.size.toUpperCase())));
 }
 
-/** Filtro por estilo. `legacy` se usa solo si el backend todavía no manda `styles`. */
 export function filterByStyleCode(
   products: CatalogProduct[],
   style: string | null,
@@ -118,7 +98,7 @@ export function filterByStyleCode(
 
 export function applyFilters(products: CatalogProduct[], q: CatalogQuery): CatalogProduct[] {
   return products.filter((p) => {
-    // Sin distinguir mayúsculas: ?tipo=chaquetas encuentra CHAQUETAS.
+
     if (q.tipo && p.category.toUpperCase() !== q.tipo.toUpperCase()) return false;
     if (q.sizes.length > 0 && !p.sizes.some((s) => q.sizes.includes(s.toUpperCase()))) return false;
     if (q.gender && !matchesGender(p, q.gender)) return false;
@@ -141,7 +121,6 @@ export function sortProducts(products: CatalogProduct[], sort: SortId): CatalogP
   return indexed.map(({ product }) => product);
 }
 
-/** Talles presentes en una lista, en orden de talle conocido y luego alfabético. */
 const SIZE_ORDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 export function availableSizes(products: CatalogProduct[]): string[] {
   const set = new Set(products.flatMap((p) => p.sizes.map((s) => s.toUpperCase())));

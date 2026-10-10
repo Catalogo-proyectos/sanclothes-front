@@ -4,84 +4,83 @@ import { useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 
-
 export default function ScrollLogoHero() {
+  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-
-  const attemptPlay = useCallback(async () => {
+const attemptPlay = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
 
-
-
-    video.muted = true;
+video.muted = true;
     video.playsInline = true;
     video.autoplay = true;
 
+video.setAttribute('webkit-playsinline', '');
 
-    video.setAttribute('webkit-playsinline', '');
-
-
-    if (!video.paused) return;
+if (!video.paused) return;
 
     try {
       await video.play();
     } catch {
 
-
-
-    }
+}
   }, []);
 
   useEffect(() => {
+    const section = sectionRef.current;
     const video = videoRef.current;
-    if (!video) return;
+    if (!section || !video) return;
 
-
-    video.muted = true;
+video.muted = true;
     video.playsInline = true;
     video.autoplay = true;
     video.setAttribute('webkit-playsinline', '');
 
+const onDataReady = () => { attemptPlay(); };
 
-
-
-
-    const onDataReady = () => { attemptPlay(); };
-
-
-    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       attemptPlay();
     } else {
       video.addEventListener('loadeddata', onDataReady, { once: true });
     }
 
-
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+let isVisible = true;
+    const syncPlayback = () => {
+      if (isVisible && document.visibilityState === 'visible') {
         attemptPlay();
+      } else {
+        video.pause();
       }
     };
-    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        syncPlayback();
+      },
+      { threshold: 0.05 },
+    );
+
+    observer.observe(section);
+    document.addEventListener('visibilitychange', syncPlayback);
 
     return () => {
+      observer.disconnect();
       video.removeEventListener('loadeddata', onDataReady);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
+      document.removeEventListener('visibilitychange', syncPlayback);
+      video.pause();
     };
   }, [attemptPlay]);
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-[#17191c] text-white">
+    <section ref={sectionRef} className="relative w-full h-screen overflow-hidden bg-[#17191c] text-white">
       <h1 className="sr-only">
         SANT CLOTHES - Streetwear y moda urbana en Paraguay
       </h1>
       <div className="absolute inset-0 w-full h-full overflow-hidden">
 
-        {/* Celular en vertical: recorte central 810x1080 (~450 KB) en vez del
-            1080p de 4 MB; object-cover ya mostraba sólo esa franja central. */}
-        <video
+<video
           ref={videoRef}
           poster="/img/video/ofi-3-poster.webp"
           autoPlay
@@ -101,14 +100,11 @@ export default function ScrollLogoHero() {
         </video>
       </div>
 
+<div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/35 to-transparent pointer-events-none" />
 
-      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/35 to-transparent pointer-events-none" />
+<div className="absolute inset-x-0 bottom-0 h-[48vh] pointer-events-none bg-[linear-gradient(to_bottom,transparent_0%,rgba(23,25,28,0.25)_38%,rgba(23,25,28,0.72)_66%,rgba(23,25,28,0.96)_84%,#17191c_92%,#17191c_100%)]" />
 
-
-      <div className="absolute inset-x-0 bottom-0 h-[48vh] pointer-events-none bg-[linear-gradient(to_bottom,transparent_0%,rgba(23,25,28,0.25)_38%,rgba(23,25,28,0.72)_66%,rgba(23,25,28,0.96)_84%,#17191c_92%,#17191c_100%)]" />
-
-
-      <motion.div
+<motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.5 }}

@@ -4,7 +4,6 @@ import { CartItem, CartState } from '@/types/cart';
 import { fetchUserCart, saveUserCart, fetchGuestCart, saveGuestCart } from '@/lib/services/cart';
 import { CART_STORAGE_KEY, migrateLegacyStorageKey } from '@/lib/storage-keys';
 
-// Antes de que zustand hidrate el carrito desde localStorage.
 migrateLegacyStorageKey(CART_STORAGE_KEY);
 
 export const useCart = create<CartState>()(
@@ -22,7 +21,7 @@ export const useCart = create<CartState>()(
           const updatedItems = [...items];
           const currentQty = updatedItems[existingIndex].quantity;
           const maxStock = newItem.maxStock ?? 99;
-          // El tope guardado se actualiza al stock más reciente.
+          
           updatedItems[existingIndex] = {
             ...updatedItems[existingIndex],
             quantity: Math.min(currentQty + qtyToAdd, maxStock),
@@ -54,9 +53,8 @@ export const useCart = create<CartState>()(
           get().removeItem(variantId);
           return;
         }
-        // Tope en el stock conocido: el + del carrito permitía pedir más de lo que hay
-        // y recién fallaba en el checkout.
-        set((state) => ({
+
+set((state) => ({
           items: state.items.map((item) =>
             item.variantId === variantId
               ? { ...item, quantity: Math.min(quantity, item.maxStock ?? quantity) }
@@ -71,15 +69,11 @@ export const useCart = create<CartState>()(
         return get().items.reduce((total, item) => total + item.quantity, 0);
       },
 
-      // Referencia visual (precio de catálogo × cantidad) mientras no hay una
-      // quote del servidor. Nunca es el importe a cobrar: subtotal, descuentos,
-      // envío y total salen de POST /checkout/quote (useCheckoutQuote).
-      getReferenceSubtotal: () => {
+getReferenceSubtotal: () => {
         return get().items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
       },
 
-
-      syncToServer: async (mode: 'user' | 'guest') => {
+syncToServer: async (mode: 'user' | 'guest') => {
         const { items } = get();
         try {
           if (mode === 'user') {

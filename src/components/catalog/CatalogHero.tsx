@@ -5,11 +5,10 @@ import Image, { getImageProps } from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { StyleId, getCatalogHero, getStyle } from '@/lib/catalogFilters';
 
-
 interface CatalogHeroProps {
 
   styleId: StyleId | null;
-  /** Catálogo v2: nombre y portada del estilo cargados en el admin (tienen prioridad). */
+  
   styleName?: string | null;
   coverImage?: string | null;
   coverImageMobile?: string | null;
@@ -33,14 +32,9 @@ export default function CatalogHero({ styleId, styleName, coverImage, coverImage
       }).props
     : null;
 
+const [coverHeight, setCoverHeight] = useState<number | null>(null);
 
-  const [coverHeight, setCoverHeight] = useState<number | null>(null);
-
-
-
-
-
-  useEffect(() => {
+useEffect(() => {
     const hero = heroRef.current;
     if (!hero) return;
 
@@ -62,7 +56,7 @@ export default function CatalogHero({ styleId, styleName, coverImage, coverImage
 
       <section
         ref={heroRef}
-        className="fixed inset-x-0 top-16 z-0 w-full bg-white sm:top-[72px]"
+        className="fixed inset-x-0 top-0 z-0 w-full bg-white"
       >
         <div className={`relative w-full ${art.mobileSrc ? 'aspect-[4/5] sm:aspect-[12/5]' : 'aspect-[12/5]'}`}>
 
@@ -103,8 +97,7 @@ export default function CatalogHero({ styleId, styleName, coverImage, coverImage
           </AnimatePresence>
         </div>
 
-
-        <motion.div
+<motion.div
           key={caption}
           initial={reduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

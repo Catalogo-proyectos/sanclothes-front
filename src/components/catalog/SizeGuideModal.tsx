@@ -24,21 +24,18 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
   const titleId = useId();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const [apiChart, setApiChart] = useState<Record<string, Record<string, string>> | null>(null);
 
   useEffect(() => {
     if (!category) return;
+    let ignore = false;
     fetchSizeGuide(category).then((data) => {
-      if (data.chart && Object.keys(data.chart).length > 0) {
+      if (!ignore && data.chart && Object.keys(data.chart).length > 0) {
         setApiChart(data.chart);
       }
     }).catch(() => {  });
+    return () => { ignore = true; };
   }, [category]);
 
   useEffect(() => {
@@ -56,13 +53,12 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
     previouslyFocused.current = document.activeElement;
     closeButtonRef.current?.focus();
     return () => {
       (previouslyFocused.current as HTMLElement | null)?.focus?.();
     };
-  }, [mounted]);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -96,8 +92,6 @@ export default function SizeGuideModal({ activeSize, category, onClose }: SizeGu
   const apiColumns = apiChart && apiSizes.length > 0
     ? Object.keys(apiChart[apiSizes[0]])
     : [];
-
-  if (!mounted) return null;
 
   return createPortal(
     <div

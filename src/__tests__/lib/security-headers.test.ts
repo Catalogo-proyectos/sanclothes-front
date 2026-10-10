@@ -28,7 +28,7 @@ describe('headers de seguridad del storefront (M4)', () => {
     const rules = await nextConfig.headers!();
     const all = rules.find((r) => r.source === '/:path*');
     expect(all?.headers).toEqual(SECURITY_HEADERS);
-    // Las reglas de caché de assets siguen presentes.
+    
     expect(rules.some((r) => r.source === '/img/:path*')).toBe(true);
   });
 });

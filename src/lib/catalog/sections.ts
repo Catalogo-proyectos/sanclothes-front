@@ -1,27 +1,15 @@
 import type { CatalogProduct } from '@/types/api';
 
-/**
- * Catálogo v2 — armado de secciones (una por tipo de prenda) con bentos.
- * Funciones puras: todo el layout del catálogo sale de acá y se testea sin DOM.
- *
- * Reglas (santclothesback/docs/PLAN-CATALOGO-V2-2026-10-05.md):
- *  - Una sección por tipo de prenda, en el orden de `sortOrder` del admin.
- *  - Sin productos marcados como bento → la sección es solo grilla de cards.
- *  - Cada bento toma hasta 4 productos de SU sección para mostrarlos al lado;
- *    un producto nunca aparece dos veces y un bento nunca se repite.
- *  - El armado depende de cuántos productos quedan al lado del bento.
- */
-
 export type BentoArrangement =
-  /** 0 al lado: el bento ocupa todo el ancho. */
+  
   | 'banner'
-  /** 1 al lado: mitad y mitad. */
+  
   | 'split'
-  /** 2 al lado: dos cards apiladas. */
+  
   | 'stack'
-  /** 3 al lado: 3 cards + tarjeta "Ver todas". */
+  
   | 'trio'
-  /** 4 al lado: 2×2. */
+  
   | 'quad';
 
 export const SIDE_CARDS = 4;
@@ -37,12 +25,12 @@ export interface BentoBand {
 export interface CatalogSection {
   categoryCode: string;
   categoryName: string;
-  /** Total de productos de la sección (bentos incluidos). */
+  
   total: number;
   bands: BentoBand[];
-  /** Cards normales visibles debajo de los bentos. */
+  
   grid: CatalogProduct[];
-  /** Cards que quedaron fuera por el límite de filas ("Ver todas (N)"). */
+  
   hiddenCount: number;
 }
 
@@ -62,7 +50,6 @@ export function arrangementFor(sideCount: number): BentoArrangement {
 
 const time = (p: CatalogProduct) => (p.createdAt ? Date.parse(p.createdAt) || 0 : 0);
 
-/** Orden por defecto dentro de una sección: más nuevos primero (estable). */
 export function newestFirst(products: CatalogProduct[]): CatalogProduct[] {
   return products
     .map((product, index) => ({ product, index }))
@@ -70,18 +57,12 @@ export function newestFirst(products: CatalogProduct[]): CatalogProduct[] {
     .map(({ product }) => product);
 }
 
-/** Bentos de una sección: prioridad ascendente (0 = primero), luego los más nuevos. */
 export function orderBentos(products: CatalogProduct[]): CatalogProduct[] {
   return newestFirst(products.filter((p) => p.bento)).sort(
     (a, b) => (a.bento?.priority ?? 0) - (b.bento?.priority ?? 0)
   );
 }
 
-/**
- * Arma bandas de bento + grilla para los productos de UNA sección (ya en el
- * orden en que deben verse). `maxGridRows` limita las filas de cards normales;
- * `null` = sin límite (vista "Ver todas").
- */
 export function buildSectionBody(
   products: CatalogProduct[],
   { maxGridRows = SECTION_GRID_ROWS, perRow = CARDS_PER_ROW }: { maxGridRows?: number | null; perRow?: number } = {}
@@ -105,10 +86,6 @@ export function buildSectionBody(
   };
 }
 
-/**
- * Agrupa por tipo de prenda en el orden del admin. Tipos que el catálogo trae
- * pero la taxonomía no conoce (p. ej. combos) van al final, por nombre.
- */
 export function buildSections(
   products: CatalogProduct[],
   categories: CategoryOrder[],
@@ -146,7 +123,6 @@ function nameOf(code: string, byCode: Map<string, CatalogProduct[]>): string {
   return byCode.get(code)?.[0]?.categoryName || code;
 }
 
-/** Título del bento: el del admin o, si no tiene, el nombre del tipo de prenda. */
 export function bentoTitle(product: CatalogProduct): string {
   return product.bento?.title?.trim() || product.categoryName || product.category;
 }

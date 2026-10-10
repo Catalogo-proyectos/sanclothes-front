@@ -1,8 +1,4 @@
-/**
- * Contrato de POST /api/checkout/quote (backend A2, lib/pricing/quote.ts).
- * El backend es la única fuente de verdad monetaria: estos importes se
- * muestran tal cual, nunca se recalculan en el storefront.
- */
+
 
 export interface QuoteItemRequest {
   productId: string;
@@ -35,7 +31,7 @@ export type QuoteCouponStatus = 'APPLIED' | 'NOT_APPLIED' | 'INVALID' | 'REQUIRE
 export interface QuoteCoupon {
   code: string;
   status: QuoteCouponStatus;
-  /** APPLIED → null. NOT_APPLIED → TIER_IS_GREATER | NO_DISCOUNT. INVALID → código público (COUPON_EXPIRED, …). */
+  
   reason: string | null;
   message: string | null;
   amount: number;

@@ -12,7 +12,7 @@ interface CatalogSplitHeroProps {
 }
 
 export default function CatalogSplitHero({
-  imageSrc = '/img/hero/IMG_4390.webp',
+  imageSrc = '/img/web/hero/IMG_4390.webp',
   imageAlt = 'SANT CLOTHES® — Nueva Colección Atelier',
   title = 'NUEVA COLECCIÓN',
   subtitle = 'Descubre las prendas Sant',
@@ -42,34 +42,29 @@ export default function CatalogSplitHero({
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/45 transition-colors duration-500" />
 
-
-          <div className="absolute bottom-6 left-6 z-10">
+<div className="absolute bottom-6 left-6 z-10">
             <span className="bg-black/60 backdrop-blur-md text-white border border-white/20 text-[10px] font-mono font-bold px-3.5 py-1.5 uppercase tracking-[0.2em]">
               SANT CLOTHES
             </span>
           </div>
         </div>
 
-
-        <div className="flex flex-col justify-center items-start p-8 sm:p-12 lg:p-16 bg-[#17191c] text-white relative z-10">
+<div className="flex flex-col justify-center items-start p-8 sm:p-12 lg:p-16 bg-[#17191c] text-white relative z-10">
           <div className="max-w-xl">
 
             <span className="inline-block text-[11px] font-mono font-bold uppercase tracking-[0.25em] text-white/60 mb-4 border-l-2 border-white pl-3">
               DROP #01 · 2026
             </span>
 
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-[family-name:var(--font-bebas)] uppercase tracking-[0.06em] text-white leading-none mb-4 drop-shadow-md">
+<h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-[family-name:var(--font-bebas)] uppercase tracking-[0.06em] text-white leading-none mb-4 drop-shadow-md">
               {title}
             </h1>
 
-
-            <p className="text-base sm:text-lg lg:text-xl text-zinc-300 font-light tracking-wide leading-relaxed mb-8">
+<p className="text-base sm:text-lg lg:text-xl text-zinc-300 font-light tracking-wide leading-relaxed mb-8">
               {subtitle}
             </p>
 
-
-            <button
+<button
               type="button"
               onClick={handleScrollToGrid}
               className="group h-13 sm:h-14 px-8 border-2 border-white bg-transparent text-white font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-[0.12em] uppercase cursor-pointer hover:bg-white hover:text-[#17191c] transition-all duration-300 flex items-center gap-3 shadow-lg active:scale-[0.98]"

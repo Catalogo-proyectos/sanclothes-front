@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
@@ -20,7 +20,7 @@ const CATEGORIES: HeroCategory[] = [
     title: 'CASUAL',
     subtitle: 'CONFORT DIARIO',
     href: '/catalog?category=casual',
-    imageSrc: '/img/hero/IMG_3202.webp',
+    imageSrc: '/img/web/hero/IMG_3202.webp',
     alt: 'SANT - Moda Casual',
   },
   {
@@ -28,7 +28,7 @@ const CATEGORIES: HeroCategory[] = [
     title: 'STREETWEAR',
     subtitle: 'EXPRESA TU ESTILO',
     href: '/catalog?category=streetwear',
-    imageSrc: '/img/hero/IMG_3148.webp',
+    imageSrc: '/img/web/hero/IMG_3148.webp',
     alt: 'SANT - Streetwear Drop',
   },
   {
@@ -36,7 +36,7 @@ const CATEGORIES: HeroCategory[] = [
     title: 'OLD MONEY',
     subtitle: 'ELEGANCIA ATEMPORAL',
     href: '/catalog?category=old-money',
-    imageSrc: '/img/hero/IMG_2334.webp',
+    imageSrc: '/img/web/hero/IMG_2334.webp',
     alt: 'SANT - Old Money Collection',
   },
   {
@@ -44,27 +44,73 @@ const CATEGORIES: HeroCategory[] = [
     title: 'SPORTS',
     subtitle: 'RENDI AL MAXIMO',
     href: '/catalog?category=sports',
-    imageSrc: '/img/hero/IMG_1460.webp',
+    imageSrc: '/img/web/hero/IMG_1460.webp',
     alt: 'SANT - Performance Sports',
   },
 ];
 
 export default function Hero() {
   const [activeMobileSlide, setActiveMobileSlide] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    const section = sectionRef.current;
+    if (!section) return;
 
-    const intervalId = window.setInterval(() => {
-      setActiveMobileSlide((current) => (current + 1) % CATEGORIES.length);
-    }, 4200);
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let isVisible = false;
+    let intervalId: number | null = null;
 
-    return () => window.clearInterval(intervalId);
+    const stop = () => {
+      if (intervalId === null) return;
+      window.clearInterval(intervalId);
+      intervalId = null;
+    };
+
+    const sync = () => {
+      const shouldRun =
+        mobileQuery.matches &&
+        !reducedMotionQuery.matches &&
+        isVisible &&
+        document.visibilityState === 'visible';
+
+      if (!shouldRun) {
+        stop();
+        return;
+      }
+      if (intervalId !== null) return;
+
+      intervalId = window.setInterval(() => {
+        setActiveMobileSlide((current) => (current + 1) % CATEGORIES.length);
+      }, 4200);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        sync();
+      },
+      { threshold: 0.05 },
+    );
+
+    observer.observe(section);
+    mobileQuery.addEventListener('change', sync);
+    reducedMotionQuery.addEventListener('change', sync);
+    document.addEventListener('visibilitychange', sync);
+
+    return () => {
+      stop();
+      observer.disconnect();
+      mobileQuery.removeEventListener('change', sync);
+      reducedMotionQuery.removeEventListener('change', sync);
+      document.removeEventListener('visibilitychange', sync);
+    };
   }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="hero-cover-zone"
       className="relative w-full bg-[#17191c] text-[#f6f8f9] overflow-hidden select-none"
     >
@@ -85,7 +131,7 @@ export default function Hero() {
                 fill
                 quality={85}
                 sizes="(min-width: 768px) 25vw, 100vw"
-                className="object-cover object-center scale-100 group-hover:scale-105 group-hover:brightness-110 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                className="object-cover object-center scale-100 group-hover:scale-105 group-hover:brightness-110 transition-[transform,filter] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent group-hover:from-black/75 transition-colors duration-500" />
             </div>
@@ -157,7 +203,7 @@ export default function Hero() {
               onClick={() => setActiveMobileSlide(index)}
               aria-label={`Ver ${cat.title}`}
               aria-current={index === activeMobileSlide ? 'true' : undefined}
-              // La barrita mide 2px; el ::before invisible agranda el área táctil.
+
               className={`relative h-[2px] transition-colors duration-300 before:absolute before:inset-x-0 before:-inset-y-5 before:content-[''] ${index === activeMobileSlide ? 'bg-white' : 'bg-white/25'}`}
             />
           ))}

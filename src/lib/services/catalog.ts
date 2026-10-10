@@ -9,9 +9,6 @@ import type {
   ProductReview,
 } from '@/types/api';
 
-
-
-
 export interface CatalogQuery {
   cut?: string;
   category?: string;
@@ -54,12 +51,10 @@ export async function fetchProduct(productId: string): Promise<CatalogProduct | 
   }
 }
 
-
 export async function fetchCuts(): Promise<CutInfo[]> {
   const res = await apiCall<{ cuts: CutInfo[] }>('GET', '/catalog/cuts');
   return res.cuts ?? [];
 }
-
 
 export async function searchCatalog(query: string): Promise<SearchSuggestion[]> {
   if (!query.trim()) return [];
@@ -69,7 +64,6 @@ export async function searchCatalog(query: string): Promise<SearchSuggestion[]> 
   const data = await res.json();
   return data.suggestions ?? [];
 }
-
 
 export async function fetchSizeGuide(category: string): Promise<{
   id?: string;
@@ -84,7 +78,6 @@ export async function fetchSizeGuide(category: string): Promise<{
   return res.json();
 }
 
-
 export async function fetchProductReviews(productId: string): Promise<ProductReview[]> {
   try {
     return await apiCall<ProductReview[]>('GET', `/catalog/${productId}/reviews`);
@@ -93,14 +86,12 @@ export async function fetchProductReviews(productId: string): Promise<ProductRev
   }
 }
 
-
 export async function submitProductReview(
   productId: string,
   review: { rating: number; comment?: string; guestName?: string; photoUrl?: string },
 ): Promise<ProductReview> {
   return apiCall<ProductReview>('POST', `/catalog/${productId}/reviews`, review);
 }
-
 
 export async function joinWaitlist(
   sku: string,

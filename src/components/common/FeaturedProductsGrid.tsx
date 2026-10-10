@@ -21,7 +21,6 @@ import {
   type QuickSize,
 } from '@/lib/catalog/quickBuy';
 
-
 const GRID_CAPACITY = 8;
 
 export interface GridProduct {
@@ -33,14 +32,12 @@ export interface GridProduct {
   priceFormatted: string;
   image: string;
   imageAlt: string;
-  /** Sólo talles con variante real (SKU que el checkout acepta). */
+  
   sizes: QuickSize[];
   variants: ProductVariant[];
-  /** Tiene más de un corte: el cliente lo elige en la ficha. */
+  
   multiCut: boolean;
 }
-
-
 
 export function toGridProduct(product: CatalogProduct): GridProduct {
   const effectivePrice = product.discountPrice ?? product.price;
@@ -63,15 +60,10 @@ export function toGridProduct(product: CatalogProduct): GridProduct {
   };
 }
 
-/** Talle que muestra la tarjeta: el elegido o, si no, el primero con stock. */
 export function currentGridSize(product: GridProduct, picked: string | undefined): string | undefined {
   return picked ?? defaultQuickSize(product.sizes);
 }
 
-/**
- * Ítem de carrito con la variante real del talle, o `null` si no hay una
- * inequívoca con stock (varios cortes, agotado o sin variantes).
- */
 export function toCartItem(product: GridProduct, size: string | undefined): CartItem | null {
   const variant = quickVariant(product.variants, size);
   if (!variant) return null;
@@ -80,7 +72,6 @@ export function toCartItem(product: GridProduct, size: string | undefined): Cart
     variant
   );
 }
-
 
 interface FeaturedProductsGridProps {
   products: CatalogProduct[];
@@ -110,16 +101,13 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
     });
   };
 
-
-
-  if (gridProducts.length === 0) return null;
+if (gridProducts.length === 0) return null;
 
   return (
     <section className="w-full bg-[#f6f8f9] text-[#17191c] py-20 px-6 sm:px-12 border-b border-[#17191c]/10">
       <div className="max-w-[1440px] mx-auto">
 
-
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-[#17191c]/10">
+<div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 pb-6 border-b border-[#17191c]/10">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Flame className="w-4 h-4 text-[#17191c]" />
@@ -147,8 +135,7 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
           </Link>
         </div>
 
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {gridProducts.map((product, idx) => {
             const currentSize = currentGridSize(product, selectedSizes[product.id]);
             const canAdd = toCartItem(product, currentSize) !== null;
@@ -179,8 +166,7 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
                   />
                 </Link>
 
-
-                <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
+<div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
 
                   <Link
                     href={`/products/${product.id}`}
@@ -200,8 +186,7 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
                     </span>
                   </Link>
 
-
-                  <div className="absolute inset-0 z-20 bg-white text-[#17191c] p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-xl border border-zinc-200">
+<div className="absolute inset-0 z-20 bg-white text-[#17191c] p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-xl border border-zinc-200">
 
                     <div className="flex items-center justify-center gap-1.5">
                       {product.sizes.map(({ size: sz, soldOut }) => (
@@ -223,9 +208,8 @@ export default function FeaturedProductsGrid({ products }: FeaturedProductsGridP
                       ))}
                     </div>
 
+{product.sizes.length === 0 || product.multiCut ? (
 
-                    {product.sizes.length === 0 || product.multiCut ? (
-                      // Varios cortes: el cliente elige el corte en la ficha, con el talle ya marcado.
                       <Link
                         href={productHref(product.id, selectedSizes[product.id])}
                         className="w-full h-9 bg-[#17191c] text-white hover:bg-zinc-800 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"

@@ -1,8 +1,6 @@
 import { config } from '@/lib/config';
 import { ensureCsrfToken, getGuestCartToken, hasStoredSession } from '@/lib/auth';
 
-
-
 interface CartPayload {
   items: unknown[];
 }
@@ -18,7 +16,7 @@ interface CartSaveResponse {
 async function cartFetch<T>(
   method: 'GET' | 'POST',
   path: string,
-  /** Token del carrito de invitado, o `'session'`: la cookie del cliente logueado (M5). */
+  
   auth: string,
   body?: unknown,
 ): Promise<T> {
@@ -48,8 +46,6 @@ async function cartFetch<T>(
   return res.json();
 }
 
-
-
 export async function fetchUserCart(): Promise<CartPayload> {
   if (!hasStoredSession()) throw new Error('Not authenticated');
   return cartFetch<CartPayload>('GET', '/api/v1/me/cart', 'session');
@@ -59,8 +55,6 @@ export async function saveUserCart(items: unknown[]): Promise<CartSaveResponse> 
   if (!hasStoredSession()) throw new Error('Not authenticated');
   return cartFetch<CartSaveResponse>('POST', '/api/v1/me/cart', 'session', { items });
 }
-
-
 
 export async function fetchGuestCart(): Promise<CartPayload> {
   const token = getGuestCartToken();

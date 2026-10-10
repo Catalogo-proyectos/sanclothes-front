@@ -16,7 +16,6 @@ interface ComboPurchasePanelProps {
   image?: string;
 }
 
-/** Compra de un combo: el cliente elige el talle de cada prenda. */
 export default function ComboPurchasePanel({ product, combo, image }: ComboPurchasePanelProps) {
   const router = useRouter();
   const addItem = useCart((state) => state.addItem);

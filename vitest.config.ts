@@ -8,9 +8,6 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/__tests__/setup.ts'],
-    // Los tests del adapter ejercitan el dataset mock; en runtime el mock
-    // solo se activa con NEXT_PUBLIC_USE_MOCK=true explícito.
-    env: { NEXT_PUBLIC_USE_MOCK: 'true' },
     alias: {
       '@': path.resolve(__dirname, './src'),
     },

@@ -1,33 +1,37 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { OrderSummaryItem, CustomerTier, TicketDetail } from '@/types/api';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import {
+  Package,
+  MessageSquare,
+  User,
+  Receipt,
+  ArrowRight,
+  Crown,
+  ShoppingBag,
+  KeyRound,
+  Send,
+} from 'lucide-react';
+import type { OrderSummaryItem, CustomerTier, TicketDetail } from '@/types/api';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { apiCall } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { config } from '@/lib/config';
 import PhoneInput from '@/components/common/PhoneInput';
+import StatusBadge, { type StatusBadgeTone } from '@/components/common/StatusBadge';
 import OrderTicketModal from '@/components/customer/OrderTicketModal';
 import { toPyE164, toPyLocalDigits } from '@/lib/phone';
 
-const ORDER_STATUS_LABELS: Record<string, string> = {
-  pending: 'Pendiente',
-  processing: 'En Proceso',
-  confirmed: 'Confirmado',
-  shipped: 'Enviado',
-  delivered: 'Entregado',
-  cancelled: 'Cancelado',
-  returned: 'Devuelto',
-};
-
-const ORDER_STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-800',
-  processing: 'bg-blue-100 text-blue-800',
-  confirmed: 'bg-emerald-100 text-emerald-800',
-  shipped: 'bg-indigo-100 text-indigo-800',
-  delivered: 'bg-emerald-100 text-emerald-800',
-  cancelled: 'bg-red-100 text-red-800',
-  returned: 'bg-slate-100 text-slate-800',
+const ORDER_STATUS_CONFIG: Record<string, { label: string; tone: StatusBadgeTone; live: boolean }> = {
+  pending: { label: 'Pendiente', tone: 'amber', live: true },
+  processing: { label: 'En Proceso', tone: 'amber', live: true },
+  confirmed: { label: 'Confirmado', tone: 'amber', live: true },
+  shipped: { label: 'Enviado', tone: 'sky', live: true },
+  delivered: { label: 'Entregado', tone: 'emerald', live: false },
+  cancelled: { label: 'Cancelado', tone: 'red', live: false },
+  returned: { label: 'Devuelto', tone: 'zinc', live: false },
 };
 
 export default function Dashboard() {
@@ -35,29 +39,23 @@ export default function Dashboard() {
 
   const [activeTab, setActiveTab] = useState<'orders' | 'tickets' | 'profile'>('orders');
 
-
   const [orders, setOrders] = useState<OrderSummaryItem[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OrderSummaryItem | null>(null);
   const closeOrderTicket = useCallback(() => setSelectedOrder(null), []);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
-
   const [tickets, setTickets] = useState<TicketDetail[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
 
-
   const [tier, setTier] = useState<CustomerTier | null>(null);
-
 
   const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '' });
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState('');
 
-
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '' });
   const [savingPw, setSavingPw] = useState(false);
   const [pwMsg, setPwMsg] = useState('');
-
 
   const [newSubject, setNewSubject] = useState('');
   const [newMessage, setNewMessage] = useState('');
@@ -66,7 +64,6 @@ export default function Dashboard() {
   const fetchOrders = useCallback(async () => {
     setLoadingOrders(true);
     try {
-
       const data = await apiCall<OrderSummaryItem[]>('GET', '/me/orders', undefined, true);
       setOrders(Array.isArray(data) ? data : []);
     } catch {
@@ -90,26 +87,24 @@ export default function Dashboard() {
 
   const fetchProfile = useCallback(async () => {
     try {
-
       const me = await apiCall<{ id: string; firstName: string; lastName: string; email: string; phone?: string }>('GET', '/me', undefined, true);
       setProfileForm({
         firstName: me.firstName || '',
         lastName: me.lastName || '',
         phone: toPyE164(toPyLocalDigits(me.phone || '')),
       });
-    } catch {  }
+    } catch { }
   }, []);
 
   const fetchTier = useCallback(async () => {
     if (!config.features.loyalty) return;
     try {
-
       const url = `${config.api.origin}/api/v1/me/tier`;
       const res = await fetch(url, { credentials: 'include' });
       if (res.ok) {
         setTier(await res.json());
       }
-    } catch {  }
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -121,14 +116,13 @@ export default function Dashboard() {
     return () => window.clearTimeout(timeoutId);
   }, [isLoggedIn, fetchOrders, fetchTickets, fetchProfile, fetchTier]);
 
-
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingProfile(true);
     setProfileMsg('');
     try {
       await apiCall('PATCH', '/me', profileForm, true);
-      setProfileMsg('Perfil actualizado.');
+      setProfileMsg('Perfil actualizado correctamente.');
     } catch (err) {
       setProfileMsg((err as Error).message);
     } finally {
@@ -136,14 +130,13 @@ export default function Dashboard() {
     }
   };
 
-
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingPw(true);
     setPwMsg('');
     try {
       await apiCall('POST', '/me/change-password', pwForm, true);
-      setPwMsg('Contraseña actualizada.');
+      setPwMsg('Contraseña actualizada con éxito.');
       setPwForm({ currentPassword: '', newPassword: '' });
     } catch (err) {
       setPwMsg((err as Error).message);
@@ -172,85 +165,184 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      <div>
-        <h1 className="text-3xl font-black uppercase text-black">Mi Cuenta & Pedidos</h1>
-        <p className="text-xs text-slate-500 mt-1">Gestión de historial de compras, perfil y soporte.</p>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-10">
+      
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#b6b2a7]/40 pb-6">
+        <div className="space-y-1">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#50524a] block">
+            CLIENTE REGISTRADO · SANT CLUB
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-none">
+            {profileForm.firstName ? `HOLA, ${profileForm.firstName.toUpperCase()} ${profileForm.lastName ? profileForm.lastName.toUpperCase() : ''}` : 'PANEL PRIVADO'}
+          </h2>
+        </div>
+        <div className="flex items-center gap-3">
+          <StatusBadge tone="emerald">Sesión activa</StatusBadge>
+        </div>
       </div>
 
-
-      {tier && tier.currentTier && (
-        <div className="p-4 bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-2xl flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Tu nivel</p>
-            <p className="text-lg font-black">{tier.currentTier.name}</p>
-            <p className="text-xs text-slate-300">{tier.currentTier.discountPercentage}% de descuento</p>
+{tier && tier.currentTier && (
+        <div className="bg-[#17191c] text-white border border-[#17191c] p-6 sm:p-8 relative overflow-hidden shadow-md">
+          <div className="absolute right-0 top-0 translate-x-10 -translate-y-6 pointer-events-none opacity-5 select-none">
+            <span className="font-[family-name:var(--font-bebas)] text-[160px] leading-none text-white">SANT</span>
           </div>
-          {tier.nextTier && (
-            <div className="text-right">
-              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Siguiente nivel</p>
-              <p className="text-sm font-bold">{tier.nextTier.name}</p>
-              <p className="text-xs text-slate-300">Faltan {formatCurrency(tier.centsToNextTier)}</p>
-              <div className="w-32 h-1.5 bg-slate-600 rounded-full mt-1">
-                <div className="h-full bg-white rounded-full" style={{ width: `${tier.progressPercentage}%` }} />
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Crown className="w-4 h-4 text-amber-400 stroke-[2]" />
+                <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-zinc-400">
+                  MEMBRESÍA EXCLUSIVA · SANT CLUB
+                </span>
               </div>
+              <h3 className="text-3xl sm:text-4xl font-[family-name:var(--font-bebas)] tracking-wider uppercase text-white leading-none">
+                {tier.currentTier.name}
+              </h3>
+              <p className="text-xs font-mono text-zinc-300 tracking-wide">
+                {tier.currentTier.discountPercentage}% DE DESCUENTO EN TODOS LOS DROPS Y COMPRAS
+              </p>
             </div>
-          )}
+
+            {tier.nextTier && (
+              <div className="md:text-right space-y-1.5 min-w-[240px]">
+                <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-400 block">
+                  SIGUIENTE NIVEL: <span className="text-white font-bold">{tier.nextTier.name.toUpperCase()}</span>
+                </span>
+                <p className="text-xs font-mono text-zinc-300">
+                  FALTAN <span className="font-bold text-white">{formatCurrency(tier.centsToNextTier)}</span>
+                </p>
+                <div className="w-full md:w-60 h-2 bg-zinc-800 border border-white/20 p-0.5 mt-2">
+                  <div
+                    className="h-full bg-white transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(0, tier.progressPercentage))}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
+<div className="flex border-b border-[#b6b2a7]/50 w-full sm:gap-8">
+        {(['orders', 'tickets', 'profile'] as const).map((tab) => {
+          const isActive = activeTab === tab;
+          const desktopLabel =
+            tab === 'orders' ? 'Mis Pedidos' : tab === 'tickets' ? 'Soporte al Cliente' : 'Mi Perfil & Seguridad';
+          const mobileLabel =
+            tab === 'orders' ? 'Mis Pedidos' : tab === 'tickets' ? 'Soporte' : 'Mi Perfil';
+          const Icon = tab === 'orders' ? Package : tab === 'tickets' ? MessageSquare : User;
 
-      <div className="flex border-b border-slate-200 gap-4">
-        {(['orders', 'tickets', 'profile'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-3 text-xs font-black uppercase tracking-wider border-b-2 transition-all ${
-              activeTab === tab ? 'border-black text-black' : 'border-transparent text-slate-400 hover:text-slate-700'
-            }`}
-          >
-            {tab === 'orders' ? 'Mis Pedidos' : tab === 'tickets' ? 'Soporte' : 'Mi Perfil'}
-          </button>
-        ))}
+          return (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`relative flex-1 sm:flex-initial justify-center sm:justify-start pb-3 sm:pb-3.5 pt-1 text-[11px] sm:text-[13px] font-bold uppercase tracking-[0.08em] sm:tracking-[0.16em] transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5 sm:gap-2 px-1 sm:px-0 ${isActive ? 'text-[#17191c]' : 'text-[#50524a]/70 hover:text-[#17191c]'
+                }`}
+            >
+              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.75] shrink-0" />
+              <span className="hidden sm:inline">{desktopLabel}</span>
+              <span className="sm:hidden">{mobileLabel}</span>
+              {tab === 'orders' && !loadingOrders && orders.length > 0 && (
+                <span
+                  className={`text-[9.5px] font-mono px-1.5 py-0.2 border shrink-0 ${isActive
+                      ? 'bg-[#17191c] text-white border-[#17191c]'
+                      : 'bg-white text-[#50524a] border-[#b6b2a7]'
+                    }`}
+                >
+                  {orders.length}
+                </span>
+              )}
+              {isActive && (
+                <motion.span
+                  layoutId="dashboard-active-tab-bar"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#17191c]"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
+            </button>
+          );
+        })}
       </div>
 
-
-      {activeTab === 'orders' && (
+{activeTab === 'orders' && (
         <div className="space-y-4">
           {loadingOrders ? (
-            <div className="p-8 text-center text-xs text-slate-400 font-bold">Cargando pedidos...</div>
+            <div className="p-12 text-center border border-[#b6b2a7]/50 bg-white">
+              <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#50524a]">
+                Consultando pedidos registrados en el atelier…
+              </span>
+            </div>
           ) : orders.length === 0 ? (
-            <div className="p-12 text-center bg-slate-50 rounded-2xl text-xs text-slate-500 font-medium">
-              No registrás pedidos aún.
+            <div className="p-12 sm:p-16 text-center border border-[#b6b2a7]/60 bg-white space-y-5">
+              <ShoppingBag className="w-10 h-10 text-[#b6b2a7] stroke-[1] mx-auto" />
+              <div className="space-y-1.5">
+                <h3 className="text-3xl font-[family-name:var(--font-bebas)] tracking-wider text-[#17191c] uppercase">
+                  NO REGISTRÁS PEDIDOS AÚN
+                </h3>
+                <p className="text-xs font-mono text-[#50524a] uppercase tracking-wide max-w-sm mx-auto">
+                  Descubrí nuestros drops de alto gramaje, moldería boxfit y confección nacional en Ciudad del Este.
+                </p>
+              </div>
+              <Link
+                href="/catalog"
+                className="inline-flex items-center gap-2 bg-[#17191c] text-white text-xs font-bold uppercase tracking-[0.16em] px-6 py-3.5 hover:bg-neutral-800 transition-colors shadow-xs"
+              >
+                <span>Explorar Catálogo</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           ) : (
-            orders.map((order) => (
-              <button
-                type="button"
-                key={order.id}
-                onClick={() => setSelectedOrder(order)}
-                aria-label={`Ver ticket del pedido ${order.orderNumber}`}
-                className="w-full text-left bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between transition-colors hover:border-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black cursor-pointer"
-              >
-                <div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-extrabold text-sm text-black">{order.orderNumber}</span>
-                    <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${
-                      ORDER_STATUS_COLORS[order.status] || 'bg-slate-100 text-slate-700'
-                    }`}>
-                      {ORDER_STATUS_LABELS[order.status] || order.status}
-                    </span>
+            orders.map((order) => {
+              const statusConfig = ORDER_STATUS_CONFIG[order.status] || {
+                label: order.status,
+                tone: 'zinc' as const,
+                live: false,
+              };
+
+              return (
+                <div
+                  key={order.id}
+                  onClick={() => setSelectedOrder(order)}
+                  className="group relative bg-white border border-[#b6b2a7] p-5 sm:p-7 transition-all duration-200 hover:border-[#17191c] hover:shadow-[0_8px_30px_rgba(23,25,28,0.06)] cursor-pointer"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-2.5">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <span className="font-mono font-bold text-sm sm:text-base text-[#17191c] tracking-wider">
+                          PEDIDO #{order.orderNumber}
+                        </span>
+                        <StatusBadge tone={statusConfig.tone} live={statusConfig.live}>
+                          {statusConfig.label}
+                        </StatusBadge>
+                      </div>
+
+                      <p className="text-xs font-mono text-[#50524a] uppercase tracking-wide">
+                        <span>FECHA: {formatDate(order.createdAt).toUpperCase()}</span>
+                        <span className="mx-2 text-[#b6b2a7]">·</span>
+                        <span>
+                          {order.itemCount} {order.itemCount === 1 ? 'PRENDA' : 'PRENDAS'}
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-[#17191c]/10 pt-3 sm:pt-0 gap-2">
+                      <span className="text-2xl sm:text-3xl font-[family-name:var(--font-bebas)] text-[#17191c] tracking-wide leading-none">
+                        {formatCurrency(order.total)}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={`Ver ticket del pedido ${order.orderNumber}`}
+                        className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.15em] border border-[#17191c] px-3.5 py-1.5 bg-transparent text-[#17191c] group-hover:bg-[#17191c] group-hover:text-white transition-colors cursor-pointer"
+                      >
+                        <Receipt className="w-3.5 h-3.5 stroke-[1.75]" />
+                        <span>Ver Ticket</span>
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Fecha: {formatDate(order.createdAt)} | {order.itemCount} {order.itemCount === 1 ? 'item' : 'items'}
-                  </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-base font-black text-black">{formatCurrency(order.total)}</p>
-                  <p className="text-[10px] text-slate-400">Ver ticket →</p>
-                </div>
-              </button>
-            ))
+              );
+            })
           )}
         </div>
       )}
@@ -258,142 +350,213 @@ export default function Dashboard() {
       {selectedOrder && (
         <OrderTicketModal
           orderId={selectedOrder.id}
-          statusLabel={ORDER_STATUS_LABELS[selectedOrder.status] || selectedOrder.status}
+          statusLabel={ORDER_STATUS_CONFIG[selectedOrder.status]?.label || selectedOrder.status}
           onClose={closeOrderTicket}
         />
       )}
 
+{activeTab === 'tickets' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <div className="lg:col-span-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#17191c]/15 pb-2.5">
+              <h3 className="font-[family-name:var(--font-bebas)] text-xl sm:text-2xl tracking-wider text-[#17191c] uppercase leading-none">
+                TUS TICKETS & CONSULTAS
+              </h3>
+              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#50524a]">
+                ATENCIÓN DIRECTA
+              </span>
+            </div>
 
-      {activeTab === 'tickets' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <h3 className="text-sm font-extrabold uppercase text-slate-800">Tus Tickets</h3>
             {loadingTickets ? (
-              <div className="p-4 text-xs text-slate-400">Cargando tickets...</div>
+              <div className="p-8 text-center border border-[#b6b2a7]/50 bg-white text-xs font-mono text-[#50524a]">
+                Cargando tickets de soporte…
+              </div>
             ) : tickets.length === 0 ? (
-              <p className="text-xs text-slate-500">No tenés tickets abiertos.</p>
+              <div className="p-10 text-center border border-[#b6b2a7]/50 bg-white space-y-2">
+                <MessageSquare className="w-8 h-8 text-[#b6b2a7] stroke-[1] mx-auto" />
+                <p className="text-xs font-mono uppercase tracking-wide text-[#50524a]">
+                  No tenés tickets abiertos en este momento.
+                </p>
+              </div>
             ) : (
               tickets.map((ticket) => (
-                <div key={ticket.ticketId} className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-extrabold text-black">{ticket.ticketNumber}</span>
-                    <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                <div
+                  key={ticket.ticketId}
+                  className="bg-white border border-[#b6b2a7] p-5 space-y-2.5 hover:border-[#17191c] transition-colors"
+                >
+                  <div className="flex justify-between items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#17191c] tracking-wider">
+                      TICKET #{ticket.ticketNumber}
+                    </span>
+                    <span className="text-[9.5px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 border border-[#17191c] bg-[#17191c] text-white">
                       {ticket.status}
                     </span>
                   </div>
-                  <p className="text-xs font-bold text-slate-800 mt-1">{ticket.subject}</p>
+                  <p className="text-xs font-bold uppercase tracking-wide text-[#17191c]">
+                    {ticket.subject}
+                  </p>
                 </div>
               ))
             )}
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-sm font-extrabold uppercase text-slate-800">Crear Nuevo Ticket de Soporte</h3>
-            <form onSubmit={handleCreateTicket} className="space-y-3">
+<div className="lg:col-span-6 bg-white border border-[#17191c] p-6 sm:p-8 space-y-5 shadow-sm">
+            <div className="space-y-1 border-b border-[#17191c]/10 pb-3">
+              <h3 className="font-[family-name:var(--font-bebas)] text-2xl sm:text-3xl tracking-wider text-[#17191c] uppercase leading-none">
+                CREAR NUEVO TICKET
+              </h3>
+              <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#50524a]">
+                Respuesta directa del equipo atelier de Ciudad del Este.
+              </p>
+            </div>
+
+            <form onSubmit={handleCreateTicket} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-600 mb-1">Asunto</label>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#50524a] mb-1.5">
+                  Asunto de la Consulta
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ej: Estado de mi envío"
+                  placeholder="Ej: Estado de mi envío / Cambio de talle"
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+                  className="w-full bg-[#f6f8f9] border border-[#b6b2a7] px-3.5 py-2.5 text-xs text-[#17191c] placeholder:text-[#b6b2a7] focus:border-[#17191c] focus:bg-white focus:outline-none transition-colors rounded-none"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-600 mb-1">Mensaje</label>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#50524a] mb-1.5">
+                  Mensaje detallado
+                </label>
                 <textarea
                   required
                   rows={4}
-                  placeholder="Describí tu consulta..."
+                  placeholder="Describí tu consulta con el mayor detalle posible…"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+                  className="w-full bg-[#f6f8f9] border border-[#b6b2a7] px-3.5 py-2.5 text-xs text-[#17191c] placeholder:text-[#b6b2a7] focus:border-[#17191c] focus:bg-white focus:outline-none transition-colors rounded-none resize-none"
                 />
               </div>
               <button
                 type="submit"
                 disabled={submittingTicket}
-                className="w-full py-2.5 bg-black text-white text-xs font-extrabold uppercase rounded-xl hover:bg-slate-800"
+                className="w-full py-3.5 bg-[#17191c] text-white text-xs font-bold uppercase tracking-[0.18em] hover:bg-neutral-800 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
               >
-                {submittingTicket ? 'Enviando...' : 'Enviar Ticket'}
+                <Send className="w-3.5 h-3.5 stroke-[2]" />
+                <span>{submittingTicket ? 'Enviando Ticket…' : 'Enviar Ticket al Atelier'}</span>
               </button>
             </form>
           </div>
         </div>
       )}
 
+{activeTab === 'profile' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          
+          <div className="bg-white border border-[#b6b2a7] p-6 sm:p-8 space-y-5">
+            <div className="space-y-1 border-b border-[#17191c]/10 pb-3">
+              <h3 className="font-[family-name:var(--font-bebas)] text-2xl tracking-wider text-[#17191c] uppercase leading-none">
+                DATOS DEL PERFIL
+              </h3>
+              <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#50524a]">
+                Información personal para envíos y facturación.
+              </p>
+            </div>
 
-      {activeTab === 'profile' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-sm font-extrabold uppercase text-slate-800">Editar Perfil</h3>
             {profileMsg && (
-              <p className="text-xs font-bold text-emerald-700 bg-emerald-50 p-2 rounded-lg">{profileMsg}</p>
+              <p className="text-xs font-mono uppercase tracking-wider text-[#17191c] bg-[#f6f8f9] border border-[#17191c] p-2.5">
+                {profileMsg}
+              </p>
             )}
-            <form onSubmit={handleSaveProfile} className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#50524a] mb-1.5">
+                    Nombre
+                  </label>
                   <input
                     type="text"
                     value={profileForm.firstName}
                     onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+                    className="w-full bg-[#f6f8f9] border border-[#b6b2a7] px-3.5 py-2.5 text-xs text-[#17191c] focus:border-[#17191c] focus:bg-white focus:outline-none transition-colors rounded-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-600 mb-1">Apellido</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#50524a] mb-1.5">
+                    Apellido
+                  </label>
                   <input
                     type="text"
                     value={profileForm.lastName}
                     onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+                    className="w-full bg-[#f6f8f9] border border-[#b6b2a7] px-3.5 py-2.5 text-xs text-[#17191c] focus:border-[#17191c] focus:bg-white focus:outline-none transition-colors rounded-none"
                   />
                 </div>
               </div>
+
               <div>
-                <label htmlFor="profile-phone" className="block text-xs font-bold uppercase text-slate-600 mb-1">Celular / WhatsApp (opcional)</label>
+                <label
+                  htmlFor="profile-phone"
+                  className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#50524a] mb-1.5"
+                >
+                  Celular / WhatsApp (opcional)
+                </label>
                 <PhoneInput
                   id="profile-phone"
                   value={profileForm.phone}
                   onChange={(phone) => setProfileForm((prev) => ({ ...prev, phone }))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
-                  prefixClassName="text-xs text-slate-500"
+                  className="w-full bg-[#f6f8f9] border border-[#b6b2a7] px-3.5 py-2.5 text-xs text-[#17191c] focus:border-[#17191c] focus:bg-white focus:outline-none transition-colors rounded-none"
+                  prefixClassName="text-xs font-mono text-[#50524a]"
                 />
               </div>
+
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="w-full py-2.5 bg-black text-white text-xs font-extrabold uppercase rounded-xl hover:bg-slate-800"
+                className="w-full py-3.5 bg-[#17191c] text-white text-xs font-bold uppercase tracking-[0.18em] hover:bg-neutral-800 transition-colors disabled:opacity-50 cursor-pointer"
               >
-                {savingProfile ? 'Guardando...' : 'Guardar Cambios'}
+                {savingProfile ? 'Guardando Cambios…' : 'Guardar Cambios'}
               </button>
             </form>
           </div>
 
+<div className="bg-white border border-[#b6b2a7] p-6 sm:p-8 space-y-5">
+            <div className="space-y-1 border-b border-[#17191c]/10 pb-3">
+              <h3 className="font-[family-name:var(--font-bebas)] text-2xl tracking-wider text-[#17191c] uppercase leading-none">
+                SEGURIDAD & ACCESO
+              </h3>
+              <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#50524a]">
+                Actualizá tu contraseña de acceso privado a SANT CLUB.
+              </p>
+            </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-sm font-extrabold uppercase text-slate-800">Cambiar Contraseña</h3>
             {pwMsg && (
-              <p className="text-xs font-bold text-emerald-700 bg-emerald-50 p-2 rounded-lg">{pwMsg}</p>
+              <p className="text-xs font-mono uppercase tracking-wider text-[#17191c] bg-[#f6f8f9] border border-[#17191c] p-2.5">
+                {pwMsg}
+              </p>
             )}
-            <form onSubmit={handleChangePassword} className="space-y-3">
+
+            <form onSubmit={handleChangePassword} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-600 mb-1">Contraseña Actual</label>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#50524a] mb-1.5">
+                  Contraseña Actual
+                </label>
                 <input
                   type="password"
                   required
                   autoComplete="current-password"
                   value={pwForm.currentPassword}
                   onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+                  className="w-full bg-[#f6f8f9] border border-[#b6b2a7] px-3.5 py-2.5 text-xs text-[#17191c] focus:border-[#17191c] focus:bg-white focus:outline-none transition-colors rounded-none"
                 />
               </div>
+
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-600 mb-1">Nueva Contraseña</label>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#50524a] mb-1.5">
+                  Nueva Contraseña
+                </label>
                 <input
                   type="password"
                   required
@@ -401,16 +564,20 @@ export default function Dashboard() {
                   autoComplete="new-password"
                   value={pwForm.newPassword}
                   onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+                  className="w-full bg-[#f6f8f9] border border-[#b6b2a7] px-3.5 py-2.5 text-xs text-[#17191c] focus:border-[#17191c] focus:bg-white focus:outline-none transition-colors rounded-none"
                 />
-                <p className="text-[10px] text-slate-400 mt-1">Mínimo 8 caracteres.</p>
+                <p className="text-[10px] font-mono text-[#50524a] uppercase tracking-wide mt-1">
+                  Mínimo 8 caracteres alfanuméricos.
+                </p>
               </div>
+
               <button
                 type="submit"
                 disabled={savingPw}
-                className="w-full py-2.5 bg-black text-white text-xs font-extrabold uppercase rounded-xl hover:bg-slate-800"
+                className="w-full py-3.5 bg-[#17191c] text-white text-xs font-bold uppercase tracking-[0.18em] hover:bg-neutral-800 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
               >
-                {savingPw ? 'Guardando...' : 'Cambiar Contraseña'}
+                <KeyRound className="w-3.5 h-3.5 stroke-[1.75]" />
+                <span>{savingPw ? 'Actualizando…' : 'Cambiar Contraseña'}</span>
               </button>
             </form>
           </div>

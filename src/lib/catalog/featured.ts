@@ -1,29 +1,18 @@
 import type { CatalogProduct } from '@/types/api';
 
-
-
 const MAX_FEATURED = 4;
-
 
 export function selectFeatured(products: CatalogProduct[]): CatalogProduct[] {
   const flagged = products.filter((p) => p.isFeatured === true);
   if (flagged.length > 0) return flagged.slice(0, MAX_FEATURED);
 
-
-
-  return products.filter((p) => p.isLimitedDrop || !!p.badge).slice(0, MAX_FEATURED);
+return products.filter((p) => p.isLimitedDrop || !!p.badge).slice(0, MAX_FEATURED);
 }
 
-/**
- * Bento 2x2 del home (sección "Camperas & Chaquetas"): solo productos marcados
- * explícitamente como destacados en el admin. Sin fallback a otros productos:
- * si no hay ninguno marcado, la sección se muestra sin tarjetas.
- */
 export function selectBento(products: CatalogProduct[], limit = 4): CatalogProduct[] {
   return products.filter((p) => p.isFeatured === true).slice(0, limit);
 }
 
-/** Productos del catálogo que no están en `exclude` (para no repetir entre secciones). */
 export function excludeProducts(products: CatalogProduct[], exclude: CatalogProduct[]): CatalogProduct[] {
   const ids = new Set(exclude.map((p) => p.productId));
   return products.filter((p) => !ids.has(p.productId));
@@ -45,7 +34,6 @@ export type BentoLayout =
   | { kind: 'hero-only'; hero: CatalogProduct; secondary: [] }
   | { kind: 'partial'; hero: CatalogProduct; secondary: CatalogProduct[] }
   | { kind: 'full'; hero: CatalogProduct; secondary: CatalogProduct[] };
-
 
 export function bentoLayout(featured: CatalogProduct[]): BentoLayout {
   if (featured.length === 0) return { kind: 'none' };

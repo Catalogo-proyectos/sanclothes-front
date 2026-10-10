@@ -1,60 +1,74 @@
-import { describe, it, expect } from 'vitest';
-import { apiCall } from '@/lib/api';
-import { CutInfo } from '@/types/api';
-import type { BackendProduct } from '@/types/backend';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { apiCall, ApiError } from '@/lib/api';
 
-describe('API Adapter & Mock Data Layer', () => {
-
-
-
-  it('should fetch catalog products from mock dataset when USE_MOCK is true', async () => {
-    const products = await apiCall<BackendProduct[]>('GET', '/catalog');
-    expect(Array.isArray(products)).toBe(true);
-    expect(products.length).toBeGreaterThan(0);
-    expect(products[0]).toHaveProperty('productId');
-    expect(products[0]).toHaveProperty('name');
-    expect(products[0]).toHaveProperty('imagesByCut');
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
   });
 
-  it('should expose variants nested by cut and size like the real API', async () => {
-    const [product] = await apiCall<BackendProduct[]>('GET', '/catalog');
-    const cut = product.availableCuts?.[0];
+describe('API HTTP adapter', () => {
+  const fetchMock = vi.fn();
 
-    expect(cut).toBeTruthy();
-    const sizesForCut = product.variants[cut!];
-    expect(sizesForCut).toBeTypeOf('object');
-
-    const [firstSize] = Object.keys(sizesForCut);
-    expect(sizesForCut[firstSize]).toHaveProperty('sku');
-    expect(sizesForCut[firstSize]).toHaveProperty('stock');
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal('fetch', fetchMock);
   });
 
-  it('should filter catalog products by cut', async () => {
-    const products = await apiCall<BackendProduct[]>('GET', '/catalog?cut=FEMENINO');
-    expect(products.every((p) => p.availableCuts?.includes('FEMENINO'))).toBe(true);
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
-  it('should fetch available cuts list', async () => {
-    const res = await apiCall<{ cuts: CutInfo[] }>('GET', '/catalog/cuts');
-    expect(res.cuts).toHaveLength(3);
-    expect(res.cuts.map((c) => c.code)).toContain('FEMENINO');
+  it('consulta el endpoint real configurado', async () => {
+    fetchMock.mockResolvedValue(json([{ productId: 'producto-real' }]));
+
+    const products = await apiCall<Array<{ productId: string }>>('GET', '/catalog');
+
+    expect(products).toEqual([{ productId: 'producto-real' }]);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:5014/api/catalog',
+      expect.objectContaining({ method: 'GET', credentials: 'include' }),
+    );
   });
 
-  it('should handle login request in mock mode', async () => {
-    const response = await apiCall<{ token: string; user: { email: string } }>('POST', '/auth/login', {
-      email: 'test@example.com',
-      password: 'password123',
-    });
-    expect(response).toHaveProperty('token');
-    expect(response.user.email).toBe('test@example.com');
+  it('envía el cuerpo JSON al backend', async () => {
+    fetchMock.mockResolvedValue(json({ success: true }));
+
+    await apiCall('POST', '/auth/login', { email: 'cliente@example.com', password: 'secreto' });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:5014/api/auth/login',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'cliente@example.com', password: 'secreto' }),
+      }),
+    );
   });
 
-  it('should reject invalid password in mock mode', async () => {
-    await expect(
-      apiCall('POST', '/auth/login', {
-        email: 'test@example.com',
-        password: 'wrong',
-      })
-    ).rejects.toThrow('Invalid email or password');
+  it('envía tokens de acceso de propósito único como Bearer', async () => {
+    fetchMock.mockResolvedValue(json({ id: 'pedido-1' }));
+
+    await apiCall('GET', '/checkout/pedido-1', undefined, 'token-pedido');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:5014/api/checkout/pedido-1',
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: 'Bearer token-pedido' }),
+      }),
+    );
+  });
+
+  it('convierte las respuestas de error del backend en ApiError', async () => {
+    fetchMock.mockResolvedValue(json({ message: 'Credenciales inválidas', code: 'INVALID_CREDENTIALS' }, 401));
+
+    const request = apiCall('POST', '/auth/login', { email: 'cliente@example.com', password: 'incorrecta' });
+
+    await expect(request).rejects.toMatchObject({
+      name: 'ApiError',
+      message: 'Credenciales inválidas',
+      status: 401,
+      code: 'INVALID_CREDENTIALS',
+    } satisfies Partial<ApiError>);
   });
 });

@@ -23,6 +23,7 @@ import type { CheckoutResponse, ConfirmOtpResponse } from '@/types/api';
 import TurnstileWidget from '@/components/checkout/TurnstileWidget';
 import OrderPaymentPanel from '@/components/checkout/OrderPaymentPanel';
 import type { CheckoutQuote } from '@/types/quote';
+import { CARD_CUT } from '@/components/common/headerStyles';
 
 type CheckoutStep = 'email' | 'otp' | 'form' | 'success';
 
@@ -30,20 +31,14 @@ export default function CheckoutForm() {
   const { items, clearCart } = useCart();
   const { isLoggedIn, user } = useAuth();
 
-
-  // null = todavía automático: sale de la sesión, que se restaura después del
-  // primer render (cookie httpOnly, M5). Un cliente logueado que entra directo a
-  // /checkout no pasa por el email; cualquier setStep explícito (p. ej. M7) manda.
-  const [chosenStep, setStep] = useState<CheckoutStep | null>(null);
+const [chosenStep, setStep] = useState<CheckoutStep | null>(null);
   const step: CheckoutStep = chosenStep ?? (isLoggedIn ? 'form' : 'email');
 
-
-  const [guestEmail, setGuestEmail] = useState('');
+const [guestEmail, setGuestEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [otpResponse, setOtpResponse] = useState<ConfirmOtpResponse | null>(null);
 
-
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
     address: '',
@@ -62,21 +57,15 @@ export default function CheckoutForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [createdOrder, setCreatedOrder] = useState<CheckoutResponse | null>(null);
-  // M7: una cuenta con email sin verificar no puede comprar con su sesión. Se
-  // reutiliza el flujo OTP del checkout, fijo en el email de la cuenta.
-  const [verifyingAccount, setVerifyingAccount] = useState(false);
+
+const [verifyingAccount, setVerifyingAccount] = useState(false);
   const [notice, setNotice] = useState('');
-  // Cupón que se cotiza (se aplica con el botón, no en cada tecla).
+  
   const [appliedCoupon, setAppliedCoupon] = useState<string | undefined>(undefined);
-  // 409 PRICE_CHANGED: el total cambió y el cliente tiene que volver a confirmar.
+  
   const [priceChange, setPriceChange] = useState<{ previousTotal: number; newTotal: number; signature: string } | null>(null);
 
-
-
-  // Identidad de la quote = la misma con la que se crea el pedido (token OTP o
-  // sesión). Solo existe en el paso del formulario: ahí ya hubo OTP o login, y
-  // al pasar de anónimo a identificado cambia el token, así que se recotiza.
-  const identityToken = step === 'form' ? getCheckoutIdentity() : null;
+const identityToken = step === 'form' ? getCheckoutIdentity() : null;
   const quoteState = useCheckoutQuote({
     items,
     couponCode: appliedCoupon,
@@ -98,15 +87,13 @@ export default function CheckoutForm() {
     setAppliedCoupon(undefined);
   };
 
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
     const value = target instanceof HTMLInputElement && target.type === 'checkbox' ? target.checked : target.value;
     setFormData({ ...formData, [target.name]: value });
   };
 
-
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileReset, setTurnstileReset] = useState(0);
 
   const handleVerifyEmail = async (e: React.FormEvent) => {
@@ -122,7 +109,7 @@ export default function CheckoutForm() {
       await verifyEmail(guestEmail, turnstileToken ?? undefined);
       setStep('otp');
     } catch (err) {
-      // El token es de un solo uso: para reintentar hace falta uno nuevo.
+      
       if (config.turnstile.enabled) setTurnstileReset((n) => n + 1);
       if (err instanceof ApiError && err.code === 'INVALID_EMAIL') {
         setError('El correo electrónico no es válido.');
@@ -134,8 +121,7 @@ export default function CheckoutForm() {
     }
   };
 
-
-  const handleConfirmOtp = async (e: React.FormEvent) => {
+const handleConfirmOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -144,10 +130,8 @@ export default function CheckoutForm() {
       const res = await confirmOtp(guestEmail, otp);
 
       if (verifyingAccount) {
-        // La cuenta ya está logueada: no es un invitado con cuenta existente.
-        // El backend dejó el email verificado; se vuelve al formulario y la
-        // quote se recalcula con la nueva identidad.
-        setVerifyingAccount(false);
+
+setVerifyingAccount(false);
         setNotice('Correo verificado. Ya podés confirmar tu compra.');
       } else {
         setOtpResponse(res);
@@ -174,14 +158,13 @@ export default function CheckoutForm() {
     }
   };
 
-
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) {
       setError('El carrito está vacío');
       return;
     }
-    // Solo se confirma contra la última quote READY del servidor.
+    
     if (!canSubmit || !quote) return;
     const confirmedQuote: CheckoutQuote = quote;
     const confirmedSignature = quoteState.signature;
@@ -193,7 +176,7 @@ export default function CheckoutForm() {
       const customerEmail = isLoggedIn ? user?.email || '' : guestEmail;
 
       const order = await createOrder({
-        // Sin precios: el backend precifica con el mismo motor de la quote.
+        
         items: items.map((i) => ({
           sku: i.sku,
           productId: i.productId,
@@ -214,7 +197,7 @@ export default function CheckoutForm() {
         },
         wantsClubMembership: formData.wantsClubMembership,
         couponCode: appliedCoupon,
-        // Total que el cliente vio y aceptó. El backend solo lo compara.
+        
         expectedTotal: confirmedQuote.total,
         requestsInvoice: formData.requestsInvoice || undefined,
         invoiceData: formData.requestsInvoice
@@ -233,9 +216,8 @@ export default function CheckoutForm() {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 409 && err.code === 'PRICE_CHANGED' && err.data?.quote) {
-          // No se creó el pedido: se muestra la quote nueva y el cliente tiene
-          // que confirmar otra vez, a mano. Nunca se reenvía solo.
-          const newQuote = err.data.quote as CheckoutQuote;
+
+const newQuote = err.data.quote as CheckoutQuote;
           quoteState.replaceQuote(newQuote, confirmedSignature);
           setPriceChange({ previousTotal: confirmedQuote.total, newTotal: newQuote.total, signature: confirmedSignature });
         } else if (err.code === 'INVALID_PRODUCT' || err.code?.startsWith('COUPON_')) {
@@ -244,9 +226,8 @@ export default function CheckoutForm() {
         } else if (err.code === 'INSUFFICIENT_STOCK') {
           setError(`Sin stock suficiente para SKU: ${err.data?.sku || 'desconocido'}`);
         } else if (err.status === 403 && err.code === 'EMAIL_VERIFICATION_REQUIRED') {
-          // M7: no se reservó stock, no se creó el pedido ni se usó el cupón.
-          // Se verifica el email de la cuenta con el OTP existente, sin cerrar sesión.
-          setGuestEmail(user?.email || '');
+
+setGuestEmail(user?.email || '');
           setVerifyingAccount(true);
           setNotice('');
           setOtp('');
@@ -268,30 +249,29 @@ export default function CheckoutForm() {
     }
   };
 
+const inputClass = 'w-full border border-[#d0d1d2] bg-[#f6f8f9] px-3.5 py-3 font-mono text-xs text-[#17191c] outline-none transition-colors placeholder:text-zinc-400 focus:border-[#17191c] focus:bg-white focus:ring-1 focus:ring-[#17191c] disabled:bg-zinc-100 disabled:text-zinc-500';
+  const labelClass = 'mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#50524a]';
+  const primaryButtonClass = 'w-full bg-[#17191c] px-6 py-4 font-mono text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-40';
 
-
-  const inputClass = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:ring-2 focus:ring-black outline-none';
-  const labelClass = 'block text-xs font-bold uppercase text-slate-600 mb-1';
-
-
-  if (step === 'success' && createdOrder) {
+if (step === 'success' && createdOrder) {
     return (
-      <div className="max-w-3xl mx-auto my-12 p-8 bg-white rounded-3xl border border-slate-200 shadow-2xl space-y-6">
+      <div className="mx-auto my-4 max-w-4xl space-y-7 border border-[#d0d1d2] bg-white p-6 shadow-sm sm:p-9">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-black uppercase text-black">Pedido Generado Con Éxito</h2>
-          <p className="text-sm text-slate-600">
-            ID de Orden: <span className="font-extrabold text-black">{createdOrder.orderId}</span>
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">Pedido confirmado</span>
+          <h2 className="font-[family-name:var(--font-bebas)] text-4xl uppercase tracking-wider text-[#17191c]">Pedido generado con éxito</h2>
+          <p className="font-mono text-xs text-zinc-600">
+            ID de orden: <span className="font-bold text-black">{createdOrder.orderId}</span>
           </p>
-          <p className="text-xs text-slate-500">{createdOrder.message}</p>
+          <p className="font-mono text-xs text-zinc-500">{createdOrder.message}</p>
         </div>
 
         <OrderPaymentPanel orderId={String(createdOrder.orderId)} />
 
         {isLoggedIn && (
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 border-t border-zinc-200 pt-6">
             <Link
               href="/dashboard"
-              className="flex-1 bg-black text-white text-center py-3.5 rounded-xl font-bold uppercase text-xs hover:bg-slate-800"
+              className="flex-1 bg-[#17191c] py-4 text-center font-mono text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-black"
             >
               Ver Mis Pedidos
             </Link>
@@ -303,18 +283,21 @@ export default function CheckoutForm() {
 
   if (step === 'email') {
     return (
-      <div className="max-w-md mx-auto my-12 p-8 bg-white rounded-3xl border border-slate-200 shadow-2xl space-y-6">
-        <h2 className="text-xl font-black uppercase text-black text-center">
+      <div className="mx-auto my-4 max-w-lg space-y-6 border border-[#d0d1d2] bg-white p-6 shadow-sm sm:p-9">
+        <div className="space-y-2 text-center">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">01 / Identificación</span>
+          <h2 className="font-[family-name:var(--font-bebas)] text-3xl uppercase tracking-wider text-[#17191c]">
           {verifyingAccount ? 'Verificá tu correo para comprar' : 'Checkout — Verificar Email'}
-        </h2>
-        <p className="text-xs text-slate-500 text-center" data-testid="verify-email-intro">
+          </h2>
+        </div>
+        <p className="text-center font-mono text-xs leading-relaxed text-zinc-500" data-testid="verify-email-intro">
           {verifyingAccount
             ? 'Para comprar con tu cuenta necesitamos confirmar que este correo es tuyo. Te enviamos un código de verificación.'
             : 'Ingresá tu correo para recibir un código de verificación.'}
         </p>
 
         {error && (
-          <div className="p-3 bg-red-50 text-red-700 text-xs font-bold rounded-xl">{error}</div>
+          <div className="border-l-2 border-red-500 bg-red-50 p-3 font-mono text-xs font-bold text-red-700">{error}</div>
         )}
 
         <form onSubmit={handleVerifyEmail} className="space-y-4">
@@ -325,27 +308,26 @@ export default function CheckoutForm() {
               required
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
-              // La verificación es del email de la cuenta: no se puede cambiar acá.
+
               readOnly={verifyingAccount}
               className={verifyingAccount ? `${inputClass} bg-slate-100 text-slate-500` : inputClass}
             />
           </div>
 
-
-          {config.turnstile.enabled && (
+{config.turnstile.enabled && (
             <TurnstileWidget siteKey={config.turnstile.siteKey} onToken={setTurnstileToken} resetKey={turnstileReset} />
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-black text-white font-extrabold uppercase rounded-2xl shadow-xl hover:bg-slate-800 transition-colors disabled:opacity-50"
+            className={primaryButtonClass}
           >
             {loading ? 'Enviando...' : 'Enviar Código OTP'}
           </button>
 
           {!verifyingAccount && (
-            <p className="text-[10px] text-slate-400 text-center">
+            <p className="text-center font-mono text-[10px] text-zinc-500">
               ¿Ya tenés cuenta?{' '}
               <Link href="/login" className="text-black font-bold underline">
                 Iniciar sesión
@@ -357,17 +339,19 @@ export default function CheckoutForm() {
     );
   }
 
-
-  if (step === 'otp') {
+if (step === 'otp') {
     return (
-      <div className="max-w-md mx-auto my-12 p-8 bg-white rounded-3xl border border-slate-200 shadow-2xl space-y-6">
-        <h2 className="text-xl font-black uppercase text-black text-center">Verificar Código OTP</h2>
-        <p className="text-xs text-slate-500 text-center">
+      <div className="mx-auto my-4 max-w-lg space-y-6 border border-[#d0d1d2] bg-white p-6 shadow-sm sm:p-9">
+        <div className="space-y-2 text-center">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">02 / Seguridad</span>
+          <h2 className="font-[family-name:var(--font-bebas)] text-3xl uppercase tracking-wider text-[#17191c]">Verificar código OTP</h2>
+        </div>
+        <p className="text-center font-mono text-xs text-zinc-500">
           Enviamos un código de 6 dígitos a <span className="font-bold text-black">{guestEmail}</span>
         </p>
 
         {error && (
-          <div className="p-3 bg-red-50 text-red-700 text-xs font-bold rounded-xl">{error}</div>
+          <div className="border-l-2 border-red-500 bg-red-50 p-3 font-mono text-xs font-bold text-red-700">{error}</div>
         )}
 
         <form onSubmit={handleConfirmOtp} className="space-y-4">
@@ -388,7 +372,7 @@ export default function CheckoutForm() {
           <button
             type="submit"
             disabled={loading || otp.length !== 6}
-            className="w-full py-4 bg-black text-white font-extrabold uppercase rounded-2xl shadow-xl hover:bg-slate-800 transition-colors disabled:opacity-50"
+            className={primaryButtonClass}
           >
             {loading ? 'Verificando...' : 'Verificar Código'}
           </button>
@@ -397,7 +381,7 @@ export default function CheckoutForm() {
             <button
               type="button"
               onClick={() => { setStep('email'); setError(''); setOtp(''); setTurnstileToken(null); }}
-              className="w-full text-xs text-slate-500 hover:text-black transition-colors"
+              className="w-full font-mono text-xs text-zinc-500 transition-colors hover:text-black"
             >
               ← Cambiar correo
             </button>
@@ -407,14 +391,19 @@ export default function CheckoutForm() {
     );
   }
 
-
-  return (
-    <div className="max-w-5xl mx-auto my-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div className="md:col-span-2 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-lg space-y-6">
-        <h2 className="text-xl font-black uppercase text-black">Datos de Envío y Contacto</h2>
+return (
+    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.85fr)] lg:items-start">
+      <div className="space-y-7 border border-[#d0d1d2] bg-white p-5 shadow-sm sm:p-8">
+        <div className="flex items-end justify-between gap-4 border-b border-[#17191c]/10 pb-5">
+          <div>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">03 / Entrega</span>
+            <h2 className="mt-1 font-[family-name:var(--font-bebas)] text-3xl uppercase leading-none tracking-wider text-[#17191c] sm:text-4xl">Datos de envío y contacto</h2>
+          </div>
+          <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-400 sm:block">Campos obligatorios *</span>
+        </div>
 
         {otpResponse?.existingAccount && (
-          <div className="p-3 bg-blue-50 text-blue-800 text-xs font-bold rounded-xl">
+          <div className="border-l-2 border-sky-500 bg-sky-50 p-3 font-mono text-xs font-bold text-sky-800">
             Ya tenés una cuenta asociada a este email.{' '}
             <Link href={`/login?email=${encodeURIComponent(guestEmail)}`} className="underline">
               Iniciar sesión
@@ -424,16 +413,16 @@ export default function CheckoutForm() {
         )}
 
         {notice && (
-          <div role="status" data-testid="checkout-notice" className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl">
+          <div role="status" data-testid="checkout-notice" className="border-l-2 border-emerald-500 bg-emerald-50 p-3 font-mono text-xs font-bold text-emerald-800">
             {notice}
           </div>
         )}
 
         {error && (
-          <div className="p-3 bg-red-50 text-red-700 text-xs font-bold rounded-xl">{error}</div>
+          <div className="border-l-2 border-red-500 bg-red-50 p-3 font-mono text-xs font-bold text-red-700">{error}</div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
 
           <div>
             <label className={labelClass}>Nombre Completo *</label>
@@ -449,7 +438,7 @@ export default function CheckoutForm() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className={labelClass}>Email</label>
               <input
@@ -473,8 +462,7 @@ export default function CheckoutForm() {
             </div>
           </div>
 
-
-          <div>
+<div>
             <label className={labelClass}>Dirección de Entrega *</label>
             <input
               type="text"
@@ -488,7 +476,7 @@ export default function CheckoutForm() {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label className={labelClass}>Localidad *</label>
               <input
@@ -530,8 +518,7 @@ export default function CheckoutForm() {
 
           <DeliveryLocationPicker value={deliveryLocation} onChange={setDeliveryLocation} />
 
-
-          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+<div className="flex items-center gap-3 border border-[#d0d1d2] bg-[#f6f8f9] p-4">
             <input
               type="checkbox"
               name="wantsClubMembership"
@@ -540,13 +527,12 @@ export default function CheckoutForm() {
               onChange={handleChange}
               className="w-4 h-4 accent-black"
             />
-            <label htmlFor="clubMembership" className="text-xs font-bold text-slate-700">
+            <label htmlFor="clubMembership" className="font-mono text-xs font-bold text-[#50524a]">
               Quiero unirme al SANT CLUB (beneficios y descuentos exclusivos)
             </label>
           </div>
 
-
-          <div>
+<div>
             <label htmlFor="checkout-coupon" className={labelClass}>Código de Cupón (Opcional)</label>
             <div className="flex gap-2">
               <input
@@ -568,12 +554,12 @@ export default function CheckoutForm() {
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={!normalizeCouponCode(formData.couponCode) || normalizeCouponCode(formData.couponCode) === appliedCoupon}
-                className="px-4 bg-slate-900 text-white text-xs font-bold uppercase rounded-xl disabled:opacity-40"
+                className="bg-[#17191c] px-4 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-black disabled:opacity-40"
               >
                 Aplicar
               </button>
               {appliedCoupon && (
-                <button type="button" onClick={handleRemoveCoupon} className="px-3 text-xs font-bold text-slate-500 underline">
+                <button type="button" onClick={handleRemoveCoupon} className="px-3 font-mono text-xs font-bold text-zinc-500 underline">
                   Quitar
                 </button>
               )}
@@ -586,8 +572,7 @@ export default function CheckoutForm() {
             </div>
           </div>
 
-
-          <div className="space-y-3">
+<div className="space-y-3">
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
@@ -597,7 +582,7 @@ export default function CheckoutForm() {
                 onChange={handleChange}
                 className="w-4 h-4 accent-black"
               />
-              <label htmlFor="requestsInvoice" className="text-xs font-bold text-slate-700">
+              <label htmlFor="requestsInvoice" className="font-mono text-xs font-bold text-[#50524a]">
                 Solicitar factura
               </label>
             </div>
@@ -621,7 +606,7 @@ export default function CheckoutForm() {
           </div>
 
           {activePriceChange && (
-            <div role="alert" data-testid="price-changed" className="p-3 bg-amber-50 text-amber-900 text-xs font-bold rounded-xl">
+            <div role="alert" data-testid="price-changed" className="border-l-2 border-amber-500 bg-amber-50 p-3 font-mono text-xs font-bold text-amber-900">
               El total de tu compra cambió de {formatCurrency(activePriceChange.previousTotal)} a{' '}
               {formatCurrency(activePriceChange.newTotal)}. Revisá el resumen y confirmá de nuevo si estás de acuerdo.
             </div>
@@ -630,7 +615,7 @@ export default function CheckoutForm() {
           <button
             type="submit"
             disabled={loading || !canSubmit}
-            className="w-full py-4 bg-black text-white font-extrabold uppercase rounded-2xl shadow-xl hover:bg-slate-800 transition-colors disabled:opacity-50 mt-4"
+            className={`${primaryButtonClass} mt-4`}
           >
             {loading
               ? 'Procesando Orden...'
@@ -639,7 +624,7 @@ export default function CheckoutForm() {
                 : 'Confirmar Pedido'}
           </button>
           {!loading && !canSubmit && items.length > 0 && (
-            <p className="text-[10px] text-slate-500 text-center" data-testid="confirm-blocked-reason">
+            <p className="text-center font-mono text-[10px] text-zinc-500" data-testid="confirm-blocked-reason">
               {couponBlocked
                 ? 'Corregí o quitá el cupón para continuar.'
                 : quoteStatus === 'loading' || quoteStatus === 'stale'
@@ -664,22 +649,27 @@ export default function CheckoutForm() {
         </form>
       </div>
 
+<aside
+        className="relative h-fit space-y-5 overflow-hidden bg-[#17191c] p-6 text-white shadow-md lg:sticky lg:top-24"
+        style={{ clipPath: CARD_CUT }}
+      >
+        <span aria-hidden className="pointer-events-none absolute -right-4 -top-7 select-none font-[family-name:var(--font-bebas)] text-[110px] leading-none text-white opacity-[0.035]">SANT</span>
+        <div className="relative border-b border-white/15 pb-4">
+          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-zinc-500">Tu selección</span>
+          <h3 className="mt-1 font-[family-name:var(--font-bebas)] text-3xl uppercase leading-none tracking-wider">Resumen de compra</h3>
+        </div>
 
-      <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4 h-fit">
-        <h3 className="font-extrabold text-sm uppercase text-black border-b pb-3">Resumen de Compra</h3>
-
-        <div className="space-y-3 max-h-64 overflow-y-auto">
+        <div className="relative max-h-64 space-y-4 overflow-y-auto pr-1">
           {items.map((item, index) => {
-            // Con quote READY, el importe de la línea es el del servidor (incluye
-            // flash y descuentos por cantidad); si no, referencia de catálogo.
-            const serverLine = quoteStatus === 'ready' ? quote?.lines[index] : undefined;
+
+const serverLine = quoteStatus === 'ready' ? quote?.lines[index] : undefined;
             return (
-              <div key={item.variantId} className="flex justify-between text-xs">
+              <div key={item.variantId} className="flex justify-between gap-4 font-mono text-xs">
                 <div>
-                  <p className="font-bold text-black">{item.productName}</p>
-                  <p className="text-slate-500">Talle: {item.size} x {item.quantity}</p>
+                  <p className="font-bold text-white">{item.productName}</p>
+                  <p className="mt-1 text-[10px] uppercase tracking-wide text-zinc-500">Talle: {item.size} × {item.quantity}</p>
                 </div>
-                <span className={serverLine ? 'font-bold' : 'font-bold text-slate-400'}>
+                <span className={serverLine ? 'shrink-0 font-bold text-white' : 'shrink-0 font-bold text-zinc-500'}>
                   {formatCurrency(serverLine ? serverLine.lineTotal : item.unitPrice * item.quantity)}
                 </span>
               </div>
@@ -687,16 +677,17 @@ export default function CheckoutForm() {
           })}
         </div>
 
-        <div className="border-t pt-3">
+        <div className="relative border-t border-white/15 pt-4">
           <QuoteSummary
             status={quoteStatus}
             quote={quote}
             error={quoteState.error}
             hasPriceIssue={quoteState.hasPriceIssue}
             onRetry={quoteState.refresh}
+            variant="dark"
           />
         </div>
-      </div>
+      </aside>
     </div>
   );
 }

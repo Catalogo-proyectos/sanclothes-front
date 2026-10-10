@@ -6,19 +6,8 @@ import { fetchCheckoutQuote, normalizeCouponCode, toQuoteItems } from '@/lib/ser
 import type { CartItem } from '@/types/cart';
 import type { CheckoutQuote, QuoteItemRequest } from '@/types/quote';
 
-/**
- * Estados de la cotización del servidor:
- * - idle        → no hay nada que cotizar (carrito vacío o deshabilitado).
- * - loading     → primera cotización en curso; no hay importes que mostrar.
- * - ready       → la quote corresponde EXACTAMENTE al carrito/cupón/identidad actuales.
- * - stale       → cambió el carrito, el cupón o la identidad: la quote anterior
- *                 ya no vale y se está pidiendo una nueva.
- * - error       → no se pudo cotizar (red, servidor, sesión vencida).
- * - unavailable → un producto del carrito ya no se puede comprar (INVALID_PRODUCT).
- */
 export type QuoteStatus = 'idle' | 'loading' | 'ready' | 'stale' | 'error' | 'unavailable';
 
-/** Motivo por el que no se puede confirmar el pedido con la quote actual. */
 export type QuoteBlockReason = Exclude<QuoteStatus, 'ready'> | 'PRICE_CONFIGURATION';
 
 export interface QuoteError {
@@ -31,11 +20,11 @@ export interface QuoteError {
 interface UseCheckoutQuoteOptions {
   items: CartItem[];
   couponCode?: string | null;
-  /** Token de identidad (OTP de checkout o sesión). null = quote anónima. */
+  
   token?: string | true | null;
   enabled?: boolean;
   debounceMs?: number;
-  /** Si el token es rechazado (401), cotizar como anónimo en vez de fallar (solo para vistas informativas). */
+  
   anonymousFallbackOn401?: boolean;
 }
 
@@ -70,9 +59,7 @@ export function useCheckoutQuote({
   const active = enabled && items.length > 0;
   const normalizedCoupon = normalizeCouponCode(couponCode);
 
-  // Todo lo que define el precio: items, cupón e identidad. Una quote solo es
-  // válida para la firma con la que se pidió.
-  const signature = useMemo(
+const signature = useMemo(
     () =>
       JSON.stringify({
         items: toQuoteItems(items),
@@ -102,7 +89,7 @@ export function useCheckoutQuote({
             throw err;
           }
         }
-        // Una respuesta vieja nunca pisa a una más nueva.
+        
         if (requestId !== requestIdRef.current || controller.signal.aborted) return;
         setSettled({ signature, quote, error: null });
         setLastQuote(quote);
@@ -150,21 +137,14 @@ export function useCheckoutQuote({
     status = 'loading';
   }
 
-  // M2 pendiente en el backend: un precio <= 0 nunca se confirma ni se
-  // "arregla" acá. Protección de UX, no resolución de M2.
-  const hasPriceIssue = Boolean(quote?.warnings.some((w) => w.code === 'NON_POSITIVE_PRICE'));
+const hasPriceIssue = Boolean(quote?.warnings.some((w) => w.code === 'NON_POSITIVE_PRICE'));
   const blockReason: QuoteBlockReason | null =
     status !== 'ready' ? status : hasPriceIssue ? 'PRICE_CONFIGURATION' : null;
 
   const refresh = useCallback(() => setNonce((n) => n + 1), []);
 
-  /**
-   * Reemplaza la quote con una que devolvió el servidor por otra vía (409
-   * PRICE_CHANGED). Solo queda READY si `forSignature` sigue siendo la firma
-   * actual; si el carrito cambió mientras tanto, queda STALE y se recotiza.
-   */
-  const replaceQuote = useCallback((next: CheckoutQuote, forSignature: string) => {
-    requestIdRef.current += 1; // invalida cualquier respuesta en vuelo
+const replaceQuote = useCallback((next: CheckoutQuote, forSignature: string) => {
+    requestIdRef.current += 1; 
     setSettled({ signature: forSignature, quote: next, error: null });
     setLastQuote(next);
   }, []);

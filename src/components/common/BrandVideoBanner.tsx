@@ -15,25 +15,22 @@ export default function BrandVideoBanner() {
         <LazyAutoplayVideo
           src="/img/video/video.mp4"
           mobileSrc="/img/video/video-mobile.mp4"
-          poster="/img/hero/Hero-Catalogo2.jpeg"
-          mobilePoster="/img/hero/Hero-Catalogo2-m.webp"
+          poster="/img/web/hero/hero-catalogo-2.webp"
+          mobilePoster="/img/movil/hero/catalogo-streetwear.webp"
           ariaLabel="Campaña SANT CLOTHES en movimiento"
           className="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
         />
 
+<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 pointer-events-none" />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/15 pointer-events-none" />
-
-
-        <div className="relative z-10 p-6 sm:p-10 lg:p-12">
+<div className="relative z-10 p-6 sm:p-10 lg:p-12">
           <span className="inline-flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.25em] text-white bg-black/85 backdrop-blur-md px-4 py-2 uppercase border border-white/20">
             <Film className="w-3.5 h-3.5 text-white" />
             <span>SANT CLOTHES · CAMPAÑA EN MOVIMIENTO</span>
           </span>
         </div>
 
-
-        <motion.div
+<motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

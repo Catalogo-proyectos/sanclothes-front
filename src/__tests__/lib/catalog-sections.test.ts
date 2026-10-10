@@ -21,7 +21,7 @@ function product(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
     categoryName: 'Remeras',
     color: null,
     bento: null,
-    // más nuevo cuanto mayor el seq
+
     createdAt: new Date(Date.UTC(2026, 0, 1) + seq * 60_000).toISOString(),
     ...overrides,
   };
@@ -76,7 +76,7 @@ describe('buildSectionBody', () => {
     const body = buildSectionBody([late, first, ...rest]);
     expect(body.bands.map((band) => band.bento)).toEqual([first, late]);
     expect(body.bands[0]!.side).toEqual(rest.slice(0, 4));
-    expect(body.bands[1]!.side).toEqual(rest.slice(4)); // el último se queda con 1
+    expect(body.bands[1]!.side).toEqual(rest.slice(4));
     expect(body.bands[1]!.arrangement).toBe('split');
     const ids = [...body.bands.flatMap((band) => [band.bento, ...band.side]), ...body.grid].map((p) => p.productId);
     expect(new Set(ids).size).toBe(ids.length);

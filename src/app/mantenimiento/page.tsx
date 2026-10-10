@@ -17,7 +17,7 @@ export default function MantenimientoPage() {
       <div className="my-auto space-y-6 max-w-xl mx-auto flex flex-col items-center py-12">
         <div className="relative w-48 sm:w-64 lg:w-72 aspect-[3/1]">
           <Image
-            src="/img/logo/Sant_Logo Negro.png"
+            src="/img/web/logo/sant-logo-negro.webp"
             alt="SANT CLOTHES®"
             fill
             priority

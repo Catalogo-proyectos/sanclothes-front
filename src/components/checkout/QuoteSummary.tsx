@@ -4,11 +4,6 @@ import { formatCurrency } from '@/utils/format';
 import type { QuoteError, QuoteStatus } from '@/hooks/useCheckoutQuote';
 import type { CheckoutQuote, QuoteCoupon } from '@/types/quote';
 
-/**
- * Muestra los importes de la quote del servidor TAL CUAL: subtotal, descuento,
- * envío y total vienen del backend; acá solo se formatean, nunca se recalculan.
- */
-
 const STYLES = {
   checkout: {
     root: 'space-y-2 text-xs text-slate-600',
@@ -24,6 +19,13 @@ const STYLES = {
     muted: 'text-[10px] text-[#50524a]',
     alert: 'p-3 text-[11px] font-mono',
   },
+  dark: {
+    root: 'space-y-2 font-mono text-xs text-zinc-400',
+    strong: 'font-bold text-white',
+    total: 'flex items-baseline justify-between border-t border-white/15 pt-4 font-[family-name:var(--font-bebas)] text-2xl tracking-wider text-white',
+    muted: 'text-[10px] leading-relaxed text-zinc-500',
+    alert: 'border-l-2 p-3 text-[11px] font-bold',
+  },
 } as const;
 
 const COUPON_FALLBACK_MESSAGES: Record<string, string> = {
@@ -32,7 +34,6 @@ const COUPON_FALLBACK_MESSAGES: Record<string, string> = {
   REQUIRES_IDENTITY: 'Este cupón es personal: verificá tu email o iniciá sesión para usarlo.',
 };
 
-/** Mensaje público del cupón: el que entrega el backend (no se agrega información propia). */
 export function couponMessage(coupon: QuoteCoupon): string | null {
   if (coupon.status === 'APPLIED') return null;
   return coupon.message || (coupon.reason ? COUPON_FALLBACK_MESSAGES[coupon.reason] ?? null : null) || 'El cupón no es válido.';
@@ -43,12 +44,18 @@ export function CouponNotice({ coupon, variant = 'checkout' }: { coupon: QuoteCo
   const s = STYLES[variant];
   if (coupon.status === 'APPLIED') {
     return (
-      <p role="status" data-testid="coupon-notice" data-coupon-status="APPLIED" className={`${s.alert} bg-emerald-50 text-emerald-800`}>
+      <p role="status" data-testid="coupon-notice" data-coupon-status="APPLIED" className={`${s.alert} ${variant === 'dark' ? 'border-emerald-400 bg-emerald-500/10 text-emerald-200' : 'bg-emerald-50 text-emerald-800'}`}>
         Cupón {coupon.code} aplicado: −{formatCurrency(coupon.amount)}
       </p>
     );
   }
-  const tone =
+  const tone = variant === 'dark'
+    ? coupon.status === 'NOT_APPLIED'
+      ? 'border-sky-400 bg-sky-500/10 text-sky-200'
+      : coupon.status === 'REQUIRES_IDENTITY'
+        ? 'border-amber-400 bg-amber-500/10 text-amber-200'
+        : 'border-red-400 bg-red-500/10 text-red-200'
+    :
     coupon.status === 'NOT_APPLIED'
       ? 'bg-blue-50 text-blue-800'
       : coupon.status === 'REQUIRES_IDENTITY'
@@ -113,7 +120,7 @@ export default function QuoteSummary({ status, quote, error, hasPriceIssue, onRe
   if (!quote) return null;
 
   if (hasPriceIssue) {
-    // M2: nunca se muestra ni se confirma un precio <= 0.
+
     return (
       <div className={s.root} data-testid="quote-summary" data-quote-status="price-issue">
         <p role="alert" className={`${s.alert} bg-red-50 text-red-700`}>

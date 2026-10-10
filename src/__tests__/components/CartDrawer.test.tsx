@@ -39,10 +39,10 @@ describe('CartDrawer', () => {
     render(<CartDrawer isOpen onClose={() => {}} />);
     await waitFor(() => expect(screen.getByTestId('quote-total')).toHaveTextContent('180.000'));
     expect(screen.queryByTestId('reference-subtotal')).not.toBeInTheDocument();
-    // Cotización anónima: sin token y con aviso de que tier/cupones se aplican al identificarse.
+    
     expect(fetchCheckoutQuote.mock.calls[0]![1].token).toBeNull();
     expect(screen.getByText(/al identificarte en el checkout/i)).toBeInTheDocument();
-    // La línea usa el importe del servidor (descuento por cantidad), no 2 × 150.000.
+    
     expect(screen.queryByText(/300\.000/)).not.toBeInTheDocument();
   });
 
