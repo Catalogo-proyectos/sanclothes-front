@@ -10,7 +10,6 @@ vi.mock('@/lib/services/quote', async (importOriginal) => {
   return { ...actual, fetchCheckoutQuote: (...args: unknown[]) => fetchCheckoutQuote(...args) };
 });
 
-// Identidad de checkout simulada: null hasta que el OTP la crea.
 let identityToken: string | true | null = true;
 const createOrder = vi.fn();
 const confirmOtp = vi.fn();
@@ -86,7 +85,7 @@ describe('CheckoutForm con quote del servidor', () => {
   });
 
   it('el unitPrice local no determina el total: se muestra el del servidor', async () => {
-    // El carrito dice 777.777; el servidor cobra 100.000.
+    
     await renderReady(makeQuote({ subtotal: 100_000, total: 100_000 }));
     expect(screen.getByTestId('quote-total')).toHaveTextContent(gs(100_000));
     expect(quoteSummary()).not.toHaveTextContent(gs(777_777));
@@ -134,7 +133,7 @@ describe('CheckoutForm con quote del servidor', () => {
     fireEvent.click(screen.getByRole('button', { name: /aplicar/i }));
     expect(quoteSummary()).toHaveAttribute('data-quote-status', 'stale');
     expect(confirmButton()).toBeDisabled();
-    // El cupón se manda normalizado al servidor; el frontend no lo valúa.
+    
     await waitFor(() => expect(fetchCheckoutQuote.mock.calls.at(-1)![0].couponCode).toBe('PROMO10'));
   });
 
@@ -266,15 +265,14 @@ describe('CheckoutForm con quote del servidor', () => {
     expect(alert).toHaveTextContent(gs(125_000));
     expect(screen.getByTestId('quote-total')).toHaveTextContent(gs(125_000));
     expect(screen.queryByText(/pedido generado con éxito/i)).not.toBeInTheDocument();
-    // No hubo reenvío automático.
+    
     await act(async () => {
       await new Promise((r) => setTimeout(r, 50));
     });
     expect(createOrder).toHaveBeenCalledTimes(1);
     expect(confirmButton()).toHaveTextContent(/nuevo total/i);
 
-    // Segunda confirmación, explícita, con el total nuevo.
-    createOrder.mockResolvedValueOnce({ orderId: 'ord_2', status: 'x', expiresAt: '', message: 'ok', orderAccessToken: 'oat' });
+createOrder.mockResolvedValueOnce({ orderId: 'ord_2', status: 'x', expiresAt: '', message: 'ok', orderAccessToken: 'oat' });
     submit();
     await waitFor(() => expect(createOrder).toHaveBeenCalledTimes(2));
     expect(createOrder.mock.calls[1]![0].expectedTotal).toBe(125_000);
@@ -302,8 +300,7 @@ describe('CheckoutForm con quote del servidor', () => {
     fetchCheckoutQuote.mockResolvedValue(makeQuote());
     render(<CheckoutForm />);
 
-    // Antes del OTP no hay quote que confirmar.
-    expect(fetchCheckoutQuote).not.toHaveBeenCalled();
+expect(fetchCheckoutQuote).not.toHaveBeenCalled();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'invitado@example.com' } });
     fireEvent.submit(screen.getByRole('button', { name: /enviar código/i }).closest('form')!);
     const otpInput = await screen.findByPlaceholderText('000000');
@@ -324,8 +321,7 @@ describe('CheckoutForm con quote del servidor', () => {
     fillForm();
     submit();
 
-    // Pasa al paso de email, fijo en el correo de la cuenta (sin cerrar sesión).
-    expect(await screen.findByTestId('verify-email-intro')).toHaveTextContent(/necesitamos confirmar que este correo es tuyo/);
+expect(await screen.findByTestId('verify-email-intro')).toHaveTextContent(/necesitamos confirmar que este correo es tuyo/);
     const emailInput = screen.getByDisplayValue('cliente@example.com');
     expect(emailInput).toHaveAttribute('readonly');
     expect(screen.queryByText(/pedido generado con éxito/i)).not.toBeInTheDocument();
@@ -335,8 +331,7 @@ describe('CheckoutForm con quote del servidor', () => {
     await waitFor(() => expect(verifyEmail).toHaveBeenCalledWith('cliente@example.com', undefined));
     expect(screen.queryByRole('button', { name: /cambiar correo/i })).not.toBeInTheDocument();
 
-    // OTP correcto: la identidad pasa a ser el token del OTP y se recotiza.
-    confirmOtp.mockImplementation(async () => {
+confirmOtp.mockImplementation(async () => {
       identityToken = 'otp-token';
       return { checkoutSessionToken: 'otp-token', guestCartToken: 'g', existingAccount: true, message: 'ok' };
     });
@@ -345,13 +340,12 @@ describe('CheckoutForm con quote del servidor', () => {
     fireEvent.submit(otpInput.closest('form')!);
 
     expect(await screen.findByTestId('checkout-notice')).toHaveTextContent(/correo verificado/i);
-    // No se muestra el aviso de "ya tenés una cuenta" a quien ya está logueado.
+    
     expect(screen.queryByText(/podés iniciar sesión para un checkout más rápido/i)).not.toBeInTheDocument();
     await waitFor(() => expect(fetchCheckoutQuote.mock.calls.at(-1)![1].token).toBe('otp-token'));
     await waitFor(() => expect(quoteSummary()).toHaveAttribute('data-quote-status', 'ready'));
 
-    // Reintento explícito: ahora el pedido se crea.
-    createOrder.mockResolvedValueOnce({ orderId: 'ord_m7', status: 'x', expiresAt: '', message: 'ok', orderAccessToken: 'oat' });
+createOrder.mockResolvedValueOnce({ orderId: 'ord_m7', status: 'x', expiresAt: '', message: 'ok', orderAccessToken: 'oat' });
     fillForm();
     submit();
     await waitFor(() => expect(createOrder).toHaveBeenCalledTimes(2));

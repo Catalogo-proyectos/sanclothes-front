@@ -10,14 +10,6 @@ interface ProductGalleryProps {
   onOpenZoom: (index: number) => void;
 }
 
-
-function getSlotImage(images: GalleryImage[], index: number): GalleryImage {
-  if (!images || images.length === 0) {
-    return { url: '/img/Placeholer.jpeg', alt: 'Imagen no disponible' };
-  }
-  return images[index % images.length];
-}
-
 function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
   const isPlaceholderUrl = (url?: string) =>
     !url || url.includes('Placeholer') || url.includes('placeholder');
@@ -29,7 +21,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
 
   if (hasOnlyPlaceholder || images.length <= 1) {
     const singleImg = images?.[0] ?? {
-      url: '/img/Placeholer.jpeg',
+      url: '/img/web/placeholder.webp',
       alt: 'Imagen no disponible',
     };
 
@@ -70,7 +62,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      {/* Hero principal */}
+      
       <button
         type="button"
         onClick={() => onOpenZoom(0)}
@@ -95,8 +87,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         </span>
       </button>
 
-      {/* Si hay 2 imágenes exactamente */}
-      {images.length === 2 && secondImage && (
+{images.length === 2 && secondImage && (
         <button
           type="button"
           onClick={() => onOpenZoom(1)}
@@ -118,8 +109,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         </button>
       )}
 
-      {/* Si hay 3 o más imágenes, mostrar fila de 2 */}
-      {images.length >= 3 && secondImage && thirdImage && (
+{images.length >= 3 && secondImage && thirdImage && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {[secondImage, thirdImage].map((image, i) => {
             const index = i + 1;
@@ -149,8 +139,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         </div>
       )}
 
-      {/* 4ta imagen opcional */}
-      {fourthImage && (
+{fourthImage && (
         <button
           type="button"
           onClick={() => onOpenZoom(3)}
@@ -172,8 +161,7 @@ function ProductGallery({ images, onOpenZoom }: ProductGalleryProps) {
         </button>
       )}
 
-      {/* Extras (5ta en adelante) */}
-      {extras.length > 0 && (
+{extras.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {extras.map((image, i) => {
             const index = i + 4;

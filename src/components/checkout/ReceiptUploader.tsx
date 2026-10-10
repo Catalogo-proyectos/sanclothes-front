@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { FileText, Upload } from 'lucide-react';
 import { ApiError } from '@/lib/api';
 import { openReceipt, uploadReceipt } from '@/lib/services/checkout';
 
@@ -9,18 +10,13 @@ const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'applica
 
 interface ReceiptUploaderProps {
   orderId: string;
-  /** Ya hay un comprobante cargado (se puede reemplazar o ver). */
+  
   hasReceipt: boolean;
-  /** Solo ver el comprobante (el pedido ya no acepta uno nuevo). */
+  
   readOnly?: boolean;
   onUploaded: () => void;
 }
 
-/**
- * Un solo botón: abre el selector de archivos (en el celular, cámara o galería)
- * y sube apenas se elige. Antes había un input casi invisible al lado de un
- * botón "Subir" que sin archivo elegido no hacía nada.
- */
 export default function ReceiptUploader({ orderId, hasReceipt, readOnly = false, onUploaded }: ReceiptUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -50,8 +46,12 @@ export default function ReceiptUploader({ orderId, hasReceipt, readOnly = false,
         setError('El pedido cambió mientras se subía el archivo. Recargá la página.');
       } else if (err instanceof ApiError && err.code === 'INVALID_FILE_TYPE') {
         setError('El archivo no es una imagen o PDF válido.');
+      } else if (err instanceof ApiError && err.code === 'NETWORK_ERROR') {
+        setError('No pudimos conectar con el servidor. Revisá tu conexión e intentá nuevamente.');
       } else {
-        setError((err as Error).message || 'No se pudo subir el comprobante. Probá de nuevo.');
+        setError(err instanceof ApiError
+          ? err.message
+          : 'No se pudo subir el comprobante. Intentá nuevamente.');
       }
     } finally {
       setUploading(false);
@@ -83,18 +83,26 @@ export default function ReceiptUploader({ orderId, hasReceipt, readOnly = false,
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className="w-full bg-white text-black text-sm font-black uppercase tracking-wider px-4 py-3.5 rounded-xl hover:bg-slate-200 disabled:opacity-60"
+            className="w-full inline-flex items-center justify-center gap-2 bg-[#f6f8f9] text-[#17191c] text-xs font-bold uppercase tracking-[0.16em] px-6 py-4 transition-colors hover:bg-white disabled:opacity-60 disabled:cursor-wait focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer"
           >
-            {uploading ? `Subiendo ${fileName}...` : hasReceipt ? 'Reemplazar comprobante' : 'Subir comprobante'}
+            <Upload aria-hidden className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              {uploading ? `Subiendo ${fileName}…` : hasReceipt ? 'Reemplazar comprobante' : 'Subir comprobante'}
+            </span>
           </button>
         </>
       )}
       {hasReceipt && !uploading && (
-        <button type="button" onClick={handleOpen} className="w-full text-xs text-slate-300 underline hover:text-white">
+        <button
+          type="button"
+          onClick={handleOpen}
+          className="w-full inline-flex items-center justify-center gap-2 border border-white/25 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-300 transition-colors hover:border-white hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer"
+        >
+          <FileText aria-hidden className="h-3.5 w-3.5 shrink-0" />
           Ver el comprobante que subí
         </button>
       )}
-      {error && <p className="p-2 bg-red-500/20 text-red-300 text-xs font-bold rounded-lg">{error}</p>}
+      {error && <p className="border-l-2 border-red-400 bg-red-500/15 px-3 py-2 text-xs font-mono font-bold text-red-200">{error}</p>}
     </div>
   );
 }

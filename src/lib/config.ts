@@ -1,7 +1,5 @@
-// IMPORTANTE: leer siempre `process.env.NEXT_PUBLIC_X` de forma literal.
-// Next.js solo inlinea NEXT_PUBLIC_* en el bundle del cliente cuando ve esa
-// sintaxis exacta; pasar por una variable intermedia (`const env = process.env`)
-// hace que en el navegador todo lea `undefined` (y el mock quede siempre activo).
+
+
 import { AUTH_TOKEN_KEY } from './storage-keys';
 
 const publicEnv = {
@@ -9,7 +7,6 @@ const publicEnv = {
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_HEALTH_URL: process.env.NEXT_PUBLIC_HEALTH_URL,
   NEXT_PUBLIC_MEDIA_ORIGIN: process.env.NEXT_PUBLIC_MEDIA_ORIGIN,
-  NEXT_PUBLIC_USE_MOCK: process.env.NEXT_PUBLIC_USE_MOCK,
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,
   NEXT_PUBLIC_FEATURE_LOYALTY: process.env.NEXT_PUBLIC_FEATURE_LOYALTY,
@@ -28,7 +25,6 @@ const requiredEnvVars = [
   'NEXT_PUBLIC_ENV',
 ] as const;
 
-
 if (typeof window !== 'undefined' || process.env.NODE_ENV === 'production') {
   requiredEnvVars.forEach((envVar) => {
     if (!publicEnv[envVar]) {
@@ -37,24 +33,15 @@ if (typeof window !== 'undefined' || process.env.NODE_ENV === 'production') {
   });
 }
 
-// The deployed environment provides an origin, while apiCall consumes the
-// versionless /api routes. Keep NEXT_PUBLIC_API_URL as a backwards-compatible
-// override for local environments that already provide the full API base URL.
 const configuredOrigin = publicEnv.NEXT_PUBLIC_SANTCLOTHES_API_ORIGIN?.replace(/\/$/, '');
 const rawApiUrl = publicEnv.NEXT_PUBLIC_API_URL || (configuredOrigin ? `${configuredOrigin}/api` : 'http://localhost:5014/api');
 const apiOrigin = configuredOrigin || rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
-// El mock solo se activa de forma explícita: nunca por omisión, para que un
-// build de producción con alguna variable faltante no sirva datos falsos.
-const useMock = publicEnv.NEXT_PUBLIC_USE_MOCK === 'true';
-
 export const config = {
   api: {
     baseUrl: rawApiUrl,
 
     origin: apiOrigin,
     healthUrl: publicEnv.NEXT_PUBLIC_HEALTH_URL || `${apiOrigin}/health`,
-    useMock,
-
     mediaOrigin: publicEnv.NEXT_PUBLIC_MEDIA_ORIGIN || '',
   },
   app: {

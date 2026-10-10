@@ -5,16 +5,15 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
   Check,
-  Heart,
   Minus,
   Plus,
   Ruler,
   Share2,
   ShoppingBag,
-  Zap,
 } from 'lucide-react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import SantLogoIcon from '@/components/common/SantLogoIcon';
 import { CatalogProduct, ProductVariant } from '@/types/api';
 import { formatCurrency } from '@/utils/format';
 import { useCart } from '@/hooks/useCart';
@@ -30,7 +29,7 @@ interface ProductPurchasePanelProps {
 
   selectedCut: string;
   onSelectCut: (cut: string) => void;
-  /** Talle con el que abre la ficha (viene de la tarjeta); si no existe, el primero. */
+  
   initialSize?: string;
 }
 
@@ -49,9 +48,7 @@ export default function ProductPurchasePanel({
 
   const activeCut = selectedCut;
 
-
-
-  const availableSizes = useMemo(() => {
+const availableSizes = useMemo(() => {
     const sizesForCut = (product.variants ?? [])
       .filter((v) => v.cut === activeCut)
       .map((v) => v.size);
@@ -59,27 +56,22 @@ export default function ProductPurchasePanel({
     const unique = [...new Set(sizesForCut)];
     if (unique.length > 0) return sortSizes(unique);
 
-    // Sin variantes no se inventan talles (antes mostraba XS–XL que no existían).
-    return sortSizes(product.sizes ?? []);
+return sortSizes(product.sizes ?? []);
   }, [product.variants, product.sizes, activeCut]);
 
-  // Sólo variantes del corte activo: devolver la de otro corte metía al carrito
-  // un SKU de Femenino con la etiqueta de Masculino (o al revés).
-  const findVariant = useCallback(
+const findVariant = useCallback(
     (size: string): ProductVariant | undefined =>
       product.variants?.find((v) => v.cut === activeCut && v.size === size),
     [product.variants, activeCut]
   );
   const hasStock = (size: string) => (findVariant(size)?.stock ?? 0) > 0;
 
-  // Talle de la URL si existe y tiene stock en este corte; si no, el primero con stock.
-  const [pickedSize, setSelectedSize] = useState<string>(initialSize ?? availableSizes[0]);
+const [pickedSize, setSelectedSize] = useState<string>(initialSize ?? availableSizes[0]);
   const selectedSize =
     availableSizes.includes(pickedSize) && hasStock(pickedSize)
       ? pickedSize
       : availableSizes.find(hasStock) ?? availableSizes[0];
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [addedSuccess, setAddedSuccess] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
@@ -94,9 +86,7 @@ export default function ProductPurchasePanel({
   const effectivePrice = product.discountPrice ?? product.price;
   const isSoldOut = product.stockStatus === 'OUT_OF_STOCK';
 
-  // Nunca se inventa un SKU: sin variante real con stock no se puede comprar
-  // (el checkout lo rechazaría con INVALID_PRODUCT).
-  const selectedVariant = findVariant(selectedSize);
+const selectedVariant = findVariant(selectedSize);
   const canBuy = !isSoldOut && !!selectedVariant && selectedVariant.stock > 0;
 
   const maxQuantity = canBuy ? selectedVariant.stock : 0;
@@ -149,18 +139,6 @@ export default function ProductPurchasePanel({
     router.push('/checkout');
   }, [canBuy, handleAddToCart, router]);
 
-  const handleToggleWishlist = useCallback(() => {
-    setIsWishlisted((prev) => {
-      const next = !prev;
-      toast.success(
-        next
-          ? `Añadido a tus favoritos: ${product.title}`
-          : `Eliminado de tus favoritos: ${product.title}`
-      );
-      return next;
-    });
-  }, [product.title]);
-
   const handleShare = useCallback(async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     try {
@@ -208,11 +186,11 @@ export default function ProductPurchasePanel({
             )
           )}
           <span
-            className={`text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-[0.2em] shadow-2xs ${
+            className={`group relative overflow-hidden text-[10px] font-mono font-bold px-3 py-1 uppercase tracking-[0.2em] shadow-2xs transition-all duration-300 select-none ${
               isSoldOut
                 ? 'bg-zinc-200 text-zinc-600 border border-zinc-300'
                 : product.stockStatus === 'LOW_STOCK' || isLowStock
-                  ? 'bg-amber-500/10 text-amber-900 border border-amber-500/40 flex items-center gap-1.5'
+                  ? 'bg-[#17191c] text-white border border-[#17191c] shadow-[0_2px_10px_rgba(23,25,28,0.25)] flex items-center gap-2'
                   : 'bg-[#17191c] text-white border border-[#17191c]'
             }`}
           >
@@ -220,8 +198,22 @@ export default function ProductPurchasePanel({
               'AGOTADO'
             ) : product.stockStatus === 'LOW_STOCK' || isLowStock ? (
               <>
-                <Zap className="w-3 h-3 text-amber-600 fill-amber-600 animate-pulse" />
-                <span>ÚLTIMAS UNIDADES</span>
+                
+                <span
+                  className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_3.5s_infinite] bg-gradient-to-r from-transparent via-white/15 to-transparent"
+                  aria-hidden="true"
+                />
+
+<SantLogoIcon
+                  className="relative z-10 w-3.5 h-3.5 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.85)] animate-pulse shrink-0"
+                />
+
+                <span className="relative z-10 tracking-[0.22em]">ÚLTIMAS UNIDADES</span>
+
+<span className="relative z-10 flex h-1.5 w-1.5 items-center justify-center shrink-0 ml-0.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping bg-amber-400/80 opacity-75" />
+                  <span className="relative inline-flex h-1 w-1 bg-amber-400" />
+                </span>
               </>
             ) : (
               'DISPONIBLE'
@@ -238,8 +230,7 @@ export default function ProductPurchasePanel({
         </p>
       </div>
 
-
-      <div className="py-4 border-y border-[#17191c]/10 flex items-center justify-between gap-4 flex-wrap bg-[#17191c]/[0.015] px-1">
+<div className="py-4 border-y border-[#17191c]/10 flex items-center justify-between gap-4 flex-wrap bg-[#17191c]/[0.015] px-1">
         <div className="flex items-baseline gap-3">
           <span className="text-3xl sm:text-4xl font-[family-name:var(--font-bebas)] tracking-[0.04em] text-[#17191c] leading-none">
             {formatCurrency(effectivePrice)}
@@ -258,8 +249,7 @@ export default function ProductPurchasePanel({
         )}
       </div>
 
-
-      {images.length > 0 && (
+{images.length > 0 && (
         <div>
           <div className="flex items-center gap-3">
             {images.slice(0, 4).map((image, index) => (
@@ -285,8 +275,7 @@ export default function ProductPurchasePanel({
         </div>
       )}
 
-
-      <div>
+<div>
         <div className="flex items-center justify-between gap-3 mb-3">
           <span id="size-label" className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-zinc-700">
             SELECCIONAR TALLE:
@@ -334,15 +323,13 @@ export default function ProductPurchasePanel({
         </div>
       </div>
 
-
-      <div>
+<div>
         <div className="flex items-center justify-between mb-2.5">
           <span id="qty-label" className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-zinc-700">
             CANTIDAD:
           </span>
-          {/* Referencia de catálogo, no el total del pedido: descuentos por
-              cantidad, nivel, cupón y envío los calcula el servidor en el checkout. */}
-          <span
+
+<span
             className="text-xs font-mono font-bold text-[#17191c]"
             title="Precio de lista × cantidad. El total final se calcula en el checkout."
           >
@@ -380,15 +367,38 @@ export default function ProductPurchasePanel({
         </div>
 
         {isLowStock && (
-          <p className="mt-2.5 text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-amber-800 flex items-center gap-1.5" aria-live="polite">
-            <span className="w-2 h-2 rounded-full bg-amber-600 animate-ping inline-block" />
-            <span>ÚLTIMAS {selectedVariant?.stock} UNIDADES EN TALLE {selectedSize}</span>
-          </p>
+          <div
+            className="group relative mt-3 inline-flex items-center gap-2.5 overflow-hidden border border-[#17191c] bg-white pl-3.5 pr-3 py-1.5 shadow-2xs select-none transition-all duration-300 hover:border-black"
+            aria-live="polite"
+          >
+            
+            <span className="pointer-events-none absolute left-0 top-0 bottom-0 w-1 bg-amber-500" />
+
+<span
+              className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_3.5s_infinite] bg-gradient-to-r from-transparent via-[#17191c]/[0.05] to-transparent"
+              aria-hidden="true"
+            />
+
+<SantLogoIcon
+              className="relative z-10 w-3.5 h-3.5 text-amber-500 drop-shadow-[0_0_6px_rgba(245,158,11,0.6)] animate-pulse shrink-0 ml-0.5"
+            />
+
+<span className="relative z-10 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#17191c]">
+              {selectedVariant?.stock === 1 ? (
+                <>
+                  ÚLTIMA <span className="font-black text-amber-600">1 UNIDAD</span> EN TALLE {selectedSize}
+                </>
+              ) : (
+                <>
+                  ÚLTIMAS <span className="font-black text-amber-600">{selectedVariant?.stock} UNIDADES</span> EN TALLE {selectedSize}
+                </>
+              )}
+            </span>
+          </div>
         )}
       </div>
 
-
-      <div className="space-y-3 pt-2">
+<div className="space-y-3 pt-2">
         <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             type="button"
@@ -418,22 +428,6 @@ export default function ProductPurchasePanel({
               </>
             )}
           </button>
-
-
-          <button
-            type="button"
-            onClick={handleToggleWishlist}
-            aria-label={isWishlisted ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-            aria-pressed={isWishlisted}
-            className={`w-13 h-13 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center border cursor-pointer transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17191c] ${
-              isWishlisted
-                ? 'bg-rose-600 border-rose-600 text-white shadow-md'
-                : 'bg-white border-[#17191c]/20 text-[#17191c] hover:border-[#17191c] hover:bg-zinc-50'
-            }`}
-          >
-            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[1.8] ${isWishlisted ? 'fill-white' : ''}`} aria-hidden="true" />
-          </button>
-
 
           <button
             type="button"

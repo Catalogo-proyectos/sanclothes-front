@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -25,7 +25,6 @@ export default function ProductLightbox({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
   const titleId = useId();
-  const [mounted, setMounted] = useState(false);
 
   const total = images.length;
   const goPrev = useCallback(
@@ -36,10 +35,6 @@ export default function ProductLightbox({
     () => onIndexChange((index + 1) % total),
     [index, total, onIndexChange]
   );
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const { body } = document;
@@ -56,13 +51,12 @@ export default function ProductLightbox({
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
     previouslyFocused.current = document.activeElement;
     closeButtonRef.current?.focus();
     return () => {
       (previouslyFocused.current as HTMLElement | null)?.focus?.();
     };
-  }, [mounted]);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -102,8 +96,6 @@ export default function ProductLightbox({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [goNext, goPrev, onClose, total]);
 
-  if (!mounted) return null;
-
   const current = images[index] ?? images[0];
   if (!current) return null;
 
@@ -122,8 +114,7 @@ export default function ProductLightbox({
         Vista expandida de {productTitle}
       </h2>
 
-      {/* Botón Salir / Cerrar - Icono pequeño y minimalista */}
-      <button
+<button
         ref={closeButtonRef}
         onClick={onClose}
         className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-2 text-zinc-400 hover:text-white cursor-pointer transition-colors duration-200 focus-visible:outline-none"

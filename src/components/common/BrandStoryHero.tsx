@@ -11,15 +11,11 @@ import { currentGridSize, toCartItem, toGridProduct, type GridProduct } from '@/
 import { productHref } from '@/lib/catalog/sizes';
 import type { CatalogProduct } from '@/types/api';
 
-/** Máximo de productos en el bento 2x2 de esta sección. */
 export const BENTO_CAPACITY = 4;
 
 interface BrandStoryHeroProps {
-  /**
-   * Productos marcados como destacados en el admin ("Bento Grid / Destacados 2x2").
-   * Si no hay ninguno, la sección muestra solo la imagen editorial a lo ancho.
-   */
-  products?: CatalogProduct[];
+
+products?: CatalogProduct[];
 }
 
 export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
@@ -52,8 +48,7 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
       <div className="max-w-[1440px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
 
-
-          <motion.div
+<motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -66,21 +61,18 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
             >
 
               <Image
-                src="/img/hero/IMG_2996.webp"
+                src="/img/web/hero/IMG_2996.webp"
                 alt="SANT CLOTHES — Colección Camperas & Chaquetas"
                 fill
                 quality={80}
 
-
-                sizes="(min-width: 1024px) 50vw, 100vw"
+sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
               />
 
+<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20 pointer-events-none" />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20 pointer-events-none" />
-
-
-              <div className="relative z-10 p-6 sm:p-10 space-y-4 text-white">
+<div className="relative z-10 p-6 sm:p-10 space-y-4 text-white">
                 <motion.h2
                   initial={{ opacity: 0, y: 25 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -98,8 +90,7 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
             </div>
           </motion.div>
 
-
-          {hasProducts && (
+{hasProducts && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -131,8 +122,7 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
                       />
                     </Link>
 
-
-                    <div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
+<div className="relative min-h-[105px] px-1 flex flex-col justify-between overflow-hidden">
 
                       <Link
                         href={`/products/${product.id}`}
@@ -152,8 +142,7 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
                         </span>
                       </Link>
 
-
-                      <div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
+<div className="absolute inset-0 z-20 bg-[#17191c] text-white p-2.5 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 ease-out translate-y-2 group-hover:translate-y-0 shadow-lg">
 
                         <div className="flex items-center justify-center gap-1.5">
                           {product.sizes.map(({ size: sz, soldOut }) => (
@@ -176,9 +165,8 @@ export default function BrandStoryHero({ products = [] }: BrandStoryHeroProps) {
                           ))}
                         </div>
 
+{product.sizes.length === 0 || product.multiCut ? (
 
-                        {product.sizes.length === 0 || product.multiCut ? (
-                          // Varios cortes: el cliente elige el corte en la ficha, con el talle ya marcado.
                           <Link
                             href={productHref(product.id, selectedSizes[product.id])}
                             className="w-full h-9 bg-white text-black hover:bg-zinc-200 text-[11px] font-[family-name:var(--font-bebas)] tracking-[0.12em] uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"

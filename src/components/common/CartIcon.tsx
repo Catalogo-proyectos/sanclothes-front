@@ -26,23 +26,22 @@ export default function CartIcon({ onClick, isWhiteText = false }: CartIconProps
   return (
     <button
       onClick={onClick}
-      aria-label="Carrito de compras"
-      className={`relative p-2 transition-colors duration-300 flex items-center gap-1.5 cursor-pointer ${
-        isWhiteText ? 'text-white hover:opacity-75' : 'text-[#17191c] hover:opacity-70'
+      aria-label={displayCount > 0 ? `Carrito de compras, ${displayCount} productos` : 'Carrito de compras'}
+      className={`relative flex h-10 w-10 max-[359px]:w-9 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 ${
+        isWhiteText
+          ? 'text-white hover:bg-white/10 focus-visible:outline-white'
+          : 'text-[#17191c] hover:bg-[#17191c]/5 focus-visible:outline-[#17191c]'
       }`}
     >
-      <ShoppingBag className="w-5 h-5 stroke-[2]" />
-      <span className="text-[11px] font-bold uppercase tracking-wider hidden sm:inline">
-        CARRITO
-      </span>
+      <ShoppingBag className="h-5 w-5 stroke-[1.75]" />
       {displayCount > 0 && (
         <span
-          className={`text-[10px] font-black w-4.5 h-4.5 px-1 flex items-center justify-center transition-colors duration-300 ${
+          aria-hidden
+          className={`absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold leading-none ${
             isWhiteText
-              ? 'bg-white text-black border border-black'
-              : 'bg-black text-white border border-white'
+              ? 'bg-[#f6f8f9] text-[#17191c]'
+              : 'bg-[#17191c] text-white'
           }`}
-          style={{ borderRadius: '0px' }}
         >
           {displayCount}
         </span>

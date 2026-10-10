@@ -10,7 +10,6 @@ export interface NavCategory {
   featuredTag: string;
 }
 
-
 export const NAV_CATEGORIES: NavCategory[] = [
   {
     id: 'casual',
@@ -32,7 +31,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
       { label: 'Estilo Urbano', href: '/catalog?category=casual&type=urban' },
       { label: 'Accesorios', href: '/catalog?category=casual&type=accessories' },
     ],
-    featuredImage: '/img/nav/casual.webp',
+    featuredImage: '/img/web/nav/casual-drop.webp',
     featuredTag: 'DAILY ESSENTIALS',
   },
   {
@@ -55,7 +54,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
       { label: 'Línea Unisex', href: '/catalog?category=streetwear&gender=unisex' },
       { label: 'Accesorios Street', href: '/catalog?category=streetwear&type=accessories' },
     ],
-    featuredImage: '/img/nav/streetwear.webp',
+    featuredImage: '/img/web/nav/street-drop.webp',
     featuredTag: 'NEW DROP SS26',
   },
   {
@@ -78,7 +77,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
       { label: 'Línea Silent Luxury', href: '/catalog?category=old-money&type=silent' },
       { label: 'Marroquinería', href: '/catalog?category=old-money&type=leather' },
     ],
-    featuredImage: '/img/nav/old-money.webp',
+    featuredImage: '/img/web/nav/old-drop.webp',
     featuredTag: 'SILENT LUXURY',
   },
   {
@@ -101,20 +100,15 @@ export const NAV_CATEGORIES: NavCategory[] = [
       { label: 'High Mobility', href: '/catalog?category=sports&type=mobility' },
       { label: 'Accesorios Active', href: '/catalog?category=sports&type=accessories' },
     ],
-    featuredImage: '/img/nav/sports.webp',
+    featuredImage: '/img/web/nav/sport-drop.webp',
     featuredTag: 'HIGH PERFORMANCE',
   },
 ];
 
-// ---------------------------------------------------------------------------
-// Catálogo v2: el menú sale de la taxonomía (estilos editables en el admin).
-// Los 4 estilos originales conservan su imagen y textos de arriba como respaldo;
-// los sub-links pasan a ser los tipos de prenda reales del estilo.
-// ---------------------------------------------------------------------------
 import type { CatalogTaxonomy } from '@/lib/services/taxonomy';
 import { catalogHref } from '@/lib/catalog/query';
 
-const DEFAULT_NAV_IMAGE = '/img/nav/casual.webp';
+const DEFAULT_NAV_IMAGE = '/img/web/nav/casual-drop.webp';
 
 export function navCategoriesFromTaxonomy(taxonomy: CatalogTaxonomy): NavCategory[] {
   if (taxonomy.styles.length === 0) return NAV_CATEGORIES;
@@ -122,7 +116,7 @@ export function navCategoriesFromTaxonomy(taxonomy: CatalogTaxonomy): NavCategor
     const base = NAV_CATEGORIES.find((c) => c.id === style.code);
     const href = catalogHref({ style: style.code });
     const typeLinks = style.categories.map((c) => ({ label: c.name, href: catalogHref({ style: style.code, tipo: c.code }) }));
-    // Sin tipos cargados todavía: se mantienen las etiquetas de siempre, apuntando al estilo.
+    
     const legacy = (links: NavCategory['col1Links'] | undefined) => (links ?? []).map((l) => ({ label: l.label, href }));
     return {
       id: style.code,

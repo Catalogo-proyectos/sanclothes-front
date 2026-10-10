@@ -1,9 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CartItem } from '@/types/cart';
 
-// El servicio real (no el modo demo): config con useMock = false.
 vi.mock('@/lib/config', () => ({
-  config: { api: { useMock: false, baseUrl: 'https://api.test/api' } },
+  config: { api: { baseUrl: 'https://api.test/api' } },
 }));
 
 import { fetchCheckoutQuote, normalizeCouponCode, toQuoteItems } from '@/lib/services/quote';

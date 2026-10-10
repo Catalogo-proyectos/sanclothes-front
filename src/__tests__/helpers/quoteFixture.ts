@@ -1,7 +1,6 @@
 import type { CartItem } from '@/types/cart';
 import type { CheckoutQuote } from '@/types/quote';
 
-/** Quote con la forma exacta del backend A2 (los valores los pone cada test). */
 export function makeQuote(overrides: Partial<CheckoutQuote> = {}): CheckoutQuote {
   return {
     currency: 'PYG',
@@ -38,13 +37,12 @@ export function makeCartItem(overrides: Partial<CartItem> = {}): CartItem {
     size: 'M',
     cut: 'UNISEX',
     quantity: 1,
-    // Precio local deliberadamente distinto del servidor: nunca debe decidir el total.
+    
     unitPrice: 777_777,
     ...overrides,
   };
 }
 
-/** Promesa controlable para simular requests en vuelo. */
 export function deferred<T>() {
   let resolve!: (value: T) => void;
   let reject!: (reason?: unknown) => void;

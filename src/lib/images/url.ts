@@ -1,6 +1,5 @@
 import { config } from '@/lib/config';
 
-
 const KNOWN_MEDIA_HOSTS = [
   'https://api.santclothes.com.py',
   'http://localhost:5012',
@@ -9,15 +8,13 @@ const KNOWN_MEDIA_HOSTS = [
   'http://127.0.0.1:5014',
 ] as const;
 
-
 export function normalizeImageUrl(url: string | null | undefined): string | null {
   if (!url) return null;
 
   const clean = url.trim();
   if (!clean) return null;
 
-
-  if (clean.startsWith('/') || clean.startsWith('data:') || clean.startsWith('blob:')) {
+if (clean.startsWith('/') || clean.startsWith('data:') || clean.startsWith('blob:')) {
     return clean;
   }
 
@@ -34,6 +31,5 @@ export function normalizeImageUrl(url: string | null | undefined): string | null
     }
   }
 
-
-  return clean;
+return clean;
 }

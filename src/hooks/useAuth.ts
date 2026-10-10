@@ -15,15 +15,10 @@ const AVATAR_KEY = 'sant_avatar_url';
 
 const readAvatar = () => (typeof window !== 'undefined' ? localStorage.getItem(AVATAR_KEY) : null);
 
-/**
- * M5: pasa a cookie httpOnly la sesión que el storefront anterior guardaba en
- * localStorage, y borra el JWT de ahí. Si el API la rechaza (vencida, revocada)
- * simplemente queda deslogueado.
- */
 async function migrateLegacySession(token: string): Promise<void> {
   const decoded = parseJWT(token);
   const expired = !decoded?.exp || decoded.exp * 1000 <= Date.now();
-  if (!decoded || expired || config.api.useMock) {
+  if (!decoded || expired) {
     removeLegacyStoredToken();
     if (decoded && !expired) setStoredSession(decoded);
     return;
@@ -41,9 +36,9 @@ async function migrateLegacySession(token: string): Promise<void> {
     } else if (res.status === 401 || res.status === 403) {
       removeLegacyStoredToken();
     }
-    // Otro error (red, 5xx): se reintenta en la próxima carga.
+
   } catch {
-    // sin red: se reintenta en la próxima carga
+
   }
 }
 
@@ -65,10 +60,8 @@ export const useAuth = create<AuthState>((set) => ({
   },
 
   logout: () => {
-    // Borra las cookies en el API (no necesita CSRF). Si falla, la cookie vence sola.
-    if (!config.api.useMock) {
-      void fetch(`${config.api.baseUrl}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
-    }
+
+    void fetch(`${config.api.baseUrl}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
     clearStoredSession();
     removeLegacyStoredToken();
     if (typeof window !== 'undefined') {
@@ -94,7 +87,7 @@ export const useAuth = create<AuthState>((set) => ({
   },
 
   syncFromStorage: () => {
-    // Una sola migración en vuelo aunque lo llamen Header y ProtectedRoute a la vez.
+
     syncPromise ??= (async () => {
       const legacy = readLegacyStoredToken();
       if (legacy) await migrateLegacySession(legacy);
@@ -108,7 +101,6 @@ export const useAuth = create<AuthState>((set) => ({
   },
 }));
 
-// Un request con sesión respondió 401: la cookie venció o se revocó.
 if (typeof window !== 'undefined') {
   window.addEventListener(SESSION_EXPIRED_EVENT, () => {
     useAuth.setState({ user: null, profile: null, isLoggedIn: false });

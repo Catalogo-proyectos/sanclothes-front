@@ -29,7 +29,6 @@ export default function SmoothScrollProvider() {
       if (!targetElement) return;
 
       e.preventDefault();
-      e.stopPropagation();
 
       targetElement.scrollIntoView({
         behavior: 'smooth',

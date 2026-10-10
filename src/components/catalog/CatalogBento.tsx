@@ -10,12 +10,6 @@ import { PLACEHOLDER_PRODUCT } from '@/lib/images/constants';
 import { bentoTitle, type BentoBand } from '@/lib/catalog/sections';
 import ProductCard from './ProductCard';
 
-/**
- * Bento del catálogo v2: un producto marcado como bento en el admin, con sus
- * productos del mismo tipo de prenda al lado. El armado depende de cuántos
- * hay (ver arrangementFor en lib/catalog/sections.ts).
- */
-
 function bentoImage(product: CatalogProduct): string {
   return normalizeImageUrl(product.bento?.image) ?? product.images[0]?.url ?? PLACEHOLDER_PRODUCT;
 }
@@ -30,7 +24,7 @@ interface BentoTileProps {
 export function BentoTile({ product, className = '', priority = false, sizes }: BentoTileProps) {
   const title = bentoTitle(product);
   const price = product.discountPrice ?? product.price;
-  // Si la imagen (propia del bento o del producto) no carga, el placeholder.
+  
   const [failed, setFailed] = useState(false);
 
   return (
@@ -92,7 +86,7 @@ export function SeeAllTile({ href, label, count }: SeeAllTileProps) {
 
 interface BentoBandViewProps {
   band: BentoBand;
-  /** Alterna el lado del bento entre bandas consecutivas. */
+
   flip: boolean;
   priority: boolean;
   seeAll: { href: string; label: string; count: number };
@@ -104,8 +98,7 @@ const cards = (products: CatalogProduct[]) =>
 export function BentoBandView({ band, flip, priority, seeAll }: BentoBandViewProps) {
   const { bento, side, arrangement } = band;
 
-  // 0 al lado: banner a todo el ancho.
-  if (arrangement === 'banner') {
+if (arrangement === 'banner') {
     return (
       <BentoTile
         product={bento}
@@ -116,8 +109,7 @@ export function BentoBandView({ band, flip, priority, seeAll }: BentoBandViewPro
     );
   }
 
-  // 1 al lado: bento ancho (3/4) + una card. 2 al lado: bento (2/4) + dos cards.
-  if (arrangement === 'split' || arrangement === 'stack') {
+if (arrangement === 'split' || arrangement === 'stack') {
     const bentoSpan = arrangement === 'split' ? 'lg:col-span-3' : 'lg:col-span-2';
     return (
       <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
@@ -132,8 +124,7 @@ export function BentoBandView({ band, flip, priority, seeAll }: BentoBandViewPro
     );
   }
 
-  // 3 o 4 al lado: bento a la mitad + grilla 2×2 (con "Ver todas" en el 4.º lugar si hay 3).
-  return (
+return (
     <div className="grid grid-cols-1 items-stretch gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-6">
       <BentoTile
         product={bento}

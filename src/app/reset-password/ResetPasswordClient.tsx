@@ -55,7 +55,7 @@ function ResetPasswordForm() {
     <div className="w-full max-w-md">
       <div className="flex justify-center mb-8">
         <Image
-          src="/img/logo/Sant_Logo Negro.png"
+          src="/img/web/logo/sant-logo-negro.webp"
           alt="Sant Clothes"
           width={280}
           height={56}

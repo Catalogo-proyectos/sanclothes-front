@@ -99,6 +99,18 @@ describe('OrderPaymentPanel', () => {
     expect(await screen.findByText(/formato no permitido/i)).toBeInTheDocument();
     expect(uploadReceipt).not.toHaveBeenCalled();
   });
+
+  it('no muestra errores técnicos cuando el servidor no responde', async () => {
+    fetchCheckoutOrder.mockResolvedValue(order());
+    uploadReceipt.mockRejectedValue(new TypeError('Failed to fetch'));
+    const { container } = render(<OrderPaymentPanel orderId="42" />);
+    await screen.findByRole('button', { name: /subir comprobante/i });
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [new File(['png'], 'comprobante.png', { type: 'image/png' })] } });
+
+    expect(await screen.findByText(/no se pudo subir el comprobante/i)).toBeInTheDocument();
+    expect(screen.queryByText(/failed to fetch/i)).not.toBeInTheDocument();
+  });
 });
 
 describe('/pedido/[id] (link del email)', () => {

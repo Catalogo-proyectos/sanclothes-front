@@ -53,8 +53,8 @@ describe('phone (Paraguay)', () => {
   it.each([
     ['+595981123456', true],
     ['0981123456', true],
-    ['+59598112345', false], // 8 dígitos
-    ['+595211234567', false], // fijo, no celular
+    ['+59598112345', false], 
+    ['+595211234567', false], 
     ['', false],
   ])('isValidPyPhone(%s) = %s', (value, expected) => {
     expect(isValidPyPhone(value)).toBe(expected);

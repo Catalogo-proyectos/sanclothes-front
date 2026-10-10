@@ -58,7 +58,7 @@ export const metadata: Metadata = {
       'Streetwear, moda urbana y prendas de alto gramaje diseñadas por SANT CLOTHES en Ciudad del Este, Paraguay.',
     images: [
       {
-        url: '/img/hero/IMG_4390.webp',
+        url: '/img/web/hero/IMG_4390.webp',
         width: 1200,
         height: 630,
         alt: 'SANT CLOTHES® streetwear en Paraguay',
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     title: 'SANT CLOTHES® | Streetwear y moda urbana en Paraguay',
     description:
       'Streetwear, moda urbana y prendas de alto gramaje diseñadas por SANT CLOTHES en Ciudad del Este, Paraguay.',
-    images: ['/img/hero/IMG_4390.webp'],
+    images: ['/img/web/hero/IMG_4390.webp'],
   },
   icons: {
     icon: [
@@ -90,7 +90,7 @@ const jsonLd = {
       '@id': `${config.app.url}/#organization`,
       name: 'SANT CLOTHES',
       url: config.app.url,
-      logo: `${config.app.url}/img/logo/logo-iso-negro.png`,
+      logo: `${config.app.url}/img/web/logo/logo-iso-negro.webp`,
       sameAs: [
         'https://www.instagram.com/santclothespy/',
         'https://www.youtube.com/@santclothes',
@@ -112,7 +112,7 @@ const jsonLd = {
       '@type': 'ClothingStore',
       '@id': `${config.app.url}/#store`,
       name: 'SANT CLOTHES',
-      image: `${config.app.url}/img/hero/IMG_4390.webp`,
+      image: `${config.app.url}/img/web/hero/IMG_4390.webp`,
       url: config.app.url,
       priceRange: '$$',
       currenciesAccepted: 'PYG',
@@ -132,12 +132,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Menú de estilos editable desde el admin (revalida cada 5 min; con la API
-  // caída usa los 4 estilos de siempre).
-  const navCategories = navCategoriesFromTaxonomy(await fetchTaxonomy());
+
+const navCategories = navCategoriesFromTaxonomy(await fetchTaxonomy());
 
   return (
-    <html lang="es" className={bebas.variable}>
+    <html lang="es" className={bebas.variable} data-scroll-behavior="smooth">
       <head>
         <script
           type="application/ld+json"

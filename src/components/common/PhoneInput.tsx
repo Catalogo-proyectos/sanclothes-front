@@ -13,22 +13,16 @@ import {
 type PhoneInputProps = {
   id?: string;
   name?: string;
-  /** Valor guardado: "+595XXXXXXXXX", vacío, o un formato viejo ("0981…"). */
+  
   value: string;
-  /** Recibe siempre "+595XXXXXXXXX" (o "" si se vació el campo). */
+  
   onChange: (value: string) => void;
   required?: boolean;
-  /** Clases del input del formulario que lo contiene, para mantener su estilo. */
+  
   className?: string;
   prefixClassName?: string;
 };
 
-/**
- * Celular paraguayo con el prefijo +595 fijo (no editable ni borrable).
- * Normaliza lo que el usuario escriba o pegue y marca el campo inválido con
- * setCustomValidity, así el submit nativo del form lo bloquea sin que cada
- * formulario tenga que validar por su cuenta.
- */
 export default function PhoneInput({
   id,
   name = 'phone',

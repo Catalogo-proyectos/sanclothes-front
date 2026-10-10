@@ -16,17 +16,18 @@ export const metadata: Metadata = {
 
 export default function CheckoutPage() {
   return (
-    <div className="bg-white min-h-screen">
-
+    <div className="min-h-screen bg-[#f6f8f9]">
       <PageHero
-        category="PROCESO DE PAGO SEGURO / SANCLOTHES"
+        category="PROCESO DE PAGO / SANT CLOTHES"
         title="FINALIZAR COMPRA"
-        subtitle="Ingresá los datos de envío y selección de pago. Envíos garantizados a todo el país."
-        compact
+        subtitle="Completá tus datos de envío, revisá el total y confirmá tu pedido de forma segura."
+        image="/img/web/hero/hero-checkout.webp"
+        mobileImage="/img/movil/hero/hero-checkout.webp"
+        preserveColor
+        tall
       />
 
-
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 py-12">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <CheckoutForm />
       </div>
     </div>

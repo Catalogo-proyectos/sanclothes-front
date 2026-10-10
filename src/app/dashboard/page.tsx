@@ -18,15 +18,16 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <ProtectedRoute>
-      <div className="bg-white min-h-screen">
-
+      <div className="bg-[#f6f8f9] min-h-screen">
         <PageHero
-          category="PANEL DE CLIENTE / SANCLOTHES"
+          category="PANEL DE CLIENTE / SANT CLOTHES"
           title="MI CUENTA & PEDIDOS"
           subtitle="Consultá tu historial de compras, seguimiento de envíos y tickets de soporte al cliente."
-          compact
+          image="/img/web/hero/hero-dashboard.webp"
+          mobileImage="/img/movil/hero/hero-dashboard.webp"
+          preserveColor
+          tall
         />
-
 
         <Dashboard />
       </div>

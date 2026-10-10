@@ -52,6 +52,8 @@ next-env.d.ts
 # Claude Files
 /.claude
 /.agents
+AGENTS.md
+CLAUDE.md  
 GEMINI.md
 nude-project.com.md
 scuffers.com.md

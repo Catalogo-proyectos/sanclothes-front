@@ -10,7 +10,7 @@ describe('navCategoriesFromTaxonomy', () => {
       const base = NAV_CATEGORIES.find((c) => c.id === item.id)!;
       expect(item.featuredImage).toBe(base.featuredImage);
       expect(item.href).toBe(`/catalog?category=${item.id}`);
-      // Los sub-links viejos (&type=...) no filtraban nada: ahora apuntan al estilo.
+
       expect(item.col1Links.every((l) => l.href === item.href)).toBe(true);
     }
   });

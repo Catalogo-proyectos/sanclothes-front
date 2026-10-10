@@ -19,7 +19,7 @@ const CATEGORIES: HeroCategory[] = [
     title: 'CASUAL',
     subtitle: 'CONFORT DIARIO',
     href: '/catalog?category=casual',
-    imageSrc: '/img/hero/IMG_3202.webp',
+    imageSrc: '/img/web/hero/IMG_3202.webp',
     alt: 'SANT — Moda Casual',
   },
   {
@@ -27,7 +27,7 @@ const CATEGORIES: HeroCategory[] = [
     title: 'STREETWEAR',
     subtitle: 'EXPRESÁ TU ESTILO',
     href: '/catalog?category=streetwear',
-    imageSrc: '/img/hero/IMG_3148.webp',
+    imageSrc: '/img/web/hero/IMG_3148.webp',
     alt: 'SANT — Streetwear Drop',
   },
   {
@@ -35,7 +35,7 @@ const CATEGORIES: HeroCategory[] = [
     title: 'SPORTS',
     subtitle: 'RENDÍ AL MÁXIMO',
     href: '/catalog?category=sports',
-    imageSrc: '/img/hero/IMG_2334.webp',
+    imageSrc: '/img/web/hero/IMG_2334.webp',
     alt: 'SANT — Performance Sports',
   },
   {
@@ -43,7 +43,7 @@ const CATEGORIES: HeroCategory[] = [
     title: 'OLD MONEY',
     subtitle: 'ELEGANCIA ATEMPORAL',
     href: '/catalog?category=old-money',
-    imageSrc: '/img/hero/IMG_1460.webp',
+    imageSrc: '/img/web/hero/IMG_1460.webp',
     alt: 'SANT — Old Money Collection',
   },
 ];
@@ -75,8 +75,7 @@ export default function HeroCategoryGrid() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/15 group-hover:from-black/70 transition-colors duration-500" />
             </div>
 
-
-            <div className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-20 flex flex-col items-start gap-1">
+<div className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-20 flex flex-col items-start gap-1">
               <h2 className="text-4xl lg:text-5xl xl:text-6xl font-[family-name:var(--font-bebas)] tracking-[0.06em] uppercase text-white leading-none drop-shadow-md whitespace-nowrap group-hover:translate-x-1 transition-transform duration-300">
                 {cat.title}
               </h2>
@@ -91,8 +90,7 @@ export default function HeroCategoryGrid() {
         ))}
       </div>
 
-
-      <div className="flex md:hidden flex-col w-full bg-[#17191c]">
+<div className="flex md:hidden flex-col w-full bg-[#17191c]">
         {CATEGORIES.map((cat) => (
           <Link
             key={cat.id}
@@ -112,8 +110,7 @@ export default function HeroCategoryGrid() {
 
             <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent z-10" />
 
-
-            <div className="absolute inset-0 p-6 z-20 flex items-center justify-between">
+<div className="absolute inset-0 p-6 z-20 flex items-center justify-between">
               <div>
                 <h2 className="text-3xl font-[family-name:var(--font-bebas)] tracking-[0.08em] uppercase text-white leading-none mb-1">
                   {cat.title}

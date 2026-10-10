@@ -7,11 +7,9 @@ interface CatalogFilterState {
 
   syncFromUrl: (value: string | null) => void;
 
-  /** Código del estilo activo (cualquiera de la taxonomía del admin). */
-  style: string | null;
+style: string | null;
   setStyle: (value: string | null) => void;
 }
-
 
 export const useCatalogFilter = create<CatalogFilterState>((set) => ({
   chip: DEFAULT_CHIP,

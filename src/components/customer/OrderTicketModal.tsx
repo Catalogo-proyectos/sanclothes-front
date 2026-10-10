@@ -16,11 +16,6 @@ interface OrderTicketModalProps {
   onClose: () => void;
 }
 
-/**
- * Ticket de compra de un pedido del cliente (GET /me/orders/:id).
- * "Imprimir / PDF" usa la impresión del navegador; el CSS de print en
- * globals.css deja visible solo #order-ticket-print.
- */
 export default function OrderTicketModal({ orderId, statusLabel, onClose }: OrderTicketModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
@@ -69,10 +64,8 @@ export default function OrderTicketModal({ orderId, statusLabel, onClose }: Orde
 
   const items = order?.items ?? [];
   const address = order?.shippingAddress;
-  // A2: el backend informa el descuento registrado. Pedidos anteriores a A2 no
-  // tienen desglose (discount null): ahí se mantiene la lectura histórica de
-  // la diferencia entre subtotal y total.
-  const discount = order
+
+const discount = order
     ? order.totals.discount ?? Math.max(0, order.totals.subtotal + order.totals.shipping - order.totals.total)
     : 0;
   const addressLine = address
@@ -91,99 +84,103 @@ export default function OrderTicketModal({ orderId, statusLabel, onClose }: Orde
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="bg-white max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 rounded-t-2xl sm:rounded-2xl border border-slate-200 shadow-2xl relative print:max-h-none print:overflow-visible print:shadow-none print:border-0 print:rounded-none"
+        className="bg-white max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 rounded-none border border-[#17191c] shadow-2xl relative print:max-h-none print:overflow-visible print:shadow-none print:border-0 print:rounded-none"
       >
         <button
           ref={closeButtonRef}
           onClick={onClose}
           aria-label="Cerrar ticket de compra"
-          className="absolute top-3 right-3 p-2 text-slate-500 transition-colors hover:text-black print:hidden"
+          className="absolute top-4 right-4 p-2 text-[#50524a] transition-colors hover:text-[#17191c] cursor-pointer print:hidden"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 stroke-[1.75]" />
         </button>
 
-        <div className="flex items-center gap-2 pr-8">
-          <Receipt className="w-5 h-5 text-black shrink-0" aria-hidden="true" />
-          <h2 id={titleId} className="text-base sm:text-lg font-black uppercase tracking-wider">
+        <div className="flex items-center gap-2.5 pr-8">
+          <Receipt className="w-5 h-5 text-[#17191c] shrink-0" aria-hidden="true" />
+          <h2 id={titleId} className="text-2xl sm:text-3xl font-[family-name:var(--font-bebas)] uppercase tracking-wider text-[#17191c] leading-none">
             Ticket de compra
           </h2>
         </div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-1">Sant Clothes</p>
+        <p className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#50524a] mt-1">
+          SANT CLOTHES · ATELIER CIUDAD DEL ESTE
+        </p>
 
         {error ? (
-          <p className="mt-6 text-xs text-red-600">{error}</p>
+          <p className="mt-6 text-xs text-red-600 font-mono">{error}</p>
         ) : !order ? (
-          <p className="mt-6 text-xs text-slate-400 font-bold">Cargando pedido...</p>
+          <p className="mt-6 text-xs text-[#50524a] font-mono uppercase tracking-wider">Cargando pedido…</p>
         ) : (
           <>
-            <dl className="mt-6 grid grid-cols-2 gap-3 text-xs">
+            <dl className="mt-6 grid grid-cols-2 gap-3 text-xs border-y border-[#17191c]/15 py-4">
               <div>
-                <dt className="text-slate-400 uppercase font-bold text-[10px]">Pedido</dt>
-                <dd className="font-extrabold text-black">{order.orderNumber}</dd>
+                <dt className="text-[#50524a] uppercase font-bold text-[10px] font-mono tracking-wider">Pedido</dt>
+                <dd className="font-mono font-bold text-sm text-[#17191c]">#{order.orderNumber}</dd>
               </div>
               <div>
-                <dt className="text-slate-400 uppercase font-bold text-[10px]">Fecha</dt>
-                <dd className="font-bold text-black">{formatDate(order.createdAt)}</dd>
+                <dt className="text-[#50524a] uppercase font-bold text-[10px] font-mono tracking-wider">Fecha</dt>
+                <dd className="font-mono text-xs text-[#17191c]">{formatDate(order.createdAt).toUpperCase()}</dd>
               </div>
               <div>
-                <dt className="text-slate-400 uppercase font-bold text-[10px]">Estado</dt>
-                <dd className="font-bold text-black">{statusLabel}</dd>
+                <dt className="text-[#50524a] uppercase font-bold text-[10px] font-mono tracking-wider">Estado</dt>
+                <dd className="font-bold text-xs text-[#17191c] uppercase">{statusLabel}</dd>
               </div>
               {addressLine && (
                 <div className="col-span-2">
-                  <dt className="text-slate-400 uppercase font-bold text-[10px]">Entrega</dt>
-                  <dd className="font-bold text-black">{addressLine}</dd>
+                  <dt className="text-[#50524a] uppercase font-bold text-[10px] font-mono tracking-wider">Entrega</dt>
+                  <dd className="font-medium text-xs text-[#17191c]">{addressLine}</dd>
                 </div>
               )}
             </dl>
 
-            <ul className="mt-6 divide-y divide-slate-100 border-y border-slate-100">
+            <ul className="mt-4 divide-y divide-[#17191c]/10 border-b border-[#17191c]/15">
               {items.map((item, index) => (
-                <li key={`${item.productId}-${index}`} className="flex items-center gap-3 py-3">
+                <li key={`${item.productId}-${index}`} className="flex items-center gap-3.5 py-3">
                   <Image
                     src={normalizeImageUrl(item.image) || PLACEHOLDER_PRODUCT}
                     alt={item.name}
                     width={56}
                     height={56}
                     unoptimized
-                    className="w-14 h-14 rounded-lg object-cover bg-slate-100 shrink-0"
+                    className="w-14 h-14 rounded-none border border-[#17191c]/15 object-cover bg-neutral-100 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-black truncate">{item.name}</p>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-xs font-bold text-[#17191c] uppercase truncate">{item.name}</p>
+                    <p className="text-[11px] font-mono text-[#50524a]">
                       {item.quantity} × {formatCurrency(item.price)}
                     </p>
                   </div>
-                  <p className="text-xs font-extrabold text-black">{formatCurrency(item.price * item.quantity)}</p>
+                  <p className="text-xs font-mono font-bold text-[#17191c]">{formatCurrency(item.price * item.quantity)}</p>
                 </li>
               ))}
             </ul>
 
-            <dl className="mt-4 space-y-1.5 text-xs">
+            <dl className="mt-4 space-y-2 text-xs">
               <div className="flex justify-between">
-                <dt className="text-slate-500">Subtotal</dt>
-                <dd className="font-bold text-black">{formatCurrency(order.totals.subtotal)}</dd>
+                <dt className="text-[#50524a] font-mono uppercase text-[11px]">Subtotal</dt>
+                <dd className="font-mono font-bold text-[#17191c]">{formatCurrency(order.totals.subtotal)}</dd>
               </div>
               {order.totals.shipping > 0 && (
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Envío</dt>
-                  <dd className="font-bold text-black">{formatCurrency(order.totals.shipping)}</dd>
+                  <dt className="text-[#50524a] font-mono uppercase text-[11px]">Envío</dt>
+                  <dd className="font-mono font-bold text-[#17191c]">{formatCurrency(order.totals.shipping)}</dd>
                 </div>
               )}
               {discount > 0 && (
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Descuentos</dt>
-                  <dd className="font-bold text-emerald-700">−{formatCurrency(discount)}</dd>
+                  <dt className="text-[#50524a] font-mono uppercase text-[11px]">Descuentos</dt>
+                  <dd className="font-mono font-bold text-emerald-700">−{formatCurrency(discount)}</dd>
                 </div>
               )}
-              <div className="flex justify-between pt-2 border-t border-slate-200 text-sm">
-                <dt className="font-black uppercase">Total</dt>
-                <dd className="font-black text-black">{formatCurrency(order.totals.total)}</dd>
+              <div className="flex justify-between items-baseline pt-3 border-t border-[#17191c] text-sm">
+                <dt className="font-bold uppercase tracking-wider text-[#17191c]">Total</dt>
+                <dd className="font-[family-name:var(--font-bebas)] text-2xl text-[#17191c] tracking-wide leading-none">
+                  {formatCurrency(order.totals.total)}
+                </dd>
               </div>
             </dl>
 
             {order.returnReason && (
-              <p className="mt-4 text-[11px] text-slate-500">
+              <p className="mt-4 text-[11px] text-[#50524a] font-mono">
                 <span className="font-bold uppercase">Motivo de devolución:</span> {order.returnReason}
               </p>
             )}
@@ -191,10 +188,10 @@ export default function OrderTicketModal({ orderId, statusLabel, onClose }: Orde
             <button
               type="button"
               onClick={() => window.print()}
-              className="mt-6 w-full flex items-center justify-center gap-2 py-2.5 bg-black text-white text-xs font-extrabold uppercase rounded-xl hover:bg-slate-800 print:hidden"
+              className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-[#17191c] text-white text-xs font-bold uppercase tracking-[0.18em] hover:bg-neutral-800 rounded-none transition-colors cursor-pointer print:hidden shadow-xs"
             >
-              <Printer className="w-4 h-4" aria-hidden="true" />
-              Imprimir / Guardar PDF
+              <Printer className="w-4 h-4 stroke-[2]" aria-hidden="true" />
+              <span>Imprimir / Guardar PDF</span>
             </button>
           </>
         )}

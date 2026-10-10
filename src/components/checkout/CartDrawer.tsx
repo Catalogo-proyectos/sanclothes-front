@@ -11,8 +11,7 @@ import { getCheckoutIdentity } from '@/lib/services/checkout';
 import QuoteSummary from '@/components/checkout/QuoteSummary';
 import { formatCurrency } from '@/utils/format';
 
-
-const FALLBACK_IMAGE = '/img/hero/IMG_4390.webp';
+const FALLBACK_IMAGE = '/img/web/hero/IMG_4390.webp';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -23,8 +22,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, getReferenceSubtotal } = useCart();
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
-
-  useEffect(() => {
+useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -38,13 +36,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     };
   }, [isOpen, onClose]);
 
-  // El total que se muestra es el del servidor. Mientras no hay quote, solo el
-  // subtotal de catálogo como referencia (nunca un "total" armado acá).
-  const quoteState = useCheckoutQuote({
+const quoteState = useCheckoutQuote({
     items,
     token: isOpen ? getCheckoutIdentity() : null,
     enabled: isOpen,
-    // Vista informativa: si la sesión venció, se cotiza como anónimo.
+    
     anonymousFallbackOn401: true,
   });
   const { quote, status: quoteStatus } = quoteState;
@@ -52,8 +48,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const referenceSubtotal = getReferenceSubtotal();
   const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
 
-
-  const handleImageError = (variantId: string) => {
+const handleImageError = (variantId: string) => {
     setImageErrors((prev) => ({ ...prev, [variantId]: true }));
   };
 
@@ -145,8 +140,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           />
                         </Link>
 
-
-                        <div className="flex-1 min-w-0 space-y-1">
+<div className="flex-1 min-w-0 space-y-1">
                           <div className="flex items-start justify-between gap-2">
                             <Link
                               href={`/products/${item.productId}`}
@@ -180,8 +174,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                               )}
                             </span>
 
-
-                            <div className="flex items-center gap-2 border border-[#17191c]/20 px-2 py-0.5 text-xs font-mono">
+<div className="flex items-center gap-2 border border-[#17191c]/20 px-2 py-0.5 text-xs font-mono">
                               <button
                                 type="button"
                                 onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
@@ -211,8 +204,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 )}
               </div>
 
-
-              {items.length > 0 && (
+{items.length > 0 && (
                 <div className="p-6 border-t border-[#17191c]/10 bg-white space-y-4">
                   {!showServerTotals && (
                     <div className="flex justify-between text-xs font-mono text-[#50524a]" data-testid="reference-subtotal">

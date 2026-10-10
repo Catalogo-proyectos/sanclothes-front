@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 
 interface HypeCountdownProps {
   launchAt: string;
-  /** compact: una línea (tarjeta); full: bloques grandes (ficha). */
+  
   variant?: 'compact' | 'full';
-  /** Al llegar a cero (p. ej. recargar la ficha para mostrar los talles). */
+  
   onLaunch?: () => void;
 }
 
@@ -18,22 +18,55 @@ function remaining(launchAt: string, now: number) {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** Cuenta regresiva de un lanzamiento hype. */
+let clockNow = 0;
+let clockTimer: ReturnType<typeof setInterval> | null = null;
+const clockSubscribers = new Set<() => void>();
+
+const publishTime = () => {
+  clockNow = Date.now();
+  clockSubscribers.forEach((subscriber) => subscriber());
+};
+
+const stopClock = () => {
+  if (!clockTimer) return;
+  clearInterval(clockTimer);
+  clockTimer = null;
+};
+
+const syncClock = () => {
+  stopClock();
+  if (document.visibilityState !== 'visible' || clockSubscribers.size === 0) return;
+  publishTime();
+  clockTimer = setInterval(publishTime, 1000);
+};
+
+const subscribeToClock = (subscriber: () => void) => {
+  clockSubscribers.add(subscriber);
+  if (clockSubscribers.size === 1) {
+    document.addEventListener('visibilitychange', syncClock);
+    syncClock();
+  }
+
+  return () => {
+    clockSubscribers.delete(subscriber);
+    if (clockSubscribers.size === 0) {
+      stopClock();
+      document.removeEventListener('visibilitychange', syncClock);
+    }
+  };
+};
+
+const getClockSnapshot = () => clockNow;
+const getServerClockSnapshot = () => 0;
+
 export default function HypeCountdown({ launchAt, variant = 'full', onLaunch }: HypeCountdownProps) {
-  // null hasta montar: el server y el cliente no tienen la misma hora (evita hydration mismatch).
-  const [now, setNow] = useState<number | null>(null);
-
-  useEffect(() => {
-    const tick = () => setNow(Date.now());
-    const first = setTimeout(tick, 0);
-    const timer = setInterval(tick, 1000);
-    return () => {
-      clearTimeout(first);
-      clearInterval(timer);
-    };
-  }, []);
-
-  const t = now === null ? null : remaining(launchAt, now);
+  
+  const now = useSyncExternalStore(
+    subscribeToClock,
+    getClockSnapshot,
+    getServerClockSnapshot,
+  );
+  const t = now === 0 ? null : remaining(launchAt, now);
 
   useEffect(() => {
     if (t?.done) onLaunch?.();

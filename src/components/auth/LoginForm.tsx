@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,6 +30,7 @@ interface LoginFormProps {
 export default function LoginForm({ initialEmail = '', initialMode = 'login' }: LoginFormProps) {
   const router = useRouter();
   const { login: authLogin, setAvatarUrl } = useAuth();
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [mode, setMode] = useState<AuthMode>(initialMode);
 
@@ -46,6 +47,18 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const scheduleDashboardRedirect = useCallback((delay: number) => {
+    if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    redirectTimerRef.current = setTimeout(() => {
+      redirectTimerRef.current = null;
+      router.push('/dashboard');
+    }, delay);
+  }, [router]);
+
+  useEffect(() => () => {
+    if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+  }, []);
 
   const switchMode = (next: AuthMode) => {
     setMode(next);
@@ -73,9 +86,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         role: response.user.role,
       }, response.csrfToken);
       setSuccessMessage('Autenticación exitosa. Redirigiendo…');
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 700);
+      scheduleDashboardRedirect(700);
     } catch (err) {
       setError((err as Error).message || 'Credenciales inválidas. Verificá tus datos.');
     } finally {
@@ -106,9 +117,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         role: response.user.role,
       }, response.csrfToken);
       setSuccessMessage('Cuenta creada. Bienvenido a SANT CLUB.');
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 800);
+      scheduleDashboardRedirect(800);
     } catch (err) {
 
       if (err instanceof ApiError && err.status === 409 && err.data?.isGuestAccount) {
@@ -137,8 +146,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         role: response.user.role,
       }, response.csrfToken);
 
-
-      if (response.user.avatarUrl) {
+if (response.user.avatarUrl) {
         setAvatarUrl(response.user.avatarUrl);
       }
 
@@ -147,9 +155,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
       } else {
         setSuccessMessage('Autenticación exitosa con Google. Redirigiendo…');
       }
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 800);
+      scheduleDashboardRedirect(800);
     } catch (err) {
       if (err instanceof ApiError && err.code === 'GOOGLE_NOT_CONFIGURED') {
         setError('El inicio con Google no está disponible en este momento.');
@@ -159,10 +165,9 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     } finally {
       setLoading(false);
     }
-  }, [authLogin, router, setAvatarUrl]);
+  }, [authLogin, scheduleDashboardRedirect, setAvatarUrl]);
 
-
-  useEffect(() => {
+useEffect(() => {
     if (!config.google.enabled || mode === 'forgot') return;
 
     const script = document.createElement('script');
@@ -229,7 +234,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
       <div className="relative lg:hidden border-b border-[#b6b2a7]/20 bg-[#f6f8f9] px-6 pb-8 pt-28 text-[#101114] overflow-hidden">
         <div className="relative flex flex-col items-center space-y-4 text-center">
           <Image
-            src="/img/logo/Sant_Logo Negro.png"
+            src="/img/web/logo/sant-logo-negro.webp"
             alt="Sant Clothes"
             width={360}
             height={73}
@@ -241,11 +246,10 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         </div>
       </div>
 
-
-      <div className="relative hidden lg:flex lg:w-[54%] lg:h-screen lg:self-start lg:sticky lg:top-0 flex-col items-center justify-center bg-[#f6f8f9] p-12 xl:p-16 overflow-hidden border-r border-[#b6b2a7]/20 text-[#101114]">
+<div className="relative hidden lg:flex lg:w-[54%] lg:h-screen lg:self-start lg:sticky lg:top-0 flex-col items-center justify-center bg-[#f6f8f9] p-12 xl:p-16 overflow-hidden border-r border-[#b6b2a7]/20 text-[#101114]">
         <div className="relative flex w-full max-w-2xl flex-col items-center text-center">
           <Image
-            src="/img/logo/Sant_Logo Negro.png"
+            src="/img/web/logo/sant-logo-negro.webp"
             alt="Sant Clothes"
             width={620}
             height={125}
@@ -261,8 +265,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
         </div>
       </div>
 
-
-      <div className="w-full lg:w-[46%] flex items-center justify-center px-6 py-14 sm:px-12 xl:px-20">
+<div className="w-full lg:w-[46%] flex items-center justify-center px-6 py-14 sm:px-12 xl:px-20">
         <div className="w-full max-w-md">
           <div className="flex items-center justify-between gap-4 border-b border-[#b6b2a7]/20 pb-6">
             <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#b6b2a7]">
@@ -289,8 +292,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
             </p>
           )}
 
-
-          {mode !== 'forgot' && (
+{mode !== 'forgot' && (
             <div className="mt-8 grid grid-cols-2 border border-[#b6b2a7]/25 bg-[#0b0c0e] p-1" role="tablist">
               {(['login', 'register'] as const).map((tab) => (
                 <button
@@ -311,8 +313,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
             </div>
           )}
 
-
-          <div aria-live="polite" className="empty:hidden">
+<div aria-live="polite" className="empty:hidden">
             <AnimatePresence mode="wait">
               {error && (
                 <motion.p
@@ -490,8 +491,7 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
               />
             </button>
 
-
-            {mode !== 'forgot' && config.google.enabled && (
+{mode !== 'forgot' && config.google.enabled && (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <span className="h-px flex-1 bg-[#b6b2a7]/20" />
@@ -517,7 +517,6 @@ export default function LoginForm({ initialEmail = '', initialMode = 'login' }: 
     </div>
   );
 }
-
 
 declare global {
   const google: {

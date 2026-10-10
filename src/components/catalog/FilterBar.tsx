@@ -55,8 +55,7 @@ export default function FilterBar() {
           ))}
         </div>
 
-
-        <div className="flex items-center gap-2 shrink-0 border-l border-zinc-200 pl-6">
+<div className="flex items-center gap-2 shrink-0 border-l border-zinc-200 pl-6">
           <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mr-1">Filtro:</span>
           {cuts.map((c) => (
             <button

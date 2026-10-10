@@ -10,8 +10,7 @@ function stubGeolocation(impl: (ok: PositionCallback, fail: PositionErrorCallbac
 }
 
 afterEach(() => {
-  // @ts-expect-error -- limpiar el stub entre tests
-  delete navigator.geolocation;
+  Reflect.deleteProperty(navigator, 'geolocation');
 });
 
 describe('DeliveryLocationPicker', () => {

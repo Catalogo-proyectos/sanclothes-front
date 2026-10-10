@@ -1,6 +1,5 @@
 import { apiCall } from '@/lib/api';
 
-/** Datos bancarios para pago por transferencia (Configuración → "Datos para transferencia" en el admin). */
 export interface BankTransferInfo {
   bankName: string;
   accountHolder: string;
@@ -16,7 +15,6 @@ interface PublicSetting {
   value: string;
 }
 
-/** Interpreta el valor del setting; null si está vacío, mal formado o incompleto. */
 export function parseBankTransferInfo(value: string | null | undefined): BankTransferInfo | null {
   if (!value?.trim()) return null;
   try {
@@ -28,7 +26,6 @@ export function parseBankTransferInfo(value: string | null | undefined): BankTra
   }
 }
 
-/** Lee los datos de transferencia públicos. Si no están configurados (o falla la API), devuelve null. */
 export async function fetchBankTransferInfo(): Promise<BankTransferInfo | null> {
   try {
     const rows = await apiCall<PublicSetting[]>('GET', '/v1/settings');

@@ -8,22 +8,22 @@ export default function SocialStudioGrid() {
   const images = [
     {
       id: 1,
-      url: '/img/hero/IMG_3202.webp',
+      url: '/img/web/hero/IMG_3202.webp',
       alt: 'SANCLOTHES Studio — Detalle Remera',
     },
     {
       id: 2,
-      url: '/img/hero/IMG_4390.webp',
+      url: '/img/web/hero/IMG_4390.webp',
       alt: 'SANCLOTHES Studio — Sudadera Heavyweight',
     },
     {
       id: 3,
-      url: '/img/hero/IMG_1460.webp',
+      url: '/img/web/hero/IMG_1460.webp',
       alt: 'SANCLOTHES Studio — Pantalón Gabardina',
     },
     {
       id: 4,
-      url: '/img/hero/IMG_2334.webp',
+      url: '/img/web/hero/IMG_2334.webp',
       alt: 'SANCLOTHES Studio — Estilo Neutro',
     },
   ];
@@ -53,8 +53,7 @@ export default function SocialStudioGrid() {
           </a>
         </div>
 
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {images.map((img, idx) => (
             <motion.div
               key={img.id}

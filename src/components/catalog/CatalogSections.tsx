@@ -11,7 +11,6 @@ interface CatalogSectionsProps {
   style: string | null;
 }
 
-/** Vista sin filtros: una sección por tipo de prenda, con sus bentos. */
 export default function CatalogSections({ sections, style }: CatalogSectionsProps) {
   let bandIndex = 0;
 

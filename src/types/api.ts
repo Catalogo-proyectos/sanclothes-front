@@ -1,7 +1,5 @@
 
 
-
-
 export type CutCode = string;
 export type StockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
 
@@ -46,16 +44,16 @@ export interface CatalogProduct {
   isFeatured?: boolean;
   isLimitedDrop?: boolean;
   tags?: string[];
-  // Catálogo v2
+  
   createdAt?: string;
   styles: string[];
-  /** Nombre visible del tipo de prenda (Chaquetas, Remeras…). */
+  
   categoryName: string;
   color: string | null;
   bento: CatalogBento | null;
-  /** Solo combos: sus prendas y los talles elegibles de cada una. */
+  
   combo?: ComboInfo | null;
-  /** Solo hype (antes del lanzamiento): fecha del lanzamiento para la cuenta regresiva. */
+  
   hype?: { launchAt: string } | null;
 }
 
@@ -73,10 +71,10 @@ export interface ComboInfo {
 }
 
 export interface CatalogBento {
-  /** null = usar el nombre del tipo de prenda. */
+  
   title: string | null;
   copy: string | null;
-  /** null = usar la primera imagen del producto. */
+  
   image: string | null;
   priority: number;
 }
@@ -87,8 +85,6 @@ export interface CutInfo {
   productsCount: number;
 }
 
-
-
 export interface SearchSuggestion {
   id: string;
   name: string;
@@ -96,8 +92,6 @@ export interface SearchSuggestion {
   thumbnailUrl: string | null;
   price: number;
 }
-
-
 
 export interface ProductReview {
   id: string;
@@ -110,11 +104,8 @@ export interface ProductReview {
   createdAt: string;
 }
 
-
-
-
 export interface LoginResponse {
-  /** Transición M5: el storefront ya no lo usa (la sesión va en cookie httpOnly). */
+  
   token?: string;
   csrfToken?: string;
   user: {
@@ -125,7 +116,6 @@ export interface LoginResponse {
     role: string;
   };
 }
-
 
 export interface RegisterResponse {
   success: true;
@@ -141,7 +131,6 @@ export interface RegisterResponse {
   };
 }
 
-
 export interface GoogleAuthResponse {
   token?: string;
   csrfToken?: string;
@@ -156,14 +145,12 @@ export interface GoogleAuthResponse {
   };
 }
 
-
 export interface RegisterConflictError {
   statusCode: number;
   error: string;
   message: string;
   isGuestAccount?: boolean;
 }
-
 
 export interface AuthResponse {
   userId: string;
@@ -174,9 +161,6 @@ export interface AuthResponse {
   expiresIn: number;
 }
 
-
-
-
 export interface CustomerProfile {
   id: string;
   firstName: string;
@@ -185,7 +169,6 @@ export interface CustomerProfile {
   phone?: string | null;
   addresses: unknown[];
 }
-
 
 export interface UpdateProfileResponse {
   success: true;
@@ -199,9 +182,6 @@ export interface UpdateProfileResponse {
   };
 }
 
-
-
-
 export interface OrderSummaryItem {
   id: string;
   orderNumber: string;
@@ -212,7 +192,6 @@ export interface OrderSummaryItem {
   itemCount: number;
 }
 
-
 export interface OrderDetail {
   id: string;
   orderNumber: string;
@@ -222,7 +201,7 @@ export interface OrderDetail {
   paymentMethod?: string;
   totals: {
     subtotal: number;
-    /** A2: descuento registrado; null en pedidos anteriores a A2 (sin desglose). */
+    
     discount?: number | null;
     shipping: number;
     total: number;
@@ -243,14 +222,10 @@ export interface OrderDetail {
   returnReason?: string;
 }
 
-
-
-
 export interface VerifyEmailRequest {
   email: string;
   turnstileToken?: string;
 }
-
 
 export interface ConfirmOtpRequest {
   email: string;
@@ -264,9 +239,8 @@ export interface ConfirmOtpResponse {
   message: string;
 }
 
-
 export interface CheckoutRequest {
-  /** Sin precio: el backend precifica (A2). */
+  
   items: Array<{
     sku: string;
     productId: string;
@@ -283,12 +257,12 @@ export interface CheckoutRequest {
     locality: string;
     province: string;
     postalCode: string;
-    /** Opcional: ubicación compartida desde el navegador (el staff la abre en Maps). */
+    
     location?: DeliveryLocation;
   };
   wantsClubMembership: boolean;
   couponCode?: string;
-  /** `quote.total` de la última quote READY. Solo se compara (409 PRICE_CHANGED), nunca es precio. */
+  
   expectedTotal?: number;
   requestsInvoice?: boolean;
   invoiceData?: {
@@ -298,22 +272,20 @@ export interface CheckoutRequest {
   };
 }
 
-
 export interface CheckoutResponse {
   orderId: string;
   status: string;
   expiresAt: string;
   message: string;
   orderAccessToken: string;
-  /** Desglose persistido del pedido (A2). */
+  
   totals?: { subtotal: number; discount: number; shipping: number; total: number };
 }
-
 
 export interface CheckoutOrderDetail {
   id: string;
   totalAmount: number;
-  /** A2: null = pedido anterior a A2. */
+  
   subtotalAmount?: number | null;
   discountAmount?: number | null;
   shippingAmount?: number;
@@ -321,10 +293,10 @@ export interface CheckoutOrderDetail {
   dropType?: string;
   paymentReceiptUrl: string | null;
   createdAt: string;
-  /** Hasta cuándo puede subir el comprobante; null = no vence (lo está revisando el equipo). */
+  
   paymentDeadlineAt?: string | null;
   receiptUploadedAt?: string | null;
-  /** Solo si el estado es 'Comprobante Rechazado'. */
+  
   receiptRejectionReason?: string | null;
   canUploadReceipt?: boolean;
   items: Array<{
@@ -336,21 +308,16 @@ export interface CheckoutOrderDetail {
   }>;
 }
 
-
 export interface ReceiptUploadResponse {
   success: true;
   url: string;
   message: string;
 }
 
-
-
 export interface CartSyncResponse {
   items: unknown[];
   updatedAt?: string;
 }
-
-
 
 export interface CustomerTier {
   currentTier: {
@@ -369,8 +336,6 @@ export interface CustomerTier {
     earlyAccessHours: number;
   } | null;
 }
-
-
 
 export interface TicketMessage {
   messageId: string;
@@ -393,15 +358,11 @@ export interface TicketDetail extends TicketSummary {
   messages: TicketMessage[];
 }
 
-
-
-
 export interface AuthErrorResponse {
   statusCode: number;
   error: string;
   message: string;
 }
-
 
 export interface ApiErrorResponse {
   error: string;
@@ -414,8 +375,6 @@ export interface ApiErrorResponse {
   requestedQuantity?: number;
 }
 
-
-
 export type PaginatedList<T> = {
   items: T[];
   total: number;
@@ -423,7 +382,6 @@ export type PaginatedList<T> = {
   limit: number;
 };
 
-/** Ubicación de entrega (grados decimales; `accuracy` en metros). */
 export interface DeliveryLocation {
   lat: number;
   lng: number;

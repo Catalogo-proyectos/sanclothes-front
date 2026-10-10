@@ -59,15 +59,14 @@ export default function Footer() {
   const [revealHeight, setRevealHeight] = useState<number>(FALLBACK_REVEAL_HEIGHT);
 
   const [email, setEmail] = useState('');
-  // El footer es fixed detrás del contenido: el IntersectionObserver lo da por
-  // visible desde el inicio y prefetcheaba sus ~20 links al cargar.
-  const prefetch = useLightPrefetch();
+
+const prefetch = useLightPrefetch();
 
   const isKnownRoute = (path: string) => {
     if (path === '/mantenimiento' || path === '/error-preview' || path === '/404') return false;
     const knownExact = ['/', '/catalog', '/comunidad', '/nosotros', '/about', '/login', '/checkout', '/dashboard', '/reset-password'];
     if (knownExact.includes(path)) return true;
-    if (path.startsWith('/products/')) return true;
+    if (path.startsWith('/products/') || path.startsWith('/pedido/')) return true;
     return false;
   };
 

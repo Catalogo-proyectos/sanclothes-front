@@ -16,7 +16,6 @@ interface ProductPageProps extends PageParams {
   searchParams: Promise<{ [SIZE_PARAM]?: string | string[] }>;
 }
 
-
 const getProduct = cache(
   async (productId: string): Promise<CatalogProduct | null> => fetchProduct(productId),
 );
@@ -42,8 +41,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   const title = product.title;
   const socialTitle = `${product.title} — SANT CLOTHES®`;
 
-
-  const description = (product.description || product.title).slice(0, 160);
+const description = (product.description || product.title).slice(0, 160);
   const image = product.images?.[0]?.url;
 
   return {
@@ -74,7 +72,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 export default async function ProductDetailPage({ params, searchParams }: ProductPageProps) {
   const { productId } = await params;
-  // Talle elegido en la tarjeta del catálogo (?talle=M); la ficha lo valida.
+
   const sizeParam = (await searchParams)[SIZE_PARAM];
   const initialSize = Array.isArray(sizeParam) ? sizeParam[0] : sizeParam;
   const [product, recommended] = await Promise.all([
@@ -90,8 +88,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
       ? 'https://schema.org/OutOfStock'
       : 'https://schema.org/InStock';
 
-
-  const jsonLd = {
+const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
       {

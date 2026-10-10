@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     url: `${config.app.url}/comunidad`,
     images: [
       {
-        url: '/img/hero/IMG_3202.webp',
+        url: '/img/web/hero/IMG_3202.webp',
         width: 1200,
         height: 630,
         alt: 'Comunidad Sant Club',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: 'Comunidad & Sant Club®',
     description:
       'Unite al Sant Club oficial en WhatsApp. Acceso anticipado 24h a drops exclusivos, pases VIP para aperturas y decisiones de moldería en Paraguay.',
-    images: ['/img/hero/IMG_3202.webp'],
+    images: ['/img/web/hero/IMG_3202.webp'],
   },
 };
 

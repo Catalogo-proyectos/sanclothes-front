@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 const communityMobileSrcSet = getImageProps({
-  src: '/img/hero/IMG_2022_mobile_1080x1920.webp',
+  src: '/img/movil/hero/IMG_2022.webp',
   alt: 'Le Sant Club — Nova Collection',
   fill: true,
   quality: 85,
@@ -90,7 +90,7 @@ export default function ComunidadContent() {
           <picture>
             <source media="(max-width: 639px)" srcSet={communityMobileSrcSet} />
             <Image
-              src="/img/hero/IMG_2022_horizontal_16x9.webp"
+              src="/img/web/hero/IMG_2022.webp"
               alt="Le Sant Club — Nova Collection"
               fill
               priority
@@ -102,7 +102,7 @@ export default function ComunidadContent() {
 
           <div className="absolute top-20 left-6 sm:top-24 sm:left-12 lg:top-20 lg:left-16 z-10">
             <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-white bg-black/75 backdrop-blur-md px-4 py-2 border border-white/25 shadow-lg">
-              SANT CLUB // PARAGUAY
+              SANT CLUB 
             </span>
           </div>
 
@@ -305,7 +305,7 @@ export default function ComunidadContent() {
           <div className="flex flex-col items-center justify-center gap-3">
             <div className="w-16 sm:w-20 mx-auto">
               <Image
-                src="/img/logo/logo-iso-negro.png"
+                src="/img/web/logo/logo-iso-negro.webp"
                 alt="SANT CLOTHES"
                 width={96}
                 height={96}

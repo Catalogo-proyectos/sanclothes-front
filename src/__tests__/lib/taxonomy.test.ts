@@ -1,12 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-// Config real de producción (sin mock) para ejercitar el fetch.
-vi.mock('@/lib/config', () => ({ config: { api: { useMock: false, origin: 'https://api.test' } } }));
+vi.mock('@/lib/config', () => ({ config: { api: { origin: 'https://api.test' } } }));
 
 describe('fetchTaxonomy', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
-    vi.resetModules(); // el respaldo de 60 s vive en el módulo: uno nuevo por test
+    vi.resetModules(); 
   });
 
   it('si la API falla usa el respaldo y no la vuelve a llamar durante 60 s', async () => {
